@@ -1,3 +1,8 @@
+from typing import Union, List, Optional, Dict, Tuple, TypeAlias
+
+
+InflectionMap: TypeAlias = Tuple[Union[str, List[str]], Optional[Dict[str, str]]]
+
 # NUMBER
 swap_number_subj = (
     ["Number[subj]", "Number"],
@@ -21,7 +26,7 @@ swap_person = (
     {
         "1": "3",
         "3": "1",
-    }
+    },
 )
 swap_any_person = ("Person", None)
 
