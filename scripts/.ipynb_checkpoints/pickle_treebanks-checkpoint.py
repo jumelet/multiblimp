@@ -4,8 +4,8 @@ import pickle
 import sys
 sys.path.append("../src")
 
-from mblimp.treebank import Treebank
-from mblimp.languages import (
+from multiblimp.treebank import Treebank
+from multiblimp.languages import (
     get_ud_langs,
     remove_diacritics_langs,
     convert_arabic_to_latin_langs,

@@ -3,7 +3,7 @@ import os
 
 
 def score_tse(model, fn: str):
-    tse_df = pd.read_csv(fn, sep='\t')
+    tse_df = pd.read_csv(fn, sep="\t")
 
     tse_df["sen_prob"] = pd.Series(dtype=object).astype(object)
     tse_df["wrong_prob"] = pd.Series(dtype=object).astype(object)
@@ -30,8 +30,10 @@ def score_pair(ilm_model, sen, wrong_sen, max_length):
     sen_len = len(ilm_model.tokenizer.tokenize(sen))
     wrong_sen_len = len(ilm_model.tokenizer.tokenize(wrong_sen))
 
-    if (max_length is not None) and ((sen_len >= max_length) or (wrong_sen_len >= max_length)):
-        return 0., 0.
+    if (max_length is not None) and (
+        (sen_len >= max_length) or (wrong_sen_len >= max_length)
+    ):
+        return 0.0, 0.0
 
     stimuli = [sen, wrong_sen]
 

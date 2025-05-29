@@ -1,12 +1,13 @@
 import pickle
 import sys
+
 sys.path.append("../../src")
 
-from mblimp.pipeline import Pipeline
-from mblimp.filters import NsubjFilter
-from mblimp.languages import get_ud_langs, lang2langcode
-from mblimp.measure_agreement import get_feature_combinations
-from mblimp.swap_features import *
+from multiblimp.pipeline import Pipeline
+from multiblimp.filters import NsubjFilter
+from multiblimp.languages import get_ud_langs, lang2langcode
+from multiblimp.measure_agreement import get_feature_combinations
+from multiblimp.swap_features import *
 
 
 if __name__ == "__main__":
@@ -55,8 +56,12 @@ if __name__ == "__main__":
         print(lang)
         langcode = lang2langcode(lang)
 
-        inflector = pipeline.load_inflector(lang, langcode, pipeline.unimorph_inflect_args)[0]
-        context_inflector = pipeline.load_inflector(lang, langcode, pipeline.unimorph_context_args)[0]
+        inflector = pipeline.load_inflector(
+            lang, langcode, pipeline.unimorph_inflect_args
+        )[0]
+        context_inflector = pipeline.load_inflector(
+            lang, langcode, pipeline.unimorph_context_args
+        )[0]
         corpus = pipeline.load_corpus(lang)
 
         results = get_feature_combinations(
@@ -78,5 +83,5 @@ if __name__ == "__main__":
     #
     # prev_results.update(all_results)
 
-    with open('lang_svPa.pickle', 'wb') as f:
+    with open("lang_svPa.pickle", "wb") as f:
         pickle.dump(all_results, f)

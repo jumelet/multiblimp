@@ -1,8 +1,9 @@
 import sys
+
 sys.path.append("../src")
 
-from mblimp.ud2um import create_all_unimorph_from_ud
-from mblimp.languages import get_ud_langs
+from multiblimp.ud2um import create_all_unimorph_from_ud
+from multiblimp.languages import get_ud_langs
 
 
 if __name__ == "__main__":

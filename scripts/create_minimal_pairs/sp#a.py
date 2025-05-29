@@ -1,10 +1,11 @@
 import sys
+
 sys.path.append("../../src")
 
-from mblimp.pipeline import Pipeline
-from mblimp.swap_features import *
-from mblimp.filters import NsubjFilter
-from mblimp.argparse import fetch_lang_candidates
+from multiblimp.pipeline import Pipeline
+from multiblimp.swap_features import *
+from multiblimp.filters import NsubjFilter
+from multiblimp.argparse import fetch_lang_candidates
 
 
 if __name__ == "__main__":

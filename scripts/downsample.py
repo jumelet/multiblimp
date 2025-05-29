@@ -1,9 +1,10 @@
 import pickle
 import sys
+
 sys.path.append("../src")
 
-from mblimp.downsample import downsample_pairs
-from mblimp.languages import get_ud_langs, lang2langcode
+from multiblimp.downsample import downsample_pairs
+from multiblimp.languages import get_ud_langs, lang2langcode
 
 
 if __name__ == "__main__":
@@ -22,7 +23,7 @@ if __name__ == "__main__":
     for phenomenon in phenomena:
         n_items = 100
 
-        with open(f'lang_stats/lang_{phenomenon}.pickle', 'rb') as f:
+        with open(f"lang_stats/lang_{phenomenon}.pickle", "rb") as f:
             all_lang_probs = pickle.load(f)
 
         for lang in lang_candidates:

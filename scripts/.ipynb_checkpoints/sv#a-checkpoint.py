@@ -1,9 +1,9 @@
 import sys
 sys.path.append("../src")
 
-from mblimp.pipeline import pipeline, swap_number
-from mblimp.filters import NsubjFilter
-from mblimp.languages import get_ud_langs
+from multiblimp.pipeline import pipeline, swap_number
+from multiblimp.filters import NsubjFilter
+from multiblimp.languages import get_ud_langs
 
 
 if __name__ == "__main__":

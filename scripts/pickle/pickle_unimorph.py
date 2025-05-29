@@ -2,16 +2,17 @@ import os
 from pathlib import Path
 import pickle
 import sys
+
 sys.path.append("../../src")
 
-from mblimp.languages import (
+from multiblimp.languages import (
     get_ud_langs,
     remove_diacritics_langs,
     remove_multiples_langs,
     lang2unimorph_lang,
     lang2langcode,
 )
-from mblimp.unimorph import UnimorphInflector
+from multiblimp.unimorph import UnimorphInflector
 
 
 if __name__ == "__main__":

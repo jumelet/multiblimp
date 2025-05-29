@@ -1,11 +1,12 @@
 import os
 import pickle
 import sys
+
 sys.path.append("../src")
 
-from mblimp.pipeline import Pipeline
-from mblimp.languages import get_ud_langs, lang2langcode
-from mblimp.filters.utils import tokenlist2sen
+from multiblimp.pipeline import Pipeline
+from multiblimp.languages import get_ud_langs, lang2langcode
+from multiblimp.filters.utils import tokenlist2sen
 
 
 if __name__ == "__main__":
@@ -32,6 +33,6 @@ if __name__ == "__main__":
         os.makedirs(corpus_dir, exist_ok=True)
 
         with open(os.path.join(corpus_dir, f"{langcode}.txt"), "w") as f:
-            f.write('\n'.join(corpus))
+            f.write("\n".join(corpus))
 
         print(lang, len(corpus))

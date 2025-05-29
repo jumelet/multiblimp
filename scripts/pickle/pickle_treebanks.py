@@ -2,10 +2,11 @@ import os
 from pathlib import Path
 import pickle
 import sys
+
 sys.path.append("../../src")
 
-from mblimp.treebank import Treebank
-from mblimp.languages import (
+from multiblimp.treebank import Treebank
+from multiblimp.languages import (
     get_ud_langs,
     remove_diacritics_langs,
     gblang2udlang,
@@ -23,7 +24,7 @@ if __name__ == "__main__":
                 lang,
                 remove_diacritics=(lang in remove_diacritics_langs),
                 resource_dir=resource_dir,
-                remove_typo=remove_typo
+                remove_typo=remove_typo,
             )
 
             print(lang, len(treebank))

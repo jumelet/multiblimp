@@ -35,8 +35,12 @@ def load_hf_model(model_name: str, no_cache=False, **kwargs):
     try:
         if no_cache:
             with tempfile.TemporaryDirectory() as tmpdirname:
-                model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=tmpdirname, **kwargs)
-                tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=tmpdirname, **kwargs)
+                model = AutoModelForCausalLM.from_pretrained(
+                    model_name, cache_dir=tmpdirname, **kwargs
+                )
+                tokenizer = AutoTokenizer.from_pretrained(
+                    model_name, cache_dir=tmpdirname, **kwargs
+                )
         else:
             model = AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
             tokenizer = AutoTokenizer.from_pretrained(model_name, **kwargs)
@@ -48,14 +52,16 @@ def load_hf_model(model_name: str, no_cache=False, **kwargs):
 
     ilm_model = scorer.IncrementalLMScorer(
         model,
-        'cuda',
+        "cuda",
         tokenizer=tokenizer,
     )
 
     return ilm_model
 
 
-def load_goldfish_model(langcode: str, size: str, script: Optional[str] = None, no_cache=False, **kwargs):
+def load_goldfish_model(
+    langcode: str, size: str, script: Optional[str] = None, no_cache=False, **kwargs
+):
     if script is not None:
         return load_goldfish(langcode, script, size, no_cache=no_cache)
     else:

@@ -1,10 +1,11 @@
 import sys
+
 sys.path.append("../../src")
 
-from mblimp.pipeline import Pipeline
-from mblimp.swap_features import *
-from mblimp.filters import NsubjFilter
-from mblimp.argparse import fetch_lang_candidates
+from multiblimp.pipeline import Pipeline
+from multiblimp.swap_features import swap_number_subj_any
+from multiblimp.filters import NsubjFilter
+from multiblimp.argparse import fetch_lang_candidates
 
 
 if __name__ == "__main__":
@@ -19,14 +20,14 @@ if __name__ == "__main__":
         NsubjFilter,
         swap_number_subj_any,
         unimorph_inflect_args={
-            "filter": {
+            "filter_entries": {
                 "upos": ["V"],
             },
             "combine_um_ud": True,
             "remove_multiword_forms": True,
         },
         unimorph_context_args={
-            "filter": {
+            "filter_entries": {
                 "upos": ["N", "PRO", "PRON"],
             },
             "combine_um_ud": True,
