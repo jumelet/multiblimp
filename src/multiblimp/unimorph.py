@@ -37,6 +37,7 @@ UD2UM = {
     "Part": "V.PTCP",
 }
 UM2UD = {v: k for k, v in UD2UM.items()}
+UM2UD["INDF"] = "Ind"
 
 
 def allval2um(val):
@@ -175,6 +176,10 @@ class UnimorphInflector:
         return um_len + ud_len
 
     @property
+    def ufeat(self):
+        return self.inflection_map[0]
+
+    @property
     def columns(self) -> Set[str]:
         return set() if self.unimorph_df is None else set(self.unimorph_df.columns)
 
@@ -246,11 +251,11 @@ class UnimorphInflector:
         """Returns True if the feature of the inflection map is present
         in either the UM or UD dataframe columns.
         """
-        um_can_feature_swap = isinstance(self.inflection_map[0], str)
+        um_can_feature_swap = isinstance(self.ufeat, str)
 
         ud_can_feature_swap = False
         if self.ud_inflector is not None:
-            ud_can_feature_swap = isinstance(self.ud_inflector.inflection_map[0], str)
+            ud_can_feature_swap = isinstance(self.ud_inflector.ufeat, str)
 
         return um_can_feature_swap or ud_can_feature_swap
 
@@ -445,8 +450,8 @@ class UnimorphInflector:
         form_groups = None
 
         if self.has_unimorph_df:
-            lemma_groups = self.unimorph_df.groupby("lemma")
-            form_groups = self.unimorph_df.groupby("form")
+            lemma_groups = self.unimorph_df.groupby("lemma", observed=False)
+            form_groups = self.unimorph_df.groupby("form", observed=False)
 
         return lemma_groups, form_groups
 
@@ -458,10 +463,10 @@ class UnimorphInflector:
         # Some languages have subcategories for features (e.g. Number[subj])
         # To use a universal inflection map, we look for the feature
         # that is present the *most* in the unimorph_df columns for inflection.
-        if isinstance(self.inflection_map[0], list):
+        if isinstance(self.ufeat, list):
             inflection_column = None
             min_feats_per_column = 0
-            for column in self.inflection_map[0]:
+            for column in self.ufeat:
                 if column in self.columns:
                     feature_counts = Counter(self.unimorph_df[column])
                     non_unk_counts = []
@@ -633,7 +638,7 @@ class UnimorphInflector:
         return forms, feature_vals
 
     def ud2um_features(
-        self, ud_features: Dict[str, str], strategy={}
+        self, ud_features: Dict[str, str], strategy={}, set_defaults=True
     ) -> Dict[str, str]:
         um_features = {}
 
@@ -647,9 +652,10 @@ class UnimorphInflector:
             else:
                 um_features[ufeat] = self.val2ud_um(ufeat, val)
 
-        for ufeat, val in DEFAULTS.items():
-            if (ufeat in self.columns) and (ufeat not in um_features):
-                um_features[ufeat] = self.val2ud_um(ufeat, val)
+        if set_defaults:
+            for ufeat, val in DEFAULTS.items():
+                if (ufeat in self.columns) and (ufeat not in um_features):
+                    um_features[ufeat] = self.val2ud_um(ufeat, val)
 
         if self.verbose:
             print("UM Features:", um_features)
@@ -686,6 +692,8 @@ class UnimorphInflector:
             return "-" + self.val2ud_um(feat, val[1:])
         elif f"{feat}_{val.title()}" in self.val2feat:
             return f"{feat}_{val.title()}"
+        elif self.use_ud_inflections:
+            return f"{feat}_{val}"            
         else:
             raise ValueError(f"Unknown {feat}: {val}")
 
@@ -742,7 +750,7 @@ class UnimorphInflector:
             elif (val is not None) and (pd.notna(val)):
                 if val.startswith("-"):
                     mask &= (sub_df[col] != val[1:]) & (sub_df[col] != UNDEFINED)
-                elif col == self.inflection_map[0]:
+                elif col == self.ufeat:
                     mask &= sub_df[col] == val
                 else:
                     mask &= (
@@ -762,10 +770,18 @@ class UnimorphInflector:
         for idx, (_, row) in enumerate(candidate_rows.iterrows()):
             for ufeat, val in row.items():
                 if (not pd.isna(val)) or (val == UNDEFINED):
+                    # If it is a not-nan feature that is not present in the matching row, +1
                     features_added[idx] += ufeat not in features
+                elif (not pd.isna(features.get(ufeat))) and (pd.isna(val) or (val == UNDEFINED)):
+                    # If it is a nan feature that *is* present in the matching row, +1
+                    features_added[idx] += 1
 
         min_features_added = min(features_added)
         min_features_added_mask = features_added == min_features_added
+        
+        if self.verbose:
+            print("Tight matching #added features:", features, features_added)
+            print("Tight matching yielded:", candidate_rows, "to", candidate_rows[min_features_added_mask], sep="\n")
 
         return candidate_rows[min_features_added_mask]
 
@@ -828,19 +844,21 @@ class UnimorphInflector:
         features: Dict[str, str],
         ufeat: Optional[str] = None,
         only_try_ud_if_no_um: bool = False,
-    ) -> List[str]:
-        um_features = self.ud2um_features(features)
+    ) -> Set[str]:
+        um_features = self.ud2um_features(features, set_defaults=False)
         if ufeat in um_features:
             del um_features[ufeat]
 
         form_features = set()
 
         if self.has_unimorph_df:
-            df_ufeat = self.inflection_map[0] if ufeat is None else ufeat
+            df_ufeat = self.ufeat if ufeat is None else ufeat
             if df_ufeat is not None:
                 form_rows = self.partial_df_match(
                     self.form_groups, form, um_features, prefer_tight_match=False
                 )
+                if self.verbose:
+                    print(form_rows)
                 if (len(form_rows) > 0) and (df_ufeat in form_rows.columns):
                     form_features.update(
                         {

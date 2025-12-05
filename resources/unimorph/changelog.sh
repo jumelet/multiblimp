@@ -67,6 +67,7 @@ sed "s/:/;/" hsb/hsb > hsb/hsb2; mv hsb/hsb2 hsb/hsb
 sed "s/:3:/;3;/" hsb/hsb > hsb/hsb2; mv hsb/hsb2 hsb/hsb
 
 # Slovak
+unxz slk/slk.xz
 cut -d$'\t' -f 1-3 slk/slk > slk/slk2; mv slk/slk2 slk/slk
 
 # Kazakh

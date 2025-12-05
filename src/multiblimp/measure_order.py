@@ -4,34 +4,8 @@ from tqdm import tqdm
 from .unimorph import allval2um, UNDEFINED
 
 
-def get_feature_combinations(
-    corpus,
-    head_inflector,
-    child_inflector,
-    head_ud_features={},
-    child_ud_features={},
-    verbose=False,
-    tqdm_progress=True,
-    only_try_ud_if_no_um=True,
-    discard_undefined=True,
-    allow_undefined=False,
-    allow_multiple=False,
-    collocate_ud_features=True,
-    only_collocate_ud_features=False,
-    condition_cop_lemma=False,
-):
-    feature_combinations = Counter()
-
-    head2feat = {}
-    child2feat = {}
-
-    head_ufeat = head_inflector.ufeat
-    child_ufeat = child_inflector.ufeat
-
-    if head_inflector.ud_inflector is not None:
-        head_ufeat = head_ufeat or head_inflector.ud_inflector.ufeat
-    if child_inflector.ud_inflector is not None:
-        child_ufeat = child_ufeat or child_inflector.ud_inflector.ufeat
+def measure_orders(treebank):
+    dep_orders = Counter()
 
     iterator = tqdm(corpus) if tqdm_progress else corpus
 

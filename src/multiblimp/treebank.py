@@ -5,10 +5,11 @@ from glob import glob
 from typing import *
 
 from arabic2latin import arabic_to_latin
-from conllu import parse_incr, TokenList
+from conllu import parse_incr
 from indic_transliteration.sanscript import IAST, DEVANAGARI, transliterate
 from unidecode import unidecode
 
+from .config import UD_PATH
 from .languages import udlang2treebanks, convert_arabic_to_latin_langs
 
 
@@ -22,7 +23,7 @@ def has_typo(item):
 
     misc = item.get("misc") or {}
     misc_has_correction = any("Correct" in misc_key for misc_key in misc.keys())
-    misc_has_lang = ("Lang" in misc) or ("OrigLang" in misc)
+    # misc_has_lang = ("Lang" in misc) or ("OrigLang" in misc)
 
     if (
         is_reparandum
@@ -30,7 +31,7 @@ def has_typo(item):
         or feats_has_style
         or feats_has_foreign
         or misc_has_correction
-        or misc_has_lang
+        # or misc_has_lang
     ):
         return True
 
@@ -64,9 +65,9 @@ class Treebank:
                 return pickle.load(f)
 
         if test_files_only:
-            treebank_glob = f"ud/ud-treebanks-v2.15/UD_{lang}*/*test*.conllu"
+            treebank_glob = os.path.join(UD_PATH, f"UD_{lang}*/*test*.conllu")
         else:
-            treebank_glob = f"ud/ud-treebanks-v2.15/UD_{lang}*/*.conllu"
+            treebank_glob = os.path.join(UD_PATH, f"UD_{lang}*/*.conllu")
         treebank_glob = os.path.join(resource_dir, treebank_glob)
         treebank_paths = glob(treebank_glob)
 

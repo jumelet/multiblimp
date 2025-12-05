@@ -91,12 +91,16 @@ def create_all_unimorph_from_ud(
     ud_feature_path = os.path.join(resource_dir, "ud/ud_feats.txt")
     _, val2feat_UD = load_ud_features(ud_feature_path)
 
+    ud_unimorph_dir = os.path.join(resource_dir, "ud_unimorph")
+    if not os.path.exists(ud_unimorph_dir):
+        os.makedirs(ud_unimorph_dir)
+
     for lang in sorted(ud_langs):
         if lang in skip_langs:
             continue
 
         isolang = lang2langcode(lang)
-        um_file = os.path.join(resource_dir, f"ud_unimorph/{isolang}")
+        um_file = os.path.join(ud_unimorph_dir, isolang)
 
         ud_lang = lang.replace(" ", "_")
         treebank = Treebank(

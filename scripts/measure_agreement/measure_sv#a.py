@@ -56,7 +56,7 @@ if __name__ == "__main__":
         store_diagnostics=False,
     )
 
-    for lang in ["French"]:  # lang_candidates:
+    for lang in lang_candidates:
         print(lang)
         langcode = lang2langcode(lang)
 

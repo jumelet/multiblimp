@@ -1,5 +1,0 @@
-# Rename UD_Norwegian-Bokmaal -> UD_Norwegian_Bokmål-NDT 
-# Rename UD_Norwegian-Nynorsk -> UD_Norwegian_Nynorsk-NDT
-
-# Remove colons from Gheg
-sed -r "s/([a-z]*):([a-z]*)/\1\2/g" ud/ud-treebanks-v2.15/UD_Gheg-GPS/aln_gps-ud-test.conllu > tmp.conllu; mv tmp.conllu ud/ud-treebanks-v2.15/UD_Gheg-GPS/aln_gps-ud-test.conllu

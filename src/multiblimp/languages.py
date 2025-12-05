@@ -6,6 +6,8 @@ from glob import glob
 from iso639 import Lang
 from iso639.exceptions import InvalidLanguageValue
 
+from .config import UD_PATH
+
 
 def lang2langcode(name: str):
     try:
@@ -266,13 +268,16 @@ def latin_to_cyrillic(text):
     return new_text
 
 
-def get_ud_langs(resource_dir, ud_dir="ud/ud-treebanks-v2.15/*"):
+def get_ud_langs(resource_dir, ud_dir=None):
+    if ud_dir is None:
+        ud_dir = UD_PATH
+
     ud_pattern = r".*UD_([A-Za-zå_\-]+)-[A-Za-z]+"
 
     def ud_dir2lang(x):
         return re.match(ud_pattern, x).group(1).replace("_", " ")
 
-    treebank_dirs = glob(os.path.join(resource_dir, ud_dir))
+    treebank_dirs = glob(os.path.join(resource_dir, ud_dir, "*"))
     treebank_langs = map(ud_dir2lang, treebank_dirs)
     treebank_langs = sorted(set(treebank_langs))
 
