@@ -1,0 +1,6 @@
+sen_str,swapped_sen_str,leaf_rule
+cl.d(1):ventana VENTANA HOMBRE INDX PELOTA ARROJAR cl.e(1):TRAYECTORIA+PELOTA-caer-ventana,cl.d(1):ventana VENTANA INDX PELOTA ARROJAR HOMBRE cl.e(1):TRAYECTORIA+PELOTA-caer-ventana,[0] -> [1] -> [3] -> [5]
+MUJER PERSONA HOMBRE cl.e(1):PERSONA-aproximarse FLOR cl.m(5d):recibir-ramo,MUJER PERSONA cl.e(1):PERSONA-aproximarse FLOR cl.m(5d):recibir-ramo HOMBRE,[0] -> [1] -> [3] -> [5]
+MERCADO HOMBRE PERSONA HABITACIÓN LLEVAR,MERCADO HABITACIÓN LLEVAR HOMBRE PERSONA,[0] -> [1] -> [3] -> [5]
+BARBA HOMBRE AFEITAR,BARBA AFEITAR HOMBRE,[0] -> [1] -> [3] -> [5]
+cl.e(1):PERSONA-desplazarse MUJER SEÑOR cl.e(1):PERSONA-desplazarse cl.e(1):PERSONA ANTIFAZ(L)(1M) ANTIFAZ(1M) ROBAR DINERO,cl.e(1):PERSONA-desplazarse MUJER ROBAR SEÑOR cl.e(1):PERSONA-desplazarse cl.e(1):PERSONA ANTIFAZ(L)(1M) ANTIFAZ(1M) DINERO,[0] -> [1] -> [3] -> [5]

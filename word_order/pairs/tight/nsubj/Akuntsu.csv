@@ -1,0 +1,6 @@
+sen_str,swapped_sen_str,leaf_rule
+"kɨrẽri ta paja , kiwkiw","kɨrẽri paja ta , kiwkiw",[0] -> [1] -> [3] -> [4] -> [6]
+ebapa ẽ tʃe .,ebapa tʃe ẽ .,[0] -> [1] -> [3] -> [4] -> [6]
+ẽromri kwatin ikoa te ?,ẽromri ikoa kwatin te ?,[0] -> [1] -> [3] -> [4] -> [6]
+"poga pe pi , ameko ikora tʃe .","poga pe pi , ikora ameko tʃe .",[0] -> [1] -> [3] -> [4] -> [6]
+ebapa ẽ tʃe .,ebapa tʃe ẽ .,[0] -> [1] -> [3] -> [4] -> [6]
