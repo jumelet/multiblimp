@@ -1,7 +1,9 @@
+import os
+
+import pandas as pd
+
 from .decision_tree import set_dt_meta
 import warnings
-
-from .process_treebank import tree2sen
 
 
 def get_subtree_indices(tokens, index):
@@ -116,22 +118,44 @@ def create_swaps(df, treebank, leaf2dir, threshold=0.1):
     return low_entropy_df
 
 
-def create_pairs(model, dt_df, full_df, treebank, max_per_leaf=100, threshold=0.1, save_to: str | None = None):
+def create_pairs(
+    model,
+    dt_df: pd.DataFrame,
+    full_df: pd.DataFrame,
+    treebank,
+    max_per_leaf: int = 100,
+    threshold: float = 0.1,
+    save_to_tight: str | None = None,
+    save_to_full: str | None = None,
+):
     set_dt_meta(model, dt_df, full_df)
 
     tree = model.named_steps["clf"].tree_
-    leaf2dir = {idx: direction.item() for idx, direction in enumerate(tree.value.argmax(-1))}
+    leaf2dir = {
+        idx: direction.item() for idx, direction in enumerate(tree.value.argmax(-1))
+    }
 
     full_swap_df = create_swaps(dt_df, treebank, leaf2dir, threshold=threshold)
 
     if len(full_swap_df) > 0:
-        full_swap_df = (
-            full_swap_df
-            .groupby("leaf_id", group_keys=False)
-            .apply(lambda g: g.sample(n=min(max_per_leaf, len(g)), replace=False, random_state=42))
+        full_swap_df = full_swap_df.groupby("leaf_id", group_keys=False).apply(
+            lambda g: g.sample(
+                n=min(max_per_leaf, len(g)), replace=False, random_state=42
+            ),
+            include_groups=False,
         )
 
-        if save_to is not None:
-            full_swap_df.to_csv(save_to, index=False)
+        if save_to_tight is not None:
+            tight_swap_df = full_swap_df[
+                ["sen_str", "swapped_sen_str", "leaf_rule"]
+            ].copy()
+            tight_swap_df = tight_swap_df.sort_values("leaf_rule")
+
+            os.makedirs(os.path.dirname(save_to_tight), exist_ok=True)
+            tight_swap_df.to_csv(save_to_tight, index=False)
+
+        if save_to_full is not None:
+            os.makedirs(os.path.dirname(save_to_full), exist_ok=True)
+            full_swap_df.to_csv(save_to_full, index=False)
 
     return full_swap_df

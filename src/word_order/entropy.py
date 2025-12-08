@@ -1,6 +1,9 @@
 import math
 from collections import Counter
 
+from scipy.stats import entropy
+import numpy as np
+
 
 def order_entropy(n_ab: int, n_ba: int) -> float:
     """
@@ -39,3 +42,12 @@ def calc_dep_entropy(df):
         )
 
     return deprel_entropy
+
+
+def calc_model_entropy(model, df):
+    """ Calculate the entropy of the data in `df` for a DecisionTreeClassifier. """
+    probs = model.predict_proba(df)
+    entropies = entropy(probs.T, base=2)
+    mean_entropy = np.mean(entropies)
+
+    return mean_entropy

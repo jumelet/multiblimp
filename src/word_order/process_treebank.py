@@ -31,12 +31,13 @@ def load_treebank(
         load_from_pickle=True,
     )
     if max_treebank_len is not None and len(treebank) > max_treebank_len:
-        treebank = random.sample(treebank, max_treebank_len)
+            random.seed(42)
+            treebank = random.sample(treebank, max_treebank_len)
 
     return treebank
 
 
-def read_df(lang, word_order_dir = None) -> pd.DataFrame:
+def read_df(lang, word_order_dir=None) -> pd.DataFrame:
     lang = gblang2udlang.get(lang, lang).replace(" ", "_")
 
     df = pd.read_csv(
