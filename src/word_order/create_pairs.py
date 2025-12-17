@@ -65,7 +65,7 @@ def move_indices_relative(sen, indices, head_idx):
     return remainder[:insert_pos] + items + remainder[insert_pos:]
 
 
-def create_swaps(df, treebank, leaf2dir, threshold=0.1):
+def create_swaps(df, treebank, leaf2dir, threshold=0.1, max_sen_len=100):
     leaf_decision = [row.dir == leaf2dir[row.leaf_id] for _, row in df.iterrows()]
     df["leaf_decision"] = leaf_decision
     low_entropy_df = df[(df.leaf_entropy < threshold) & df.leaf_decision].copy()
@@ -77,10 +77,11 @@ def create_swaps(df, treebank, leaf2dir, threshold=0.1):
     for df_idx, row in low_entropy_df.iterrows():
         tree = treebank[row.tree_idx]
         ids = get_subtree_indices(tree, row.child_idx)
-        swapped_sen = move_indices_relative(row.sen, ids, row.head_idx)
 
-        if 0 in ids:
+        if (0 in ids) or (len(row.sen) > max_sen_len):
             swapped_sen = None
+        else:
+            swapped_sen = move_indices_relative(row.sen, ids, row.head_idx)
 
         swapped_sens.append(swapped_sen)
 

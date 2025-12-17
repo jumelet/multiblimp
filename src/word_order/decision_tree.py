@@ -31,13 +31,14 @@ def fit_dt(
     min_samples_leaf=25,
     min_impurity_decrease=0.005,
     verbose=1,
+    min_df_len=10,
 ):
     sub_df = df[(df.deprel == deprel)]
     if deprel_kwargs is not None:
         for k, v in deprel_kwargs.items():
             sub_df = sub_df[sub_df[k] == v]
 
-    if len(sub_df) == 0:
+    if len(sub_df) < min_df_len:
         return None, None
 
     omit_feats = (omit_feats or set()).union(set(META_FEATURES))
@@ -99,6 +100,7 @@ def fit_dt(
     model.fit(X_train, y_train)
 
     if save_to is not None:
+        os.makedirs(os.path.dirname(save_to), exist_ok=True)
         joblib.dump(model, save_to)
 
     if verbose > 0:
@@ -109,7 +111,7 @@ def fit_dt(
 
 
 def pprint_node(txt):
-    new_txt = txt.replace(" <= 0.5", "").replace("000", "").strip()
+    new_txt = txt.replace(" <= 0.5", "").replace("000", "").replace(".0,", ",").replace(".0]", "]").strip()
 
     if len(new_txt.split("_")) == 3:
         splits = new_txt.split("_")
@@ -118,9 +120,12 @@ def pprint_node(txt):
         splits = new_txt.split("_")
         new_txt = f"{splits[0]}_{splits[1]}_{splits[2]} = {splits[3]}"
     elif "True" in new_txt and not "\n" in new_txt:
-        new_txt = "     False     "
+        new_txt = "     False     "  # labels must be flipped, trust me it is right
     elif "False" in new_txt and not "\n" in new_txt:
         new_txt = "     True     "
+
+    if " = nan" in new_txt:
+        new_txt = new_txt.replace(" = nan", " is not set")
 
     return new_txt
 
@@ -146,15 +151,15 @@ def plot_dt(model, save_to=None, show_plot=True):
     for node_id, artist in enumerate(artists):
         txt = artist.get_text()
         m = re.match(r"node #(\d+)\n(.*)", txt, re.S)
-        if not m:
-            continue
-        node_id = int(m.group(1))
-        rest = m.group(2)
+        if m is not None:
+            node_id = int(m.group(1))
+            rest = m.group(2)
+            new_txt = pprint_node(rest)
 
-        # Apply your transformation
-        new_txt = pprint_node(rest)
-
-        artist.set_text(f"[{node_id}] {new_txt}")
+            artist.set_text(f"[{node_id}] {new_txt}")
+        else:
+            new_txt = pprint_node(txt)
+            artist.set_text(new_txt)
 
     if save_to is not None:
         os.makedirs(os.path.dirname(save_to), exist_ok=True)
