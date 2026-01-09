@@ -10,7 +10,7 @@ The full MultiBLiMP dataset is available on [HuggingFace](https://huggingface.co
 A more detailed explanation of evaluating your own LM on MultiBLiMP is provided by Catherine Arnett (thanks!) in this repository: https://github.com/catherinearnett/multiblimp
 
 ## Results
-We provide a `.csv` dataframe of all model results here (759MB): [Google Drive](https://drive.google.com/file/d/1meCW4AXKLXhOwMnFEV5QmbJnQhMqA0he/view?usp=sharing). Note that, to save disk space, this dataframe does not contain the original sentence pairs. In case you need those, you can download another `.csv` dataframe here: [Google Drive]().
+We provide a `.csv` dataframe of all model results here (759MB): [Google Drive](https://drive.google.com/file/d/1meCW4AXKLXhOwMnFEV5QmbJnQhMqA0he/view?usp=sharing). Note that, to save disk space, this dataframe does not contain the original sentence pairs. In case you need those, you can download another `.csv` dataframe here (2.4GB): [Google Drive](https://drive.google.com/file/d/10zeCqAJj3tTi1LbokxmNuWtT8Z3652L5/view?usp=sharing).
 
 The most important column in these dataframes is `delta` (log probability difference of the LM). Accuracy can be derived from this as well (`delta > 0`), or directly by taking the mean over the `pred` column. Specific tests should be easy to conduct using `pandas` `groupby` functionality.
 
