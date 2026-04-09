@@ -16,16 +16,22 @@ The most important column in these dataframes is `delta` (log probability differ
 
 
 ## Citation
-The paper has been accepted into TACL and should be on MIT Press soon!
+The paper has been published in TACL:
 
 ```
-@misc{jumelet2025multiblimp10massivelymultilingual,
-      title={MultiBLiMP 1.0: A Massively Multilingual Benchmark of Linguistic Minimal Pairs}, 
-      author={Jaap Jumelet and Leonie Weissweiler and Arianna Bisazza},
-      year={2025},
-      eprint={2504.02768},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2504.02768}, 
+@article{jumelet-etal-2026-multiblimp,
+    title = "{M}ulti{BL}i{MP} 1.0: A Massively Multilingual Benchmark of Linguistic Minimal Pairs",
+    author = "Jumelet, Jaap  and
+      Weissweiler, Leonie  and
+      Nivre, Joakim  and
+      Bisazza, Arianna",
+    journal = "Transactions of the Association for Computational Linguistics",
+    volume = "14",
+    year = "2026",
+    address = "Cambridge, MA",
+    publisher = "MIT Press",
+    url = "https://aclanthology.org/2026.tacl-1.10/",
+    doi = "10.1162/tacl.a.600",
+    pages = "193--216"
 }
 ```
