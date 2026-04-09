@@ -5,17 +5,25 @@ from scipy.stats import entropy
 import numpy as np
 
 
-def order_entropy(n_ab: int, n_ba: int) -> float:
+def order_entropy(
+    n_ab: int,
+    n_ba: int,
+    smoothing_a: float = 0.5,  # Jeffreys prior
+) -> float:
     """
     Compute Shannon entropy (in bits) for word order frequencies.
 
     Args:
         n_ab (int): Count of A>B order
         n_ba (int): Count of B>A order
+        smoothing_a (float): Smoothing factor
 
     Returns:
         float: Entropy in bits
     """
+    n_ab += smoothing_a
+    n_ba += smoothing_a
+
     total = n_ab + n_ba
     if total == 0:
         return 0.0
@@ -45,7 +53,7 @@ def calc_dep_entropy(df):
 
 
 def calc_model_entropy(model, df):
-    """ Calculate the entropy of the data in `df` for a DecisionTreeClassifier. """
+    """Calculate the entropy of the data in `df` for a DecisionTreeClassifier."""
     probs = model.predict_proba(df)
     entropies = entropy(probs.T, base=2)
     mean_entropy = np.mean(entropies)

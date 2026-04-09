@@ -76,6 +76,9 @@ gblang2udlang = {
     "Modern Hebrew": "Hebrew",
 }
 
+# TODO: rewrite this as exclusion list rather than inclusion
+# Maps a language to all the treebanks that should be used for that language.
+# If a language is not in this dictionary we take all available treebanks.
 udlang2treebanks = {
     "Vietnamese": ["VTB"],
     "Hebrew": ["HTB"],
@@ -86,7 +89,7 @@ udlang2treebanks = {
     "Slovenian": ["SSJ"],
     "Faroese": ["OFT"],
     "Icelandic": ["GC", "Modern", "PUD"],
-    "English": ["Atis", "EWT", "GENTLE", "GUMReddit", "LinES", "ParTUT", "PUD"],
+    "English": ["EWT", "LinES", "ParTUT", "PUD"],
     "Sanskrit": ["Vedic"],
     "French": ["FQB", "GSD", "ParTUT", "PUD", "Sequoia"],
     "Galician": ["PUD", "TreeGal"],
@@ -104,6 +107,7 @@ udlang2treebanks = {
     "Spanish": ["AnCora", "GSD", "PUD"],
     "Japanese": ["GSD", "PUD", "BCCWJ"],
     "Classical_Chinese": ["Kyoto"],
+    "Arabic": ["PADT", "PUD"],
 }
 
 lang2unimorph_lang = {
@@ -132,12 +136,15 @@ convert_arabic_to_latin_langs = {
 }
 
 skip_langs = {
-    "Frisian Dutch",
-    "Turkish German",
-    "Cappadocian",
-    "Maghrebi Arabic French",
-    "Pomak",
-    "Telugu English",
+    # "Frisian Dutch",
+    # "Turkish German",
+    # "Maghrebi Arabic French",
+    # "Telugu English",
+    # "Turkish English",
+    # "Cappadocian",
+    # "Pomak",
+    "Spanish Sign Language",
+    "Swedish Sign Language",
 }
 
 
@@ -268,7 +275,7 @@ def latin_to_cyrillic(text):
     return new_text
 
 
-def get_ud_langs(resource_dir, ud_dir=None):
+def get_ud_langs(resource_dir, ud_dir=None, do_skip_langs=True):
     if ud_dir is None:
         ud_dir = UD_PATH
 
@@ -280,5 +287,8 @@ def get_ud_langs(resource_dir, ud_dir=None):
     treebank_dirs = glob(os.path.join(resource_dir, ud_dir, "*"))
     treebank_langs = map(ud_dir2lang, treebank_dirs)
     treebank_langs = sorted(set(treebank_langs))
+
+    if do_skip_langs:
+        treebank_langs = [lang for lang in treebank_langs if lang not in skip_langs]
 
     return treebank_langs

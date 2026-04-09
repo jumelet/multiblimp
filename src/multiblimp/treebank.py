@@ -2,7 +2,6 @@ import os
 import pickle
 import re
 from glob import glob
-from typing import *
 
 from arabic2latin import arabic_to_latin
 from conllu import parse_incr
@@ -13,7 +12,7 @@ from .config import UD_PATH
 from .languages import udlang2treebanks, convert_arabic_to_latin_langs
 
 
-def has_typo(item):
+def is_malformed(item):
     is_reparandum = item["deprel"] == "reparandum"
 
     feats = item.get("feats") or {}
@@ -38,10 +37,13 @@ def has_typo(item):
     return False
 
 
-def tree_has_typo(tree):
+def tree_is_malformed(tree):
     for item in tree:
-        if has_typo(item):
+        if is_malformed(item):
             return True
+
+    if all(item["form"] == "_" for item in tree):
+        return True
 
     return False
 
@@ -91,7 +93,7 @@ class Treebank:
                     treebank.append(tree)
 
         if remove_typo:
-            treebank = [tree for tree in treebank if not tree_has_typo(tree)]
+            treebank = [tree for tree in treebank if not tree_is_malformed(tree)]
 
         for tree in treebank:
             remove_items = [tok for tok in tree if isinstance(tok["id"], tuple)]
@@ -101,8 +103,6 @@ class Treebank:
         if lang in convert_arabic_to_latin_langs:
             for tree in treebank:
                 for item in tree:
-                    if item["form"] == "بورسۇق":
-                        x = 1
                     if item.get("misc", {}).get("Translit"):
                         item["form"] = item["misc"]["Translit"]
                     else:

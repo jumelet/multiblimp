@@ -49,7 +49,9 @@ def get_feature_combinations(
                 child_features = allval2um(item["child_features"][child_ufeat])
 
             if len(head_features) > 0 and len(child_features) > 0:
-                feature_combinations[child_features, head_features, order, cop_lemma] += 1
+                feature_combinations[
+                    child_features, head_features, order, cop_lemma
+                ] += 1
                 continue
 
         if only_collocate_ud_features:
@@ -96,41 +98,60 @@ def get_feature_combinations(
             and (len(child_features) == 1)
             and (UNDEFINED not in [child_features[0], head_features[0]])
         ):
-            feature_combinations[child_features[0], head_features[0], order, cop_lemma] += 1
+            feature_combinations[
+                child_features[0], head_features[0], order, cop_lemma
+            ] += 1
         elif (
             allow_multiple
             and (len(head_features) == 1)
             and (head_features[0] != UNDEFINED)
             and (head_features[0] in child_features)
         ):
-            feature_combinations[head_features[0], head_features[0], order, cop_lemma] += 1
+            feature_combinations[
+                head_features[0], head_features[0], order, cop_lemma
+            ] += 1
         elif (
             allow_multiple
             and (len(child_features) == 1)
             and (child_features[0] != UNDEFINED)
             and (child_features[0] in head_features)
         ):
-            feature_combinations[child_features[0], child_features[0], order, cop_lemma] += 1
+            feature_combinations[
+                child_features[0], child_features[0], order, cop_lemma
+            ] += 1
         elif (
             allow_undefined
             and (len(head_features) == 1)
             and (head_features[0] != UNDEFINED)
             and (UNDEFINED in child_features or len(child_features) == 0)
         ):
-            feature_combinations[head_features[0], head_features[0], order, cop_lemma] += 1
+            feature_combinations[
+                head_features[0], head_features[0], order, cop_lemma
+            ] += 1
         elif (
             allow_undefined
             and (len(child_features) == 1)
             and (child_features[0] != UNDEFINED)
             and (UNDEFINED in head_features or len(head_features) == 0)
         ):
-            feature_combinations[child_features[0], child_features[0], order, cop_lemma] += 1
+            feature_combinations[
+                child_features[0], child_features[0], order, cop_lemma
+            ] += 1
         else:
-            if (child_ufeat in item["child_features"]) and (head_ufeat in item["head_features"]):
+            if (child_ufeat in item["child_features"]) and (
+                head_ufeat in item["head_features"]
+            ):
                 ud_head_ufeat = allval2um(item["head_features"][head_ufeat])
                 ud_child_ufeat = allval2um(item["child_features"][child_ufeat])
 
-                print(item['child'], child_features, ud_child_ufeat, item['head'], head_features, ud_head_ufeat)
+                print(
+                    item["child"],
+                    child_features,
+                    ud_child_ufeat,
+                    item["head"],
+                    head_features,
+                    ud_head_ufeat,
+                )
 
     tot = sum(feature_combinations.values())
 
@@ -145,8 +166,12 @@ def get_feature_combinations(
     head_rel_combs = Counter()
     for (childfeat, headfeat, order, cop_lemma), freq in feature_combinations.items():
         rel_combs[childfeat, headfeat, order, cop_lemma] = freq / tot
-        child_rel_combs[childfeat, headfeat, order, cop_lemma] = freq / child_tot[childfeat, order, cop_lemma]
-        head_rel_combs[childfeat, headfeat, order, cop_lemma] = freq / head_tot[headfeat, order, cop_lemma]
+        child_rel_combs[childfeat, headfeat, order, cop_lemma] = (
+            freq / child_tot[childfeat, order, cop_lemma]
+        )
+        head_rel_combs[childfeat, headfeat, order, cop_lemma] = (
+            freq / head_tot[headfeat, order, cop_lemma]
+        )
 
     if verbose:
         if len(rel_combs) > 0:

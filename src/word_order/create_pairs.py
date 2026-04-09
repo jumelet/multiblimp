@@ -5,6 +5,8 @@ import pandas as pd
 from .decision_tree import set_dt_meta
 import warnings
 
+from .utils import capitalize_first
+
 
 def get_subtree_indices(tokens, index):
     """
@@ -65,58 +67,161 @@ def move_indices_relative(sen, indices, head_idx):
     return remainder[:insert_pos] + items + remainder[insert_pos:]
 
 
-def create_swaps(df, treebank, leaf2dir, threshold=0.1, max_sen_len=100):
-    leaf_decision = [row.dir == leaf2dir[row.leaf_id] for _, row in df.iterrows()]
-    df["leaf_decision"] = leaf_decision
-    low_entropy_df = df[(df.leaf_entropy < threshold) & df.leaf_decision].copy()
+def get_sen_str(tree, sen):
+    no_space_afters = [
+        # (tok['misc'] or {}).get('SpaceAfter') == "No"
+        False
+        for tok in tree
+    ]
+    sen_str = ""
+    for tok, no_space_after in zip(sen, no_space_afters):
+        sen_str += tok if no_space_after else f"{tok} "
+    sen_str = sen_str.strip()
 
-    swapped_sens = []
-    str_sens = []
-    str_swapped_sens = []
+    return sen_str, no_space_afters
 
-    for df_idx, row in low_entropy_df.iterrows():
+
+def get_swapped_sen_str(swapped_sen, no_space_afters, ids, head_idx):
+    no_space_afters_swapped = move_indices_relative(no_space_afters, ids, head_idx)
+    swapped_sen_str = ""
+    for tok, no_space_after in zip(swapped_sen, no_space_afters_swapped):
+        swapped_sen_str += tok if no_space_after else f"{tok} "
+    swapped_sen_str = swapped_sen_str.strip()
+
+    return swapped_sen_str
+
+
+def create_head_child_swaps(
+    df, treebank, max_sen_len=100
+):
+    df["swapped_sen"] = None
+
+    for df_idx, row in df.iterrows():
         tree = treebank[row.tree_idx]
         ids = get_subtree_indices(tree, row.child_idx)
 
-        if (0 in ids) or (len(row.sen) > max_sen_len):
-            swapped_sen = None
-        else:
+        swapped_sen = None
+        # TODO: allow swapped phrase to be at start of sentence (i.e. handle capitalization correctly)
+        if (0 not in ids) and (len(row.sen) <= max_sen_len):
             swapped_sen = move_indices_relative(row.sen, ids, row.head_idx)
 
-        swapped_sens.append(swapped_sen)
+        if swapped_sen is None:
+            df.at[df_idx, "keep"] = False
+            continue
 
-        no_space_afters = [
-            False
-            # (tok['misc'] or {}).get('SpaceAfter') == "No"
-            for tok in tree
-        ]
-        sen_str = ""
-        for tok, no_space_after in zip(row.sen, no_space_afters):
-            sen_str += tok if no_space_after else f"{tok} "
-        str_sens.append(sen_str.strip())
+        sen_str, no_space_afters = get_sen_str(tree, row.sen)
 
-        if swapped_sen is not None:
-            # TODO: fix space after logic!
-            # no_space_afters_swapped = move_indices_relative(
-            #     no_space_afters, ids, row.head_idx
-            # )
+        swapped_sen_str = get_swapped_sen_str(
+            swapped_sen, no_space_afters, ids, row.head_idx
+        )
 
-            swapped_sen_str = ""
-            for tok, no_space_after in zip(swapped_sen, no_space_afters):
-                swapped_sen_str += tok if no_space_after else f"{tok} "
-            str_swapped_sens.append(swapped_sen_str.strip())
-        else:
-            str_swapped_sens.append(None)
+        df.at[df_idx, "sen_str"] = sen_str
+        df.at[df_idx, "swapped_sen_str"] = swapped_sen_str
+        df.at[df_idx, "swapped_sen"] = swapped_sen
 
-    low_entropy_df["sen_str"] = str_sens
-    low_entropy_df["swapped_sen_str"] = str_swapped_sens
-    low_entropy_df["swapped_sen"] = swapped_sens
+    return df
 
-    low_entropy_df = low_entropy_df[
-        ~low_entropy_df["swapped_sen_str"].apply(lambda x: x is None)
-    ]
 
-    return low_entropy_df
+def create_core_arg_swaps(
+    df, treebank, max_sen_len=100
+):
+    df["non_projective"] = False
+
+    for df_idx, row in df.iterrows():
+        if len(row.sen) > max_sen_len:
+            continue
+
+        tree = treebank[row.tree_idx]
+
+        subj_ids = get_subtree_indices(tree, row.subject_idx - 1)
+        obj_ids = get_subtree_indices(tree, row.object_idx - 1)
+        verb_ids = [int(row.verb_idx - 1)]  # get_subtree_indices(tree, row.verb_idx)
+
+        sen_str, no_space_afters = get_sen_str(tree, row.sen)
+
+        df.at[df_idx, "sen_str"] = sen_str
+        df.at[df_idx, f"{row.core_args}_sen_str"] = sen_str
+
+        sen_orders = {row.core_args: row.sen}
+
+        swap_logic = {
+            "svo": {
+                "sov": ("svo", obj_ids, verb_ids[0]),
+                "osv": ("svo", obj_ids, subj_ids[0]),
+                "vso": ("svo", subj_ids, verb_ids[-1]),
+                "vos": ("svo", subj_ids, obj_ids[-1]),
+                "ovs": ("vso", obj_ids, verb_ids[0] - len(subj_ids)),
+            },
+            "sov": {
+                "svo": ("sov", obj_ids, verb_ids[-1]),
+                "osv": ("sov", obj_ids, subj_ids[0]),
+                "vso": ("sov", verb_ids, subj_ids[0]),
+                "ovs": ("sov", subj_ids, verb_ids[-1]),
+                "vos": ("osv", verb_ids, obj_ids[0] - len(subj_ids)),
+            },
+            "vso": {
+                "svo": ("vso", subj_ids, verb_ids[0]),
+                "vos": ("vso", obj_ids, subj_ids[0]),
+                "ovs": ("vso", obj_ids, verb_ids[0]),
+                "sov": ("vso", verb_ids, obj_ids[-1]),
+                "osv": ("svo", obj_ids, subj_ids[0] - len(verb_ids)),
+            },
+            "vos": {
+                "vso": ("vos", subj_ids, obj_ids[-1]),
+                "ovs": ("vos", obj_ids, verb_ids[0]),
+                "svo": ("vos", subj_ids, verb_ids[0]),
+                "osv": ("vos", verb_ids, subj_ids[-1]),
+                "sov": ("ovs", subj_ids, obj_ids[0] - len(verb_ids)),
+            },
+            "ovs": {
+                "osv": ("ovs", subj_ids, verb_ids[-1]),
+                "vos": ("ovs", verb_ids, obj_ids[0]),
+                "vso": ("ovs", obj_ids, subj_ids[-1]),
+                "sov": ("ovs", subj_ids, obj_ids[0]),
+                "svo": ("vos", subj_ids, verb_ids[0] - len(obj_ids)),
+            },
+            "osv": {
+                "ovs": ("osv", subj_ids, verb_ids[-1]),
+                "sov": ("osv", subj_ids, obj_ids[0]),
+                "svo": ("osv", obj_ids, verb_ids[-1]),
+                "vos": ("osv", verb_ids, obj_ids[0]),
+                "vso": ("sov", verb_ids, subj_ids[0] - len(obj_ids)),
+            },
+        }
+
+        for swap_core_arg, (base_sen_order, ids, pivot_idx) in swap_logic[
+            row.core_args
+        ].items():
+            pivot_idx = int(pivot_idx)
+            base_sen = list(sen_orders[base_sen_order])
+            swap_sen = move_indices_relative(base_sen, ids, pivot_idx)
+
+            if swap_sen is None:
+                df.at[df_idx, "non_projective"] = True
+                break
+
+            # reset capitalization
+            if pivot_idx == 0:
+                swap_sen[0] = capitalize_first(swap_sen[0])
+                swap_sen[len(ids)] = swap_sen[len(ids)].lower()
+            if 0 in ids:
+                swap_sen[0] = swap_sen[0][0].upper() + swap_sen[0][1:]
+                swap_sen[pivot_idx - len(ids) + 1] = swap_sen[
+                    pivot_idx - len(ids) + 1
+                ].lower()
+
+            swap_sen_str = get_swapped_sen_str(
+                swap_sen, no_space_afters, ids, pivot_idx
+            )
+
+            sen_orders[swap_core_arg] = swap_sen
+
+            df.at[df_idx, f"{swap_core_arg}_sen_str"] = swap_sen_str
+
+    # only keep projective tree swaps
+    df = df[~df["non_projective"]]
+
+    return df
 
 
 def create_pairs(
@@ -124,39 +229,55 @@ def create_pairs(
     dt_df: pd.DataFrame,
     full_df: pd.DataFrame,
     treebank,
+    predictor_var,
+    swap_type: str = "head_child",
     max_per_leaf: int = 100,
     threshold: float = 0.1,
-    save_to_tight: str | None = None,
-    save_to_full: str | None = None,
+    save_to_tight_keep: str | None = None,
+    save_to_full_keep: str | None = None,
+    save_to: str | None = None,
 ):
-    set_dt_meta(model, dt_df, full_df)
+    set_dt_meta(model, dt_df, full_df, predictor_var=predictor_var, threshold=threshold)
 
-    tree = model.named_steps["clf"].tree_
-    leaf2dir = {
-        idx: direction.item() for idx, direction in enumerate(tree.value.argmax(-1))
-    }
-
-    full_swap_df = create_swaps(dt_df, treebank, leaf2dir, threshold=threshold)
+    if swap_type == "head_child":
+        full_swap_df = create_head_child_swaps(dt_df, treebank)
+    elif swap_type == "core_arg":
+        full_swap_df = create_core_arg_swaps(dt_df, treebank)
+    else:
+        raise ValueError(f"{swap_type} is not a valid swap type")
 
     if len(full_swap_df) > 0:
-        full_swap_df = full_swap_df.groupby("leaf_id", group_keys=False).apply(
-            lambda g: g.sample(
-                n=min(max_per_leaf, len(g)), replace=False, random_state=42
-            ),
-            include_groups=False,
+        # Sample `max_per_leaf` items for each leaf_id that has entropy below threshold
+        selected_idx = (
+            full_swap_df[full_swap_df["keep"]]
+            .groupby("leaf_id", group_keys=False)
+            .apply(
+                lambda g: g.sample(
+                    n=min(max_per_leaf, len(g)),
+                    replace=False,
+                    random_state=42,
+                )
+            )
+            .index
         )
+        full_swap_df["keep"] = False
+        full_swap_df.loc[selected_idx, "keep"] = True
 
-        if save_to_tight is not None:
-            tight_swap_df = full_swap_df[
-                ["sen_str", "swapped_sen_str", "leaf_rule"]
-            ].copy()
+        if save_to_tight_keep is not None:
+            sub_df = full_swap_df[full_swap_df.keep]
+            tight_swap_df = sub_df[["sen_str", "swapped_sen_str", "leaf_rule"]].copy()
             tight_swap_df = tight_swap_df.sort_values("leaf_rule")
 
-            os.makedirs(os.path.dirname(save_to_tight), exist_ok=True)
-            tight_swap_df.to_csv(save_to_tight, index=False)
+            os.makedirs(os.path.dirname(save_to_tight_keep), exist_ok=True)
+            tight_swap_df.to_csv(save_to_tight_keep, index=False)
 
-        if save_to_full is not None:
-            os.makedirs(os.path.dirname(save_to_full), exist_ok=True)
-            full_swap_df.to_csv(save_to_full, index=False)
+        if save_to_full_keep is not None:
+            os.makedirs(os.path.dirname(save_to_full_keep), exist_ok=True)
+            sub_df = full_swap_df[full_swap_df.keep]
+            sub_df.to_csv(save_to_full_keep, index=False)
+
+        if save_to is not None:
+            os.makedirs(os.path.dirname(save_to), exist_ok=True)
+            full_swap_df.to_csv(save_to, index=False)
 
     return full_swap_df

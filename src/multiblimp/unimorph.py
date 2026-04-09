@@ -693,7 +693,7 @@ class UnimorphInflector:
         elif f"{feat}_{val.title()}" in self.val2feat:
             return f"{feat}_{val.title()}"
         elif self.use_ud_inflections:
-            return f"{feat}_{val}"            
+            return f"{feat}_{val}"
         else:
             raise ValueError(f"Unknown {feat}: {val}")
 
@@ -772,16 +772,24 @@ class UnimorphInflector:
                 if (not pd.isna(val)) or (val == UNDEFINED):
                     # If it is a not-nan feature that is not present in the matching row, +1
                     features_added[idx] += ufeat not in features
-                elif (not pd.isna(features.get(ufeat))) and (pd.isna(val) or (val == UNDEFINED)):
+                elif (not pd.isna(features.get(ufeat))) and (
+                    pd.isna(val) or (val == UNDEFINED)
+                ):
                     # If it is a nan feature that *is* present in the matching row, +1
                     features_added[idx] += 1
 
         min_features_added = min(features_added)
         min_features_added_mask = features_added == min_features_added
-        
+
         if self.verbose:
             print("Tight matching #added features:", features, features_added)
-            print("Tight matching yielded:", candidate_rows, "to", candidate_rows[min_features_added_mask], sep="\n")
+            print(
+                "Tight matching yielded:",
+                candidate_rows,
+                "to",
+                candidate_rows[min_features_added_mask],
+                sep="\n",
+            )
 
         return candidate_rows[min_features_added_mask]
 
