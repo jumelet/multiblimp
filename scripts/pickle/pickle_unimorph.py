@@ -19,7 +19,7 @@ if __name__ == "__main__":
     resource_dir = "../resources"
     ud_langs = get_ud_langs(resource_dir)
 
-    for lang in ud_langs[ud_langs.index("Slovak")+1:]:
+    for lang in ud_langs:
         print(lang)
         umlang = lang2unimorph_lang.get(lang, lang)
         langcode = lang2langcode(umlang)
