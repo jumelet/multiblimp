@@ -2,9 +2,9 @@ import os
 
 import pandas as pd
 
-from .decision_tree import set_dt_meta
 import warnings
 
+from .process_treebank import PredictionTarget
 from .utils import capitalize_first
 
 
@@ -91,40 +91,7 @@ def get_swapped_sen_str(swapped_sen, no_space_afters, ids, head_idx):
     return swapped_sen_str
 
 
-def create_head_child_swaps(
-    df, treebank, max_sen_len=100
-):
-    df["swapped_sen"] = None
-
-    for df_idx, row in df.iterrows():
-        tree = treebank[row.tree_idx]
-        ids = get_subtree_indices(tree, row.child_idx)
-
-        swapped_sen = None
-        # TODO: allow swapped phrase to be at start of sentence (i.e. handle capitalization correctly)
-        if (0 not in ids) and (len(row.sen) <= max_sen_len):
-            swapped_sen = move_indices_relative(row.sen, ids, row.head_idx)
-
-        if swapped_sen is None:
-            df.at[df_idx, "keep"] = False
-            continue
-
-        sen_str, no_space_afters = get_sen_str(tree, row.sen)
-
-        swapped_sen_str = get_swapped_sen_str(
-            swapped_sen, no_space_afters, ids, row.head_idx
-        )
-
-        df.at[df_idx, "sen_str"] = sen_str
-        df.at[df_idx, "swapped_sen_str"] = swapped_sen_str
-        df.at[df_idx, "swapped_sen"] = swapped_sen
-
-    return df
-
-
-def create_core_arg_swaps(
-    df, treebank, max_sen_len=100
-):
+def create_core_arg_swaps(df, treebank, max_sen_len=100):
     df["non_projective"] = False
 
     for df_idx, row in df.iterrows():
@@ -225,27 +192,14 @@ def create_core_arg_swaps(
 
 
 def create_pairs(
-    model,
     dt_df: pd.DataFrame,
-    full_df: pd.DataFrame,
     treebank,
-    predictor_var,
-    swap_type: str = "head_child",
     max_per_leaf: int = 100,
-    threshold: float = 0.1,
-    save_to_tight_keep: str | None = None,
-    save_to_full_keep: str | None = None,
+    save_to_pairs_only: str | None = None,
     save_to: str | None = None,
 ):
-    set_dt_meta(model, dt_df, full_df, predictor_var=predictor_var, threshold=threshold)
-
-    if swap_type == "head_child":
-        full_swap_df = create_head_child_swaps(dt_df, treebank)
-    elif swap_type == "core_arg":
-        full_swap_df = create_core_arg_swaps(dt_df, treebank)
-    else:
-        raise ValueError(f"{swap_type} is not a valid swap type")
-
+    full_swap_df = create_core_arg_swaps(dt_df, treebank)
+    
     if len(full_swap_df) > 0:
         # Sample `max_per_leaf` items for each leaf_id that has entropy below threshold
         selected_idx = (
@@ -263,18 +217,13 @@ def create_pairs(
         full_swap_df["keep"] = False
         full_swap_df.loc[selected_idx, "keep"] = True
 
-        if save_to_tight_keep is not None:
+        if save_to_pairs_only is not None:
             sub_df = full_swap_df[full_swap_df.keep]
             tight_swap_df = sub_df[["sen_str", "swapped_sen_str", "leaf_rule"]].copy()
             tight_swap_df = tight_swap_df.sort_values("leaf_rule")
 
-            os.makedirs(os.path.dirname(save_to_tight_keep), exist_ok=True)
-            tight_swap_df.to_csv(save_to_tight_keep, index=False)
-
-        if save_to_full_keep is not None:
-            os.makedirs(os.path.dirname(save_to_full_keep), exist_ok=True)
-            sub_df = full_swap_df[full_swap_df.keep]
-            sub_df.to_csv(save_to_full_keep, index=False)
+            os.makedirs(os.path.dirname(save_to_pairs_only), exist_ok=True)
+            tight_swap_df.to_csv(save_to_pairs_only, index=False)
 
         if save_to is not None:
             os.makedirs(os.path.dirname(save_to), exist_ok=True)

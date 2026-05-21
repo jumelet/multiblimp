@@ -295,8 +295,6 @@ class Pipeline:
                                 )
                         if num_combinations > 1:
                             feature_distribution[feature_key] += 1
-                        if item["swap_head"] == "hebbe":
-                            print(item)
                         return "correct_swaps", item
                 elif add_item is None:
                     return "extra_pairs", item

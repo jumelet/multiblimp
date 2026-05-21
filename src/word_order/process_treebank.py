@@ -4,57 +4,18 @@ import os
 import random
 
 from collections import defaultdict, Counter
-from dataclasses import dataclass
-from typing import Literal
 
 sys.path.append("src")
 
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 import pandas as pd
 import numpy as np
 
 from multiblimp.treebank import Treebank
 from multiblimp.languages import remove_diacritics_langs, gblang2udlang
 
-
-@dataclass
-class PredictionTarget:
-    """
-    Defines what word order pattern to predict.
-
-    Examples:
-        # Single child-head relationship
-        PredictionTarget(mode="child_head", child_deprel="amod")
-
-        # Multi-child relationship (e.g., SVO)
-        PredictionTarget(
-            mode="multi_child",
-            child_deprels=["nsubj", "obj"],
-            head_deprel="root"  # optional: only consider children of root verbs
-        )
-    """
-
-    mode: Literal["child_head", "multi_child"]
-
-    # For child_head mode: single deprel to predict
-    child_deprel: str | None = None
-
-    # For multi_child mode: list of deprels to order relative to shared head
-    child_deprels: list[str] | None = None
-
-    # Optional: filter by head's deprel (e.g., only root verbs for SVO)
-    head_deprel: str | None = None
-
-    # Optional: filter by head's POS
-    head_pos: str | None = None
-
-    def __post_init__(self):
-        if self.mode == "child_head" and self.child_deprel is None:
-            raise ValueError("child_head mode requires child_deprel")
-        if self.mode == "multi_child" and (
-            self.child_deprels is None or len(self.child_deprels) < 2
-        ):
-            raise ValueError("multi_child mode requires at least 2 child_deprels")
+from .prediction_target import PredictionTarget
+from .utils import shorten_cls
 
 
 META_FEATURES = ["sen", "treebank", "sent_id", "tree_idx"]
@@ -150,6 +111,7 @@ def extract_node_features(
     features[f"{prefix}_pos"] = node["upos"]
     features[f"{prefix}_form"] = node["form"]
     features[f"{prefix}_lemma"] = node["lemma"]
+    features[f"{prefix}_idx"] = node["id"]
 
     # Morphological features
     for feat in all_feats:
@@ -238,12 +200,39 @@ def extract_node_features(
                         head2child_feat[node["head"]].get(deprel, {}).get(feat)
                     )
 
+    # Child features (node's own dependents)
+    child_deprel_candidates = set(all_deprel) - set(target.child_deprels or [])
+    child_deprels = head2child_deprels[node["id"]]
+    child_pos = head2child_pos[node["id"]]
+    child_lemmas = head2child_lemmas[node["id"]]
+
+    for deprel in child_deprel_candidates:
+        features[f"{prefix}_child-deprel_{deprel}"] = deprel in child_deprels
+
+    for pos in all_pos:
+        features[f"{prefix}_child-pos_{pos}"] = pos in child_pos
+
+    for deprel in child_deprel_candidates:
+        lemma_val = "None"
+        for dep, lem in zip(child_deprels, child_lemmas):
+            if dep == deprel:
+                lemma_val = lem
+                break
+        features[f"{prefix}_child-lemma_{deprel}"] = lemma_val
+
+    for feat in all_feats:
+        for deprel in child_deprel_candidates:
+            features[f"{prefix}_child-feat_{deprel}_{feat}"] = (
+                head2child_feat[node["id"]].get(deprel, {}).get(feat)
+            )
+
     return features
 
 
 def extract_sen_features(tree):
     """
     Extract sentence-level features that apply to the whole sentence.
+    Sets core argument structure of main clause and `in_question` features.
 
     Returns:
         dict of feature_name -> feature_value
@@ -305,20 +294,20 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
     head2left_deprels = defaultdict(list)
     head2right_deprels = defaultdict(list)
 
-    for token in tree:
-        child2head[token["id"]] = token["head"]
-        head2child_deprels[token["head"]].append(token["deprel"])
-        head2child_pos[token["head"]].add(token["upos"])
-        head2child_lemmas[token["head"]].append(token["lemma"])
+    for child in tree:
+        child2head[child["id"]] = child["head"]
+        head2child_deprels[child["head"]].append(child["deprel"])
+        head2child_pos[child["head"]].add(child["upos"])
+        head2child_lemmas[child["head"]].append(child["lemma"])
 
-        head2child_feats[token["head"]][token["deprel"]] = {}
-        for feat, value in (token["feats"] or {}).items():
-            head2child_feats[token["head"]][token["deprel"]][feat] = value
+        head2child_feats[child["head"]][child["deprel"]] = {}
+        for feat, value in (child["feats"] or {}).items():
+            head2child_feats[child["head"]][child["deprel"]][feat] = value
 
-        if token["id"] < token["head"]:
-            head2left_deprels[token["head"]].append(token["deprel"])
+        if child["id"] < child["head"]:
+            head2left_deprels[child["head"]].append(child["deprel"])
         else:
-            head2right_deprels[token["head"]].append(token["deprel"])
+            head2right_deprels[child["head"]].append(child["deprel"])
 
     for child, head in child2head.items():
         child2root[child].add(tree[child - 1]["deprel"])
@@ -331,33 +320,76 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
     # Extract sentence-level features (core_args, in_question, etc.)
     sen_features = extract_sen_features(tree)
 
-    if target.mode == "child_head":
-        # Original mode: predict order of one child relative to its head
-        for token in tree:
-            if token["deprel"] != target.child_deprel:
+    # Group children by head, keeping only those matching target deprels
+    head2children = defaultdict(list)
+    for child in tree:
+        if child["deprel"] in target.child_deprels:
+            head2children[child["head"]].append(child)
+
+    # For each head that has all required child deprels present
+    for head_id, children in head2children.items():
+        # Check if we have all required deprels
+        child_deprels_present = {c["deprel"] for c in children}
+        if not all(deprel in child_deprels_present for deprel in target.child_deprels):
+            continue
+
+        head = tree[head_id - 1]
+
+        # Create a mapping from deprel to child for this head
+        deprel2child = {c["deprel"]: c for c in children}
+
+        # Optional filters
+        if target.head_deprel is not None and head["deprel"] != target.head_deprel:
+            continue
+        if target.head_pos is not None and head["upos"] not in target.head_pos:
+            continue
+        if target.child_pos is not None:
+            skip = False
+            for deprel, child in deprel2child.items():
+                if isinstance(target.child_pos, list):
+                    if child["upos"] not in target.child_pos:
+                        skip = True
+                elif isinstance(target.child_pos, dict):
+                    if child["upos"] not in target.child_pos[deprel]:
+                        skip = True
+            if skip:
                 continue
 
-            head = tree[token["head"] - 1]
+        sen = tree2sen(tree)
+        instance = {
+            "sen": sen,
+            "treebank": tree.metadata["treebank"].split("/")[0],
+            "sent_id": tree.metadata["sent_id"],
+            "tree_idx": tree_idx,
+        }
 
-            # Optional filters
-            if target.head_deprel is not None and head["deprel"] != target.head_deprel:
+        # Extract features for the head
+        head_features = extract_node_features(
+            head,
+            tree,
+            child2root,
+            head2child_deprels,
+            head2child_lemmas,
+            head2left_deprels,
+            head2right_deprels,
+            head2child_pos,
+            head2child_feats,
+            "head",
+            all_feats,
+            all_deprel,
+            all_pos,
+            target,
+        )
+        instance.update(head_features)
+
+        # Extract features for each child type; use deprel as prefix (e.g. "nsubj_pos", "amod_pos")
+        for deprel in target.child_deprels:
+            if deprel not in deprel2child:
                 continue
-            if target.head_pos is not None and head["upos"] != target.head_pos:
-                continue
 
-            instance = {
-                "sen": tree2sen(tree),
-                "treebank": tree.metadata["treebank"].split("/")[0],
-                "sent_id": tree.metadata["sent_id"],
-                "tree_idx": tree_idx,
-                "target_order": int(
-                    token["id"] > token["head"]
-                ),  # 0 if child before head, 1 if after
-            }
-
-            # Extract features for the child
+            child = deprel2child[deprel]
             child_features = extract_node_features(
-                token,
+                child,
                 tree,
                 child2root,
                 head2child_deprels,
@@ -366,123 +398,31 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
                 head2right_deprels,
                 head2child_pos,
                 head2child_feats,
-                "child",
+                deprel,
                 all_feats,
                 all_deprel,
                 all_pos,
                 target,
             )
-
-            # Extract features for the head
-            head_features = extract_node_features(
-                head,
-                tree,
-                child2root,
-                head2child_deprels,
-                head2child_lemmas,
-                head2left_deprels,
-                head2right_deprels,
-                head2child_pos,
-                head2child_feats,
-                "head",
-                all_feats,
-                all_deprel,
-                all_pos,
-                target,
-            )
-
-            # Add sentence-level features
-            instance.update(sen_features)
             instance.update(child_features)
-            instance.update(head_features)
-            instances.append(instance)
 
-    elif target.mode == "multi_child":
-        # New mode: predict order of multiple children relative to a shared head
-        # Group children by head
-        head2children = defaultdict(list)
-        for token in tree:
-            if token["deprel"] in target.child_deprels:
-                head2children[token["head"]].append(token)
+        # Add sentence-level features
+        instance.update(sen_features)
 
-        # For each head that has at least 2 of the target children
-        for head_id, children in head2children.items():
-            if len(children) < 2:
-                continue
+        deprel_ids = {
+            deprel: instance[f"{deprel}_idx"]
+            for deprel in target.child_deprels + ["head"]
+        }
+        deprel_order = "_".join(sorted(deprel_ids, key=deprel_ids.get))
+        instance["deprel_order"] = shorten_cls(deprel_order, target)
 
-            # Check if we have all required deprels
-            child_deprels_present = {c["deprel"] for c in children}
-            if not all(
-                deprel in child_deprels_present for deprel in target.child_deprels
-            ):
-                continue
+        if "broedcellen" in sen and "voorraadpotje" in sen:
+            print(0, instance["nmod_child-deprel_det"], sen)
 
-            head = tree[head_id - 1]
+        if "bewijzen" in sen and "berusten" in sen:
+            print(1, instance["nmod_child-deprel_det"], sen)
 
-            # Optional filters
-            if target.head_deprel is not None and head["deprel"] != target.head_deprel:
-                continue
-            if target.head_pos is not None and head["upos"] != target.head_pos:
-                continue
-
-            # Create a mapping from deprel to child for this head
-            deprel2child = {c["deprel"]: c for c in children}
-
-            instance = {
-                "sen": tree2sen(tree),
-                "treebank": tree.metadata["treebank"].split("/")[0],
-                "sent_id": tree.metadata["sent_id"],
-                "tree_idx": tree_idx,
-            }
-
-            # Extract features for the head
-            head_features = extract_node_features(
-                head,
-                tree,
-                child2root,
-                head2child_deprels,
-                head2child_lemmas,
-                head2left_deprels,
-                head2right_deprels,
-                head2child_pos,
-                head2child_feats,
-                "head",
-                all_feats,
-                all_deprel,
-                all_pos,
-                target,
-            )
-            instance.update(head_features)
-
-            # Extract features for each child type
-            for deprel in target.child_deprels:
-                if deprel not in deprel2child:
-                    continue
-
-                child = deprel2child[deprel]
-                # Use deprel as prefix so features are named like "nsubj_pos", "obj_pos", etc.
-                child_features = extract_node_features(
-                    child,
-                    tree,
-                    child2root,
-                    head2child_deprels,
-                    head2child_lemmas,
-                    head2left_deprels,
-                    head2right_deprels,
-                    head2child_pos,
-                    head2child_feats,
-                    deprel,
-                    all_feats,
-                    all_deprel,
-                    all_pos,
-                    target,
-                )
-                instance.update(child_features)
-
-            # Add sentence-level features
-            instance.update(sen_features)
-
-            instances.append(instance)
+        instances.append(instance)
 
     return instances
 
@@ -507,25 +447,32 @@ def extract_features(treebank, target: PredictionTarget):
         instances = extract_instances(tree, tree_idx, target, tree_metadata)
         all_instances.extend(instances)
 
+        if len(instances) > 0 and len(instances) % 100 == 0:
+            print(len(instances))
+
     return all_instances
 
 
 def create_word_order_df(
-    lang: str,
     target: PredictionTarget,
+    treebank: Treebank | None = None,
+    lang: str | None = None,
     resource_dir: str | None = None,
     save_to: str | None = None,
     max_treebank_len: int | None = None,
+    drop_singleton_columns: bool = False,
 ) -> pd.DataFrame:
     """
     Create a DataFrame with word order features for a given language and prediction target.
 
     Args:
-        lang: Language code
         target: PredictionTarget specifying what word order to predict
+        treebank: Treebank for language, can be provided optionally
+        lang: Language code, must be provided is Treebank is not passed
         resource_dir: Directory containing treebank resources
         save_to: Directory to save CSV to (optional)
         max_treebank_len: Maximum number of sentences to process
+        drop_singleton_columns: drop columns with only a single value
 
     Returns:
         DataFrame with extracted features
@@ -547,57 +494,23 @@ def create_word_order_df(
             )
         )
     """
-    lang = gblang2udlang.get(lang, lang).replace(" ", "_")
-    treebank = load_treebank(lang, resource_dir, max_treebank_len=max_treebank_len)
+    if treebank is None:
+        assert lang is not None
+        treebank = load_treebank(lang, resource_dir, max_treebank_len=max_treebank_len)
 
     all_instances = extract_features(treebank, target)
     df = pd.DataFrame(all_instances)
 
+    if drop_singleton_columns and len(df) > 0:
+        always_keep = {"deprel_order", "sen", "treebank", "sent_id", "tree_idx"}
+        cols_to_check = df.columns.difference(list(always_keep))
+        keep = df[cols_to_check].nunique() > 1
+        kept_always = [c for c in always_keep if c in df.columns]
+        df = df[[*kept_always, *keep.index[keep]]].copy()
+
     if save_to is not None and len(df) > 0:
-        # Include target info in filename
-        if target.mode == "child_head":
-            suffix = f"_{target.child_deprel}"
-        else:
-            suffix = f"_{'_'.join(target.child_deprels)}"
-        df.to_csv(os.path.join(save_to, f"{lang}{suffix}.csv"), index=False)
+        output_path = os.path.join(save_to, f"{lang.replace(' ', '_')}.csv")
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        df.to_csv(output_path, index=False)
 
     return df
-
-
-# Backward compatibility function
-def create_word_order_df_legacy(
-    lang: str,
-    resource_dir: str | None = None,
-    save_to: str | None = None,
-    max_treebank_len: int | None = None,
-    omit_core_features: bool = False,
-    deprels: list[str] | None = None,
-) -> pd.DataFrame:
-    """
-    Legacy function for backward compatibility.
-    Creates multiple child-head DataFrames, one for each deprel.
-    """
-    if deprels is None:
-        # Get all deprels from treebank
-        treebank = load_treebank(lang, resource_dir, max_treebank_len=max_treebank_len)
-        _, _, all_deprel, _ = get_all_feats(treebank)
-        deprels = list(all_deprel)
-
-    dfs = []
-    for deprel in deprels:
-        if omit_core_features and ("nsubj" in deprel or "obj" in deprel):
-            continue
-
-        target = PredictionTarget(mode="child_head", child_deprel=deprel)
-        df = create_word_order_df(
-            lang, target, resource_dir, save_to=None, max_treebank_len=max_treebank_len
-        )
-        dfs.append(df)
-
-    combined_df = pd.concat(dfs, ignore_index=True)
-
-    if save_to is not None:
-        lang_name = gblang2udlang.get(lang, lang).replace(" ", "_")
-        combined_df.to_csv(os.path.join(save_to, f"{lang_name}.csv"), index=False)
-
-    return combined_df

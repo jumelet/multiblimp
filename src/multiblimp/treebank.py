@@ -55,12 +55,15 @@ class Treebank:
         remove_diacritics: bool = False,
         verbose: bool = False,
         load_from_pickle: bool = False,
-        resource_dir: str = ".",
+        resource_dir: str | None = None,
         test_files_only: bool = False,
         use_selected_treebanks: bool = True,
         remove_typo: bool = True,
         pickle_path: str = "ud/ud_pickles",
     ):
+        if resource_dir is None:
+            resource_dir = "."
+
         if load_from_pickle:
             pickle_path = os.path.join(resource_dir, pickle_path, f"{lang}.pickle")
             with open(pickle_path, "rb") as f:
