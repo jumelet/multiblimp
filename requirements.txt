@@ -5,3 +5,6 @@ arabic2latin
 indic_transliteration
 unidecode
 iso639-lang
+minicons
+datasets
+lm-eval

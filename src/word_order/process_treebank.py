@@ -48,7 +48,10 @@ def read_df(lang, word_order_dir=None, deprels=None) -> pd.DataFrame:
     df = pd.read_csv(
         os.path.join(word_order_dir or "", f"{lang}{deprel_suffix}.csv"),
         low_memory=False,
-        converters={"sen": ast.literal_eval},
+        converters={
+            "sen": ast.literal_eval, 
+            "swap_order_candidates": ast.literal_eval
+        },
     )
     df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
     df = df.replace([np.inf, -np.inf], "inf")
@@ -416,12 +419,6 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
         deprel_order = "_".join(sorted(deprel_ids, key=deprel_ids.get))
         instance["deprel_order"] = shorten_cls(deprel_order, target)
 
-        if "broedcellen" in sen and "voorraadpotje" in sen:
-            print(0, instance["nmod_child-deprel_det"], sen)
-
-        if "bewijzen" in sen and "berusten" in sen:
-            print(1, instance["nmod_child-deprel_det"], sen)
-
         instances.append(instance)
 
     return instances
@@ -476,23 +473,6 @@ def create_word_order_df(
 
     Returns:
         DataFrame with extracted features
-
-    Examples:
-        # Predict adjective-noun order
-        df = create_word_order_df(
-            "en",
-            PredictionTarget(mode="child_head", child_deprel="amod")
-        )
-
-        # Predict SVO order
-        df = create_word_order_df(
-            "en",
-            PredictionTarget(
-                mode="multi_child",
-                child_deprels=["nsubj", "obj"],
-                head_deprel="root"
-            )
-        )
     """
     if treebank is None:
         assert lang is not None

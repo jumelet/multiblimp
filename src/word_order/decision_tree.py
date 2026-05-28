@@ -108,7 +108,7 @@ def fit_dt(
 
     model.fit(X_train, y_train)
 
-    X_train = set_dt_features_in_df(model, X_train, full_df, target, predictor_var, threshold=leaf_threshold)
+    X_train = set_dt_features_in_df(model, X_train, full_df, target, predictor_var, additional_vars=omit_feats, threshold=leaf_threshold)
 
     if save_to is not None:
         os.makedirs(os.path.dirname(save_to), exist_ok=True)
@@ -123,7 +123,7 @@ def fit_dt(
 
 
 def set_dt_features_in_df(
-    model, df, full_df, target: PredictionTarget, predictor_var:str, additional_vars=None, threshold=0.1,
+    model, df, full_df, target: PredictionTarget, predictor_var: str, additional_vars: set | None = None, threshold=0.1,
 ):
     """
     Augments df with DT-derived columns and returns the enriched DataFrame.
@@ -154,8 +154,10 @@ def set_dt_features_in_df(
     leaf_entropy_map = dict(zip(leaf_node_ids, impurity[leaf_node_ids]))
     leaf_full_entropy = np.array([leaf_entropy_map[node] for node in leaf_ids])
 
-    additional_vars = additional_vars or []
-    additional_vars.extend(META_FEATURES + OMIT_FEATURES + [predictor_var])
+    additional_vars = additional_vars or set()
+    additional_vars.union(META_FEATURES)
+    additional_vars.union(OMIT_FEATURES)
+    additional_vars.add(predictor_var)
 
     new_cols = {col: full_df[col] for col in additional_vars if col in full_df.columns}
     new_cols["leaf_id"] = pd.Series(leaf_ids, index=df.index)
@@ -202,11 +204,7 @@ def set_dt_features_in_df(
     correct_num_swaps = []
     all_swap_order_candidates = []
     for i, (deprel_order, decision) in enumerate(zip(predictor_series, leaf_decision)):
-        if predictor_var == "core_args":
-            swap_so = str.maketrans({"s": "o", "o": "s"})
-            swap_orders = all_orders - {deprel_order, deprel_order.translate(swap_so)}
-        else:
-            swap_orders = all_orders - {deprel_order}
+        swap_orders = all_orders - {deprel_order}
         swap_order_candidates = [
             arg_order
             for arg_order in swap_orders

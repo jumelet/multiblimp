@@ -1,11 +1,11 @@
 import os
+from collections import Counter
 
+import numpy as np
 import pandas as pd
 
-import warnings
-
 from .process_treebank import PredictionTarget
-from .utils import capitalize_first
+from .utils import capitalize_first, shorten_cls
 
 
 def get_subtree_indices(tokens, index):
@@ -69,8 +69,7 @@ def move_indices_relative(sen, indices, head_idx):
 
 def get_sen_str(tree, sen):
     no_space_afters = [
-        # (tok['misc'] or {}).get('SpaceAfter') == "No"
-        False
+        (tok['misc'] or {}).get('SpaceAfter') == "No"
         for tok in tree
     ]
     sen_str = ""
@@ -81,90 +80,122 @@ def get_sen_str(tree, sen):
     return sen_str, no_space_afters
 
 
-def get_swapped_sen_str(swapped_sen, no_space_afters, ids, head_idx):
-    no_space_afters_swapped = move_indices_relative(no_space_afters, ids, head_idx)
+def get_swapped_sen_str(swapped_sen, no_space_afters_swapped):
     swapped_sen_str = ""
     for tok, no_space_after in zip(swapped_sen, no_space_afters_swapped):
         swapped_sen_str += tok if no_space_after else f"{tok} "
-    swapped_sen_str = swapped_sen_str.strip()
-
-    return swapped_sen_str
+    return swapped_sen_str.strip()
 
 
-def create_core_arg_swaps(df, treebank, max_sen_len=100):
-    df["non_projective"] = False
+def _build_swap_logic(target, dep_ids, h_ids):
+    """
+    Build the swap_logic dict for the current row.
 
-    for df_idx, row in df.iterrows():
-        if len(row.sen) > max_sen_len:
+    Each entry maps a target order string to (base_order, ids_to_move, pivot_idx).
+    Within each source dict the insertion order matters: later entries may reference
+    base orders produced by earlier entries in the same iteration.
+    """
+    h = shorten_cls("head", target)
+
+    if len(target.child_deprels) == 1:
+        dep1 = target.child_deprels[0]
+        a = shorten_cls(dep1, target)
+        a_ids = dep_ids[dep1]
+        ah, ha = f"{a}{h}", f"{h}{a}"
+        return {
+            ah: {ha: (ah, a_ids, h_ids[-1])},
+            ha: {ah: (ha, a_ids, h_ids[0])},
+        }
+
+    dep1, dep2 = target.child_deprels
+    a = shorten_cls(dep1, target)
+    b = shorten_cls(dep2, target)
+    a_ids = dep_ids[dep1]
+    b_ids = dep_ids[dep2]
+
+    # All 6 permutations of (dep1, head, dep2), mirroring the SVO structure:
+    # a ↔ subj, h ↔ verb/head, b ↔ obj
+    ahb, abh = f"{a}{h}{b}", f"{a}{b}{h}"
+    hab, hba = f"{h}{a}{b}", f"{h}{b}{a}"
+    bha, bah = f"{b}{h}{a}", f"{b}{a}{h}"
+
+    return {
+        ahb: {
+            abh: (ahb, b_ids, h_ids[0]),
+            bah: (ahb, b_ids, a_ids[0]),
+            hab: (ahb, a_ids, h_ids[-1]),
+            hba: (ahb, a_ids, b_ids[-1]),
+            bha: (hab, b_ids, h_ids[0] - len(a_ids)),
+        },
+        abh: {
+            ahb: (abh, b_ids, h_ids[-1]),
+            bah: (abh, b_ids, a_ids[0]),
+            hab: (abh, h_ids, a_ids[0]),
+            bha: (abh, a_ids, h_ids[-1]),
+            hba: (bah, h_ids, b_ids[0] - len(a_ids)),
+        },
+        hab: {
+            ahb: (hab, a_ids, h_ids[0]),
+            hba: (hab, b_ids, a_ids[0]),
+            bha: (hab, b_ids, h_ids[0]),
+            abh: (hab, h_ids, b_ids[-1]),
+            bah: (ahb, b_ids, a_ids[0] - len(h_ids)),
+        },
+        hba: {
+            hab: (hba, a_ids, b_ids[-1]),
+            bha: (hba, b_ids, h_ids[0]),
+            ahb: (hba, a_ids, h_ids[0]),
+            bah: (hba, h_ids, a_ids[-1]),
+            abh: (bha, a_ids, b_ids[0] - len(h_ids)),
+        },
+        bha: {
+            bah: (bha, a_ids, h_ids[-1]),
+            hba: (bha, h_ids, b_ids[0]),
+            hab: (bha, b_ids, a_ids[-1]),
+            abh: (bha, a_ids, b_ids[0]),
+            ahb: (hba, a_ids, h_ids[0] - len(b_ids)),
+        },
+        bah: {
+            bha: (bah, a_ids, h_ids[-1]),
+            abh: (bah, a_ids, b_ids[0]),
+            ahb: (bah, b_ids, h_ids[-1]),
+            hba: (bah, h_ids, b_ids[0]),
+            hab: (abh, h_ids, a_ids[0] - len(b_ids)),
+        },
+    }
+
+
+def create_all_constituent_swaps(df, treebank, target: PredictionTarget, max_sen_len=100):
+    assert len(target.child_deprels) in (1, 2)
+
+    result_rows = []
+
+    for _, row in df.iterrows():
+        if row.sen_len > max_sen_len:
             continue
 
         tree = treebank[row.tree_idx]
 
-        subj_ids = get_subtree_indices(tree, row.subject_idx - 1)
-        obj_ids = get_subtree_indices(tree, row.object_idx - 1)
-        verb_ids = [int(row.verb_idx - 1)]  # get_subtree_indices(tree, row.verb_idx)
+        dep_ids = {
+            dep: get_subtree_indices(tree, int(row[f"{dep}_idx"]) - 1)
+            for dep in target.child_deprels
+        }
+        h_ids = [int(row.head_idx) - 1]
 
         sen_str, no_space_afters = get_sen_str(tree, row.sen)
+        sen_orders = {row.deprel_order: row.sen}
+        nsa_orders = {row.deprel_order: no_space_afters}
+        swap_logic = _build_swap_logic(target, dep_ids, h_ids)
+        swap_candidates = set(row.swap_order_candidates)
 
-        df.at[df_idx, "sen_str"] = sen_str
-        df.at[df_idx, f"{row.core_args}_sen_str"] = sen_str
-
-        sen_orders = {row.core_args: row.sen}
-
-        swap_logic = {
-            "svo": {
-                "sov": ("svo", obj_ids, verb_ids[0]),
-                "osv": ("svo", obj_ids, subj_ids[0]),
-                "vso": ("svo", subj_ids, verb_ids[-1]),
-                "vos": ("svo", subj_ids, obj_ids[-1]),
-                "ovs": ("vso", obj_ids, verb_ids[0] - len(subj_ids)),
-            },
-            "sov": {
-                "svo": ("sov", obj_ids, verb_ids[-1]),
-                "osv": ("sov", obj_ids, subj_ids[0]),
-                "vso": ("sov", verb_ids, subj_ids[0]),
-                "ovs": ("sov", subj_ids, verb_ids[-1]),
-                "vos": ("osv", verb_ids, obj_ids[0] - len(subj_ids)),
-            },
-            "vso": {
-                "svo": ("vso", subj_ids, verb_ids[0]),
-                "vos": ("vso", obj_ids, subj_ids[0]),
-                "ovs": ("vso", obj_ids, verb_ids[0]),
-                "sov": ("vso", verb_ids, obj_ids[-1]),
-                "osv": ("svo", obj_ids, subj_ids[0] - len(verb_ids)),
-            },
-            "vos": {
-                "vso": ("vos", subj_ids, obj_ids[-1]),
-                "ovs": ("vos", obj_ids, verb_ids[0]),
-                "svo": ("vos", subj_ids, verb_ids[0]),
-                "osv": ("vos", verb_ids, subj_ids[-1]),
-                "sov": ("ovs", subj_ids, obj_ids[0] - len(verb_ids)),
-            },
-            "ovs": {
-                "osv": ("ovs", subj_ids, verb_ids[-1]),
-                "vos": ("ovs", verb_ids, obj_ids[0]),
-                "vso": ("ovs", obj_ids, subj_ids[-1]),
-                "sov": ("ovs", subj_ids, obj_ids[0]),
-                "svo": ("vos", subj_ids, verb_ids[0] - len(obj_ids)),
-            },
-            "osv": {
-                "ovs": ("osv", subj_ids, verb_ids[-1]),
-                "sov": ("osv", subj_ids, obj_ids[0]),
-                "svo": ("osv", obj_ids, verb_ids[-1]),
-                "vos": ("osv", verb_ids, obj_ids[0]),
-                "vso": ("sov", verb_ids, subj_ids[0] - len(obj_ids)),
-            },
-        }
-
-        for swap_core_arg, (base_sen_order, ids, pivot_idx) in swap_logic[
-            row.core_args
+        for swap_order, (base_sen_order, ids, pivot_idx) in swap_logic[
+            row.deprel_order
         ].items():
             pivot_idx = int(pivot_idx)
             base_sen = list(sen_orders[base_sen_order])
             swap_sen = move_indices_relative(base_sen, ids, pivot_idx)
 
             if swap_sen is None:
-                df.at[df_idx, "non_projective"] = True
                 break
 
             # reset capitalization
@@ -177,56 +208,123 @@ def create_core_arg_swaps(df, treebank, max_sen_len=100):
                     pivot_idx - len(ids) + 1
                 ].lower()
 
-            swap_sen_str = get_swapped_sen_str(
-                swap_sen, no_space_afters, ids, pivot_idx
-            )
+            base_nsa = nsa_orders[base_sen_order]
+            swap_nsa = move_indices_relative(base_nsa, ids, pivot_idx)
+            assert swap_nsa is not None  # same ids/pivot already passed for swap_sen
 
-            sen_orders[swap_core_arg] = swap_sen
+            # SpaceAfter=No is a right-boundary property of a constituent, not of an
+            # individual token. Transfer it from the old rightmost constituent to the
+            # new rightmost; reset the constituent that moved to the left to space.
+            sorted_ids = sorted(ids)
+            len_ids = len(sorted_ids)
+            if all(i > pivot_idx for i in sorted_ids):
+                # Constituent was right of pivot; now moved left. Pivot becomes rightmost.
+                swap_nsa[pivot_idx + len_ids] = base_nsa[sorted_ids[-1]]
+                swap_nsa[pivot_idx + len_ids - 1] = False
+            else:
+                # Constituent was left of pivot; now moved right. Constituent becomes rightmost.
+                swap_nsa[pivot_idx] = base_nsa[pivot_idx]
+                swap_nsa[pivot_idx - len_ids] = False
 
-            df.at[df_idx, f"{swap_core_arg}_sen_str"] = swap_sen_str
+            sen_orders[swap_order] = swap_sen
+            nsa_orders[swap_order] = swap_nsa
 
-    # only keep projective tree swaps
-    df = df[~df["non_projective"]]
+            if swap_order in swap_candidates:
+                result_row = row.to_dict()
+                result_row["sen_str"] = sen_str
+                result_row["original_order"] = row.deprel_order
+                result_row["swap_order"] = swap_order
+                result_row["swapped_sen_str"] = get_swapped_sen_str(swap_sen, swap_nsa)
+                result_rows.append(result_row)
 
-    return df
+    return pd.DataFrame(result_rows)
+
+
+def balance_df(df, n_items, balance_features):
+    feature_distributions = {feat: Counter(df[feat]) for feat in balance_features}
+    feature_totals = {
+        feat: sum(feature_distributions[feat].values()) for feat in balance_features
+    }
+    df["sample_weight"] = [
+        1
+        / np.prod(
+            [
+                feature_distributions[feat][row[feat]] / feature_totals[feat]
+                for feat in balance_features
+            ]
+        )
+        for _, row in df.iterrows()
+    ]
+    df.sample_weight /= sum(df.sample_weight)
+
+    ids = np.random.choice(
+        range(len(df)),
+        size=min(n_items, len(df)),
+        p=df.sample_weight,
+        replace=False,
+    )
+
+    return df.iloc[ids]
 
 
 def create_pairs(
     dt_df: pd.DataFrame,
     treebank,
-    max_per_leaf: int = 100,
+    target: PredictionTarget,
+    max_total_items: int = 1000,
+    max_sen_len: int = 100,
+    balance_features: list[str] | None = None,
     save_to_pairs_only: str | None = None,
     save_to: str | None = None,
 ):
-    full_swap_df = create_core_arg_swaps(dt_df, treebank)
+    keep_df = dt_df[dt_df.num_swaps > 0].copy()
+
+    if len(keep_df) == 0:
+        return None
+
+    num_leaves = len(keep_df.leaf_id.unique())
+    items_per_leaf = max_total_items // num_leaves
+
+    print(items_per_leaf)
+
+    keep_df["sen_len"] = [len(sen) for sen in keep_df.sen]
     
-    if len(full_swap_df) > 0:
-        # Sample `max_per_leaf` items for each leaf_id that has entropy below threshold
+    # Sample `max_per_leaf` items for each leaf_id that has entropy below threshold
+    if balance_features is not None:
         selected_idx = (
-            full_swap_df[full_swap_df["keep"]]
+            keep_df
+            .groupby("leaf_id", group_keys=False)
+            .apply(lambda g: balance_df(g, items_per_leaf, balance_features))
+            .index
+        )
+    else:
+        selected_idx = (
+            keep_df
             .groupby("leaf_id", group_keys=False)
             .apply(
                 lambda g: g.sample(
-                    n=min(max_per_leaf, len(g)),
+                    n=min(items_per_leaf, len(g)),
                     replace=False,
                     random_state=42,
                 )
             )
             .index
         )
-        full_swap_df["keep"] = False
-        full_swap_df.loc[selected_idx, "keep"] = True
 
+    keep_df = keep_df.loc[selected_idx]
+
+    swap_df = create_all_constituent_swaps(keep_df, treebank, target, max_sen_len=max_sen_len)
+
+    if len(swap_df) > 0:
         if save_to_pairs_only is not None:
-            sub_df = full_swap_df[full_swap_df.keep]
-            tight_swap_df = sub_df[["sen_str", "swapped_sen_str", "leaf_rule"]].copy()
-            tight_swap_df = tight_swap_df.sort_values("leaf_rule")
+            pair_df = swap_df[["sen_str", "swapped_sen_str", "leaf_rule"]].copy()
+            pair_df = pair_df.sort_values("leaf_rule")
 
             os.makedirs(os.path.dirname(save_to_pairs_only), exist_ok=True)
-            tight_swap_df.to_csv(save_to_pairs_only, index=False)
+            pair_df.to_csv(save_to_pairs_only, index=False)
 
         if save_to is not None:
             os.makedirs(os.path.dirname(save_to), exist_ok=True)
-            full_swap_df.to_csv(save_to, index=False)
+            swap_df.to_csv(save_to, index=False)
 
-    return full_swap_df
+    return swap_df

@@ -5,6 +5,8 @@ from .prediction_target import PredictionTarget
 
 ALL_CORE_ARGS = ["vos", "vso", "ovs", "svo", "osv", "sov"]
 
+MAX_TREEBANK_LEN = 30_000
+
 
 def capitalize_first(word: str) -> str:
     if len(word) == 0:
