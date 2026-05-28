@@ -69,9 +69,22 @@ def run_eval(
         all_sens.extend(df["sen_str"].tolist())
         all_swapped.extend(df["swapped_sen_str"].tolist())
 
+    def score_batched(sentences):
+        tok_lens = [len(ids) for ids in lm.tokenizer(sentences, add_special_tokens=True).input_ids]
+        order = sorted(range(len(sentences)), key=lambda i: tok_lens[i])
+        restore = [0] * len(sentences)
+        for rank, orig in enumerate(order):
+            restore[orig] = rank
+        sorted_sents = [sentences[i] for i in order]
+
+        raw = []
+        for i in tqdm(range(0, len(sorted_sents), batch_size), desc="Scoring"):
+            raw.extend(lm.token_score(sorted_sents[i : i + batch_size]))
+        return [raw[restore[i]] for i in range(len(sentences))]
+
     print("Scoring sentences ...")
-    raw_sen = lm.token_score(all_sens, batch_size=batch_size)
-    raw_swapped = lm.token_score(all_swapped, batch_size=batch_size)
+    raw_sen = score_batched(all_sens)
+    raw_swapped = score_batched(all_swapped)
 
     sen_probs = [[s for _, s in sent] for sent in raw_sen]
     swapped_probs = [[s for _, s in sent] for sent in raw_swapped]
