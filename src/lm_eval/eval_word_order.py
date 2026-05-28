@@ -51,7 +51,7 @@ def run_eval(
     deprels: Optional[list[str]] = None,
     batch_size: int = 32,
     device: str = "cuda",
-) -> None:
+) -> pd.DataFrame:
     print(f"Enumerating tasks for dataset '{dataset_name}' ...")
     specs = get_task_specs(dataset_name, langs, deprels)
     print(f"Found {len(specs)} (lang, deprel) combinations.")
@@ -70,8 +70,8 @@ def run_eval(
         all_swapped.extend(df["swapped_sen_str"].tolist())
 
     print("Scoring sentences ...")
-    raw_sen = lm.token_score(all_sens, surprisals=False, batch_size=batch_size)
-    raw_swapped = lm.token_score(all_swapped, surprisals=False, batch_size=batch_size)
+    raw_sen = lm.token_score(all_sens, batch_size=batch_size)
+    raw_swapped = lm.token_score(all_swapped, batch_size=batch_size)
 
     sen_probs = [[s for _, s in sent] for sent in raw_sen]
     swapped_probs = [[s for _, s in sent] for sent in raw_swapped]
@@ -84,6 +84,8 @@ def run_eval(
 
     result_df.to_csv(output_path, index=False)
     print(f"Saved to {output_path}")
+
+    return result_df
 
 
 def main() -> None:
