@@ -1,1 +1,1 @@
-UD_PATH = "ud/ud-treebanks-v2.16/"
+UD_PATH = "ud/ud-treebanks-v2.18/"

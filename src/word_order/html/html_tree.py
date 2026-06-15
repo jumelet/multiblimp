@@ -575,8 +575,21 @@ def create_html(meta, node_samples, node_data, hex_colors, classes, div_id):
         color: var(--text-primary);
         font-size: 13px;
         line-height: 1.35;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 150px;
+      }}
+
+       .node-table td:has(details[open]) {{
+        white-space: normal;
+        overflow: visible;
+        max-width: none;
+      }}
+
+      .node-table td details[open] {{
+        word-break: break-all;
+        white-space: normal;
       }}
 
       .node-table th.col-sen_str, .node-table td.col-sen_str {{
@@ -925,7 +938,11 @@ def create_html(meta, node_samples, node_data, hex_colors, classes, div_id):
           html += "<tr>";
           cols.forEach(c => {{
             const cls = c === "sen_str" ? "col-sen_str" : "col-other";
-            html += `<td class="${{cls}}">${{r[c]}}</td>`;
+            const val = r[c] == null ? "" : String(r[c]).split(",").join("<br>");
+            const content = c.endsWith("_features")
+              ? "<details><summary>features...</summary>" + val + "</details>"
+              : val;
+            html += "<td class='" + cls + "'>" + content + "</td>";
           }});
           html += "</tr>";
         }});

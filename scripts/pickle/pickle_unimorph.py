@@ -3,7 +3,7 @@ from pathlib import Path
 import pickle
 import sys
 
-sys.path.append("../src")
+sys.path.append("../../src")
 
 from multiblimp.languages import (
     get_ud_langs,
@@ -16,7 +16,7 @@ from multiblimp.unimorph import UnimorphInflector
 
 
 if __name__ == "__main__":
-    resource_dir = "../resources"
+    resource_dir = "../../resources"
     ud_langs = get_ud_langs(resource_dir)
 
     for lang in ud_langs:

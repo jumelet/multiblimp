@@ -34,6 +34,11 @@ def calculate_metrics(
     metrics = []
 
     for lang_name, (dt, df) in tqdm(language_data.items()):
+        # ensure dtype matching of loaded data and classifier
+        cat_cols = [ col for name, _, cols in dt.named_steps["preprocessor"].transformers_ if name == "cat"
+                    for col in cols if col in df.columns]
+        num_cols = [col for name, _, cols in dt.named_steps["preprocessor"].transformers_ if name == "num"
+                    for col in cols if col in df.columns]
         # Calculate entropies
         base_ent = calculate_base_entropy(
             df, target_col, binary=binary_entropy, smoothing=smoothing
