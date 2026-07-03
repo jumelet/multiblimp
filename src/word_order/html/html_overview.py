@@ -189,10 +189,13 @@ def create_html(panels_html, all_data_json):
                     sizemode: 'area',
                     sizeref: 2 * Math.max(...points.map(d => d.n_items)) / (20 ** 2),
                     sizemin: 3,
-                    color: '#2563eb',
+                    color: points.map(d => d.color ?? '#2563eb'),
                     opacity: 0.75,
-                    line: {{ color: '#1e40af', width: 0.5 }}
-                }},
+                    line: {{ 
+                        color: points.map(d => d.color ?? '#2563eb'),
+                        width: 0.5 
+                        }}               
+                     }},
                 showlegend: false,
             }};
 

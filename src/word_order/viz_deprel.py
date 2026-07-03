@@ -35,10 +35,12 @@ def calculate_metrics(
 
     for lang_name, (dt, df) in tqdm(language_data.items()):
         # ensure dtype matching of loaded data and classifier
-        cat_cols = [ col for name, _, cols in dt.named_steps["preprocessor"].transformers_ if name == "cat"
+        cat_cols = [col for name, _, cols in dt.named_steps["preprocessor"].transformers_ if name == "cat"
                     for col in cols if col in df.columns]
         num_cols = [col for name, _, cols in dt.named_steps["preprocessor"].transformers_ if name == "num"
                     for col in cols if col in df.columns]
+        df[cat_cols] = df[cat_cols].astype(str)
+        df[num_cols] = df[num_cols].apply(pd.to_numeric, errors='coerce').fillna(0)
         # Calculate entropies
         base_ent = calculate_base_entropy(
             df, target_col, binary=binary_entropy, smoothing=smoothing
@@ -80,6 +82,25 @@ def calculate_metrics(
 
     return pd.DataFrame(metrics).sort_values("language")
 
+def scatter_color(metrics_row, language_data, target_col, exclude_labels=None):
+    """Yellow if all labels in , blue otherwise."""
+    if exclude_labels:
+        lang_name = metrics_row["language"]
+        if lang_name not in language_data:
+            return "#2563eb"
+        _, df = language_data[lang_name]
+        labels = set(df[target_col].unique())
+        if labels <= {"--", "+-"}:
+            return "#e5c64d"
+    return "#2563eb"
+
+def extract_trivial_label(html_path: Path) -> str | None:
+    """Extract the sole label from a placeholder HTML file, or None if it's a real tree page."""
+    content = html_path.read_text(encoding="utf-8")
+    match = re.search(r'<div class="label">(.+?)</div>', content)
+    if match and "No decision tree to display" in content:
+        return match.group(1).strip()
+    return None
 
 def generate_html_deprel_index(
     data_dir: str,
@@ -87,6 +108,7 @@ def generate_html_deprel_index(
     language_data: Dict[str, Tuple[Pipeline, pd.DataFrame]] | None = None,
     target_col: str = "deprel_order",
     smoothing: float = 0.5,
+    exclude_labels=None,
 ) -> None:
     """Generate interactive overview page with metrics and language links.
 
@@ -98,11 +120,20 @@ def generate_html_deprel_index(
     """
     html_directory = Path(html_directory)
 
+    trivial_langs = {}
+    for html_file in html_directory.glob("*.html"):
+        if not html_file.name.lower() == "index.html":
+            label = extract_trivial_label(html_file)
+            if label is not None:
+                trivial_langs[html_file.stem] = label
+
     if language_data is None:
         language_data = {}
 
         for model_fn in tqdm(glob(os.path.join(data_dir, "*.joblib"))):
             lang_name = Path(model_fn).stem
+            if lang_name in trivial_langs:
+                continue
             csv_fn = os.path.join(data_dir, lang_name + ".csv")
             if not os.path.exists(csv_fn):
                 continue
@@ -116,6 +147,12 @@ def generate_html_deprel_index(
         language_data, target_col, binary_entropy=True, smoothing=smoothing
     )
 
+    for l in metrics_six[metrics_six["base_entropy"] == 0.0]["language"]:
+        trivial_langs[l] =set(language_data[l][target_col].values)[0] # if placeholders dont exist yet
+
+    metrics_six    = metrics_six[~metrics_six["language"].isin(trivial_langs.keys())]
+    metrics_binary = metrics_binary[~metrics_binary["language"].isin(trivial_langs.keys())]
+
     # Find corresponding HTML files
     html_files = {
         f.stem: f
@@ -125,18 +162,21 @@ def generate_html_deprel_index(
     deprel = html_directory.name
 
     # Generate table rows for both entropy types
-    def generate_rows(metrics_df):
+    def generate_rows(metrics_df, lang_colors):
         rows = []
         for _, row in metrics_df.iterrows():
             lang_name = row["language"].replace("_", " ")
             lang_file = html_files.get(row["language"].replace(" ", "_"))
+            color = lang_colors.get(lang_name, "#2563eb")          # ← was "#1c1917"
+            name_style = f' style="color:{color};font-weight:600;"' if color != "#2563eb" else ""
 
             if lang_file:
                 lang_link = (
                     f'<a href="/multiblimp/{deprel}/{quote(lang_file.stem)}">{lang_name}</a>'
+                    f'<a href="/multiblimp/{deprel}/{quote(lang_file.stem)}"{name_style}>{lang_name}</a>'
                 )
             else:
-                lang_link = lang_name
+                lang_link = f'<span{name_style}>{lang_name}</span>'
 
             rows.append(
                 f"""
@@ -155,8 +195,12 @@ def generate_html_deprel_index(
             )
         return "".join(rows)
 
-    rows_six = generate_rows(metrics_six)
-    rows_binary = generate_rows(metrics_binary)
+    lang_colors = {
+        row["language"].replace("_", " "): scatter_color(row, language_data, target_col, exclude_labels=exclude_labels)
+        for _, row in metrics_six.iterrows()
+    }
+    rows_six = generate_rows(metrics_six, lang_colors)
+    rows_binary = generate_rows(metrics_binary, lang_colors)
 
     # Generate scatter plot data for both entropy types
     def generate_plot_data(metrics_df):
@@ -173,6 +217,7 @@ def generate_html_deprel_index(
                     "reduced": row["reduced_entropy"],
                     "n_items": int(row["n_items"]),
                     "url": url,
+                    "color": lang_colors.get(lang_name, "#2563eb"),
                 }
             )
         return data
@@ -187,5 +232,25 @@ def generate_html_deprel_index(
     plot_data_binary_json = json.dumps(plot_data_binary)
 
     html_content = create_html(rows_six, rows_binary, plot_data_six_json, plot_data_binary_json)
+    if trivial_langs:
+        skipped_links = []
+        for lang, pred_tag in sorted(trivial_langs.items()):
+            lang_display = lang.replace("_", " ")
+            lang_file = html_files.get(lang.replace(" ", "_"))
+            if lang_file:
+                url = f"/multiblimp/{deprel}/{quote(lang_file.stem)}"
+                skipped_links.append(f'<a href="{url}">{lang_display}</a> ({pred_tag})')
+            else:
+                skipped_links.append(f'{lang_display} ({pred_tag})')
+
+        trivial_note = (
+            f'<p class="trivial-note">The following languages were omitted because '
+            f'all samples share a single agreement label: {", ".join(skipped_links)}.</p>'
+        )
+    else:
+        trivial_note = ""
+
+    html_content = create_html(rows_six, rows_binary, plot_data_six_json, plot_data_binary_json,
+                               trivial_note=trivial_note)
     output_path = html_directory / "index.html"
     output_path.write_text(html_content, encoding="utf-8")

@@ -48,6 +48,90 @@ def tree_is_malformed(tree):
     return False
 
 
+def flag_treebanks(flag_type: str) -> dict[str, list[str]]:
+    """
+    Scrape UD and flag treebanks matching a given category.
+
+    Args:
+        flag_type: Either "words removed" (treebanks where the underlying
+            text has been removed, detected via a data-hint marker on the
+            treebank header itself) or "sign language" (treebanks whose
+            language is a sign language, detected via the "Sign Language"
+            text on the parent language header, since individual sign
+            language treebank rows carry no distinguishing marker of
+            their own).
+
+    Returns:
+        Dict mapping language_name -> [treebank_names]
+    """
+    flag_type = flag_type.strip().lower()
+    if flag_type not in ("words removed", "sign language"):
+        raise ValueError(
+            f'flag_type must be "words removed" or "sign language", got {flag_type!r}'
+        )
+
+    fp = urllib.request.urlopen("https://universaldependencies.org")
+    html_str = fp.read().decode("utf8")
+    fp.close()
+
+    soup = BeautifulSoup(html_str, features="html.parser")
+    results = {}
+
+    def name_of(header) -> str:
+        try:
+            return header.select_one("span.doublewidespan").get_text(strip=True)
+        except AttributeError:
+            return "UNKNOWN"
+
+    if flag_type == "words removed":
+        marker = 'span[data-hint="Underlying text not included"]'
+
+        for treebank_header in soup.select("div.ui-accordion-header"):
+            if treebank_header.select_one("span.flagspan img") is not None:
+                continue  # skip language-level headers
+            if treebank_header.select_one(marker) is None:
+                continue
+
+            try:
+                lang_header = (
+                    treebank_header
+                    .find_parent("div", class_="ui-accordion-content")
+                    .find_previous_sibling("div", class_="ui-accordion-header")
+                )
+                language_name = name_of(lang_header)
+            except AttributeError:
+                language_name = None
+
+            results.setdefault(language_name, []).append(name_of(treebank_header))
+
+    elif flag_type=="sign language":  # "sign language"
+        for lang_header in soup.select("div.ui-accordion-header"):
+            if lang_header.select_one("span.flagspan img") is None:
+                continue  # skip treebank-level headers
+
+            is_sign_language = any(
+                span.get_text(strip=True) == "Sign Language"
+                for span in lang_header.select("span.triplewidespan")
+            )
+            if not is_sign_language:
+                continue
+
+            language_name = name_of(lang_header).replace(" Sign Language", "")
+
+            try:
+                treebank_headers = lang_header.find_next_sibling(
+                    "div", class_="ui-accordion-content"
+                ).select("div.ui-accordion-header")
+            except AttributeError:
+                treebank_headers = []
+
+            results.setdefault(language_name, []).extend(
+                name_of(tb) for tb in treebank_headers
+            )
+
+    return results
+
+
 class Treebank:
     def __new__(
         cls,
@@ -76,6 +160,8 @@ class Treebank:
         treebank_glob = os.path.join(resource_dir, treebank_glob)
         treebank_paths = glob(treebank_glob)
 
+        skip_flagged = flag_treebanks("sign language") # exclude sign languages
+        treebank_paths = [p for p in treebank_paths if p.split("/")[-2].split("-")[-1] not in skip_flagged]
         selected_treebanks = udlang2treebanks.get(lang)
         if use_selected_treebanks and selected_treebanks is not None:
             selected_paths = []
