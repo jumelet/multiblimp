@@ -279,10 +279,8 @@ def get_ud_langs(resource_dir, ud_dir=None, do_skip_langs=True):
     if ud_dir is None:
         ud_dir = UD_PATH
 
-    ud_pattern = r".*UD_([A-Za-zå_\-]+)-[A-Za-z]+"
-
     def ud_dir2lang(x):
-        return re.match(ud_pattern, x).group(1).replace("_", " ")
+        return("_".join(x.split("/")[-1].replace("UD_", "").split("-")[:-1]))
 
     treebank_dirs = glob(os.path.join(resource_dir, ud_dir, "*"))
     treebank_langs = map(ud_dir2lang, treebank_dirs)

@@ -12,7 +12,7 @@ from .config import UD_PATH
 from .languages import udlang2treebanks, convert_arabic_to_latin_langs
 
 
-def is_malformed(item):
+def has_typo(item):
     is_reparandum = item["deprel"] == "reparandum"
 
     feats = item.get("feats") or {}
@@ -39,7 +39,7 @@ def is_malformed(item):
 
 def tree_is_malformed(tree):
     for item in tree:
-        if is_malformed(item):
+        if has_typo(item):
             return True
 
     if all(item["form"] == "_" for item in tree):
@@ -90,7 +90,7 @@ class Treebank:
 
         treebank = []
         for filename in treebank_paths:
-            with open(filename) as f:
+            with open(filename, encoding="utf-8") as f:
                 for tree in parse_incr(f):
                     tree.metadata["treebank"] = "/".join(filename.split("/")[-2:])
                     treebank.append(tree)

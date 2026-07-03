@@ -144,20 +144,42 @@ def get_samples(
     predictor_var,
     max_rows=100,
     seed=42,
+    show_features=False
 ):
     sample_ids = get_sample_ids(prep, clf, dt_df, predictor_var, max_rows, seed)
-
-    full_df["sen_str"] = [" ".join(sen) for sen in full_df["sen"]]
-    full_df["treebank_link"] = [
-        f"<a href='https://universal.grew.fr/?corpus={treebank}@2.17' target='_blank'>{treebank}</a>"
-        for treebank in full_df["treebank"]
-    ]
+    
     keep_columns = ["sen_str"]
-    keep_columns.extend([col for col in full_df.columns if "_form" in col])
-    keep_columns.extend([
-        "treebank_link",
-        "sent_id",
-    ])
+    full_df["sen_str"] = [" ".join(sen) for sen in full_df["sen"]]
+
+    tb_links = list()
+    map_to_x = {i: x for i, x in enumerate([chr(i) for i in range(ord('A'), ord('Z')+1)])}
+    for i, row in full_df.iterrows():
+        base_query = f"<a href='https://universal.grew.fr/?corpus={row['treebank']}@2.18&request=pattern {{ meta.sent_id = \"{row['sent_id']}\" ;QUERYSLOT_PLACEHOLDER }}' target='_blank'>{row['treebank']}</a>"
+        tb_links.append(base_query.replace("QUERYSLOT_PLACEHOLDER", ";".join(
+            [f' {map_to_x[j]} [form="{form}"] '
+            for j, form in enumerate(dict(row[[x for x in full_df.columns if x.endswith("_form")]]).values())]
+            )))
+    full_df["treebank_link"] = tb_links
+
+    if show_features:
+        feat_collect = {}
+        for i, row in full_df.filter(regex = r'^[a-z]+_[A-Z][a-z]+$', axis=1).iterrows():
+            mf = dict()
+            for label, val in row.items():
+                prefix, feature = label.split("_")
+                mf[f"{prefix}_features"] = mf.get(f"{prefix}_features", list())
+                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if ("Person" in label and str(val).endswith(".0")) else val)}")
+            for k, v in mf.items():
+                feat_collect[k] = feat_collect.get(k, list())
+                feat_collect[k].append(v)
+
+        for k, v in feat_collect.items():
+            full_df[k] = v
+            keep_columns.extend([f"{k.split("_")[0]+"_form"}",  k ])
+    else:
+        keep_columns.extend([col for col in full_df if col.endswith("_form") ])
+    keep_columns.extend(["treebank_link"])
+
     predictor_samples = {}
     for predictor, node_sample_ids in sample_ids.items():
         predictor_samples[predictor] = {
@@ -264,6 +286,7 @@ def tree2html(
     meta=None,
     only_show_real_orders=False,
     correlate_features=True,
+    show_features=False
 ):
     """
     pipeline_model:
@@ -380,6 +403,7 @@ def tree2html(
         dt_df,
         predictor_var,
         max_rows=max_rows,
+        show_features=show_features
     )
 
     feature_names = prep.get_feature_names_out()
@@ -460,6 +484,7 @@ def tree2html(
             qualifying = [top_cls] + [
                 cls for cnt, cls in sorted_dist[1:] if cnt > 0 and cnt >= 0.5 * top_cnt
             ]
+            qualifying = [str(x) for x in qualifying if not type(x)==str]
             leaf_label = f"<b>{' / '.join(qualifying)}</b>"
             label = (
                 f"{leaf_label}<br>"
