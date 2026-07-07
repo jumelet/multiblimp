@@ -382,8 +382,8 @@ def build_treebank_links(full_df: pd.DataFrame) -> list[str]:
             f" target='_blank'>{row['treebank']}</a>"
         )
         slot = ";".join(
-            f' {map_to_x[j]} [form="{form}"] '
-            for j, form in enumerate(dict(row[form_cols]).values())
+            f' {map_to_x[j]} [form="{form if row[f"{label.split("_")[0]}_idx"]!=1 else form.capitalize()}"] '
+            for j, (label, form) in enumerate(dict(row[form_cols]).items())
         )
         tb_links.append(base_query.replace("QUERYSLOT_PLACEHOLDER", slot))
     return tb_links
