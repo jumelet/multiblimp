@@ -543,6 +543,7 @@ def create_word_order_df(
 
     if drop_singleton_columns and len(df) > 0:
         always_keep = {"deprel_order", "sen", "treebank", "sent_id", "tree_idx"}
+        always_keep.update(set([col for col in df.columns if col.endswith("_idx")]))
         cols_to_check = df.columns.difference(list(always_keep))
         keep = df[cols_to_check].nunique() > 1
         kept_always = [c for c in always_keep if c in df.columns]
