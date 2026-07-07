@@ -160,7 +160,7 @@ class Treebank:
         treebank_glob = os.path.join(resource_dir, treebank_glob)
         treebank_paths = glob(treebank_glob)
 
-        skip_flagged = flag_treebanks("sign language") # exclude sign languages
+        skip_flagged = flag_treebanks("sign language")[lang] # exclude sign languages
         treebank_paths = [p for p in treebank_paths if p.split("/")[-2].split("-")[-1] not in skip_flagged]
         selected_treebanks = udlang2treebanks.get(lang)
         if use_selected_treebanks and selected_treebanks is not None:
