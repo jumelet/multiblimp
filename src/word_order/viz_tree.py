@@ -160,7 +160,7 @@ def get_samples(
             for label, val in row.items():
                 prefix, feature = label.split("_")
                 mf[f"{prefix}_features"] = mf.get(f"{prefix}_features", list())
-                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}")            
+                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}")
             for k, v in mf.items():
                 feat_collect[k] = feat_collect.get(k, list())
                 feat_collect[k].append(v)
@@ -382,7 +382,7 @@ def build_treebank_links(full_df: pd.DataFrame) -> list[str]:
             f" target='_blank'>{row['treebank']}</a>"
         )
         slot = ";".join(
-            f' {map_to_x[j]} [form="{form if row[f"{label.split("_")[0]}_idx"]!=1 else form.capitalize()}"] '
+            f' {map_to_x[j]} [form="{form if row[f"{label.split("_")[0]}_idx"]!=1 else str(form).capitalize()}"] '
             for j, (label, form) in enumerate(dict(row[form_cols]).items())
         )
         tb_links.append(base_query.replace("QUERYSLOT_PLACEHOLDER", slot))
@@ -468,6 +468,7 @@ def tree2html(
         write_placeholder_html(out_file, predictor_var, 
                                *build_placeholder_args(dt_df, full_df, predictor_var, meta, show_features=show_features))
         return
+
     prep = pipeline_model.named_steps["preprocessor"]
     clf = pipeline_model.named_steps["clf"]
 
@@ -583,12 +584,8 @@ def tree2html(
         palette = sns.color_palette("husl", n_colors=max(n_classes, len(all_orders)))[:n_classes]
         hex_colors = [to_hex(c) for c in palette]
 
-    # Grey out classes with zero samples at the root (absent from this language)
+    # Grey out classes absent from this language (only for dynamic palette)
     root_dist = label_distribution[0]
-    hex_colors = [
-        color if root_dist[idx] > 0 else "#d4d4d4"
-        for idx, color in enumerate(hex_colors)
-    ]
     if not palette_map:
         hex_colors = [
             color if root_dist[idx] > 0 else "#d4d4d4"
@@ -664,10 +661,12 @@ def tree2html(
             # Leaf: include all classes with count >= 50% of the majority
             sorted_dist = sorted(zip(dist_i, classes), key=lambda x: x[0], reverse=True)
             top_cnt, top_cls = sorted_dist[0]
+            # print(sorted_dist)
             qualifying = [top_cls] + [
                 cls for cnt, cls in sorted_dist[1:] if cnt > 0 and cnt >= 0.5 * top_cnt
             ]
             qualifying = [str(x) for x in qualifying if not type(x)==str]
+            # if not all([type(x)==str for x in qualifying])
             leaf_label = f"<b>{' / '.join(qualifying)}</b>"
             label = (
                 f"{leaf_label}<br>"

@@ -2,11 +2,13 @@ import os
 import pickle
 import re
 from glob import glob
+import urllib.request
 
 from arabic2latin import arabic_to_latin
 from conllu import parse_incr
 from indic_transliteration.sanscript import IAST, DEVANAGARI, transliterate
 from unidecode import unidecode
+from bs4 import BeautifulSoup
 
 from .config import UD_PATH
 from .languages import udlang2treebanks, convert_arabic_to_latin_langs
@@ -160,8 +162,8 @@ class Treebank:
         treebank_glob = os.path.join(resource_dir, treebank_glob)
         treebank_paths = glob(treebank_glob)
 
-        skip_flagged = flag_treebanks("sign language")[lang] # exclude sign languages
-        treebank_paths = [p for p in treebank_paths if p.split("/")[-2].split("-")[-1] not in skip_flagged]
+        skip_flagged = flag_treebanks("sign language").get((lang if not "_" in lang else lang.split("_")[0]), [])
+        treebank_paths = [p for p in treebank_paths if p.split("/")[-2].split("-")[-1].lower() not in skip_flagged]
         selected_treebanks = udlang2treebanks.get(lang)
         if use_selected_treebanks and selected_treebanks is not None:
             selected_paths = []
