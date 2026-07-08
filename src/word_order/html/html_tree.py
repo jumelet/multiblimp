@@ -581,7 +581,7 @@ def create_html(meta, node_samples, node_data, hex_colors, classes, div_id):
         max-width: 150px;
       }}
 
-       .node-table td:has(details[open]) {{
+      .node-table td:has(details[open]) {{
         white-space: normal;
         overflow: visible;
         max-width: none;
