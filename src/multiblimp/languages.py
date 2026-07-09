@@ -83,7 +83,7 @@ udlang2treebanks = {
     "Vietnamese": ["VTB"],
     "Hebrew": ["HTB"],
     "Latvian": ["LVTB"],
-    "German": ["GSD", "PUD"],
+    "German": ["GSD", "PUD", "HDT"],
     "Czech": ["CAC", "CLTT", "FicTree", "PDT", "PUD"],
     "Russian": ["GSD", "PUD", "SynTagRus", "Taiga"],
     "Slovenian": ["SSJ"],

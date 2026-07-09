@@ -581,7 +581,7 @@ def create_html(meta, node_samples, node_data, hex_colors, classes, div_id):
         max-width: 150px;
       }}
 
-       .node-table td:has(details[open]) {{
+      .node-table td:has(details[open]) {{
         white-space: normal;
         overflow: visible;
         max-width: none;
@@ -938,10 +938,13 @@ def create_html(meta, node_samples, node_data, hex_colors, classes, div_id):
           html += "<tr>";
           cols.forEach(c => {{
             const cls = c === "sen_str" ? "col-sen_str" : "col-other";
-            const val = r[c] == null ? "" : String(r[c]).split(",").join("<br>");
-            const content = c.endsWith("_features")
-              ? "<details><summary>features...</summary>" + val + "</details>"
-              : val;
+            const raw = r[c] == null ? "" : String(r[c]);
+            let content;
+            if (c.endsWith("_features")) {{
+              content = "<details><summary>features...</summary>" + raw.split(",").join("<br>") + "</details>";
+            }} else {{
+              content = raw;
+            }}
             html += "<td class='" + cls + "'>" + content + "</td>";
           }});
           html += "</tr>";

@@ -2,6 +2,7 @@ import sys
 import ast
 import os
 import random
+import re
 
 from collections import defaultdict, Counter
 
@@ -108,18 +109,29 @@ def extract_node_features(
     This ensures consistent feature extraction across all node types.
     """
     features = {}
+    morph_feats = dict()
 
     # Basic node features
     features[f"{prefix}_deprel"] = node["deprel"]
     features[f"{prefix}_pos"] = node["upos"]
-    features[f"{prefix}_form"] = node["form"]
+    features[f"{prefix}_form"] = node["form"].lower() if node["upos"]!="PROPN" else node["form"]
     features[f"{prefix}_lemma"] = node["lemma"]
     features[f"{prefix}_idx"] = node["id"]
 
     # Morphological features
     for feat in all_feats:
         features[f"{prefix}_{feat}"] = (node["feats"] or {}).get(feat)
+        if (node["feats"] or {}).get(feat, None):
+            morph_feats[feat] = node["feats"].get(feat, None)
 
+    # Further optional filters for head from PredictionTarget; filter is (lamnda x: condition)
+    if prefix=="head" and target.head_feats is not None:
+        if not all(
+            [val_filter(features.get(f"{prefix}_{feat}", None)) 
+             for feat, val_filter in target.head_feats.items()]
+             ):
+            return None # item does not fulfil PredictionTarget feature filters, drop instance
+    
     # Features about this node's relationship to its head
     if node["head"] != 0:
         head = tree[node["head"] - 1]
@@ -278,7 +290,8 @@ def extract_sen_features(tree):
     return feature2val
 
 
-def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
+def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata,
+                      predictor_var):
     """
     Extract training instances from a tree based on the prediction target.
 
@@ -384,6 +397,9 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
             target,
         )
         instance.update(head_features)
+        
+        if head_features == None: # item failed PredictionTarget filters
+            continue
 
         # Extract features for each child type; use deprel as prefix (e.g. "nsubj_pos", "amod_pos")
         for deprel in target.child_deprels:
@@ -409,6 +425,29 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
             )
             instance.update(child_features)
 
+            # add SV agreement variable for predictor_var (e.g. "head_nsubj_Number_agreement")
+            # 1. is feature annotated on head & target child?, 2. is value the same? -> TRUE else False
+            if predictor_var and "agreement" in predictor_var:
+                target_feature = re.match(r".*_([A-Z][a-z]+)_.*", predictor_var).group(1)
+                head_val = head_features.get(f"head_{target_feature}", None)
+                child_val = child_features.get(f"{deprel}_{target_feature}", None)
+                if head_val == child_val:
+                    if head_val!=None:
+                        agreement_label = "Yes" # both set and agreeing
+                    else:
+                        agreement_label = "--" # both undefined
+                elif head_val!=None:
+                    if child_val!=None:
+                        agreement_label = "No" # both set but disagreement
+                    else:
+                        agreement_label = "+-" # child feat not set
+                elif head_val==None:
+                    agreement_label = "+-" # head feat notset
+                else:
+                    raise ValueError("Value combination inadmissable") # should not occur
+
+                instance[f"head_{deprel}_{target_feature}_agreement"] = agreement_label
+
         # Add sentence-level features
         instance.update(sen_features)
 
@@ -424,7 +463,7 @@ def extract_instances(tree, tree_idx, target: PredictionTarget, tree_metadata):
     return instances
 
 
-def extract_features(treebank, target: PredictionTarget):
+def extract_features(treebank, target: PredictionTarget, predictor_var):
     """
     Extract features from treebank based on prediction target.
 
@@ -441,7 +480,7 @@ def extract_features(treebank, target: PredictionTarget):
     all_instances = []
 
     for tree_idx, tree in tqdm(enumerate(treebank), total=len(treebank)):
-        instances = extract_instances(tree, tree_idx, target, tree_metadata)
+        instances = extract_instances(tree, tree_idx, target, tree_metadata, predictor_var)
         all_instances.extend(instances)
 
         if len(instances) > 0 and len(instances) % 100 == 0:
@@ -458,6 +497,7 @@ def create_word_order_df(
     save_to: str | None = None,
     max_treebank_len: int | None = None,
     drop_singleton_columns: bool = False,
+    predictor_var = None
 ) -> pd.DataFrame:
     """
     Create a DataFrame with word order features for a given language and prediction target.
@@ -478,11 +518,12 @@ def create_word_order_df(
         assert lang is not None
         treebank = load_treebank(lang, resource_dir, max_treebank_len=max_treebank_len)
 
-    all_instances = extract_features(treebank, target)
+    all_instances = extract_features(treebank, target, predictor_var)
     df = pd.DataFrame(all_instances)
 
     if drop_singleton_columns and len(df) > 0:
         always_keep = {"deprel_order", "sen", "treebank", "sent_id", "tree_idx"}
+        always_keep.update(set([col for col in df.columns if col.endswith("_idx")]))
         cols_to_check = df.columns.difference(list(always_keep))
         keep = df[cols_to_check].nunique() > 1
         kept_always = [c for c in always_keep if c in df.columns]

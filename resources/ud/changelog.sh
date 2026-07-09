@@ -1,5 +1,5 @@
 # Rename UD_Norwegian-Bokmaal -> UD_Norwegian_Bokmål-NDT 
-mv ud-treebanks-v2.18/UD_Norwegian-Bokmaal ud-treebanks-v2.18/UD_Norwegian_Bokmål-NDT 
+mv ud-treebanks-v2.18/UD_Norwegian-Bokmaal ud-treebanks-v2.18/UD_Norwegian_Bokmaal-NDT 
 
 # Rename UD_Norwegian-Nynorsk -> UD_Norwegian_Nynorsk-NDT
 mv ud-treebanks-v2.18/UD_Norwegian-Nynorsk ud-treebanks-v2.18/UD_Norwegian_Nynorsk-NDT 

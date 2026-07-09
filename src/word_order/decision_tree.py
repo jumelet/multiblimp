@@ -18,7 +18,7 @@ from .utils import get_all_orders
 
 
 RND = 42
-OMIT_FEATURES = ["subject_idx", "object_idx", "verb_idx"]
+OMIT_FEATURES = ["subject_idx", "object_idx", "verb_idx"] # TODO should be passed via pipeline to fit_dt kwarg omit_feats
 
 
 def fit_dt(
@@ -48,6 +48,7 @@ def fit_dt(
     )
     omit_feats.update({col for col in full_df.columns if "idx" in col})
     omit_feats.update({col for col in full_df.columns if "_dir" in col})
+    omit_feats.update({col for col in full_df.columns if "agreement" in col and not predictor_var in col})
 
     sub_condition_on = list(set(full_df.columns) - omit_feats - {predictor_var})
 

@@ -5,6 +5,7 @@ import numpy as np
 import plotly.graph_objects as go
 import scipy
 import seaborn as sns
+import pandas as pd
 
 from matplotlib.colors import to_hex
 
@@ -150,16 +151,7 @@ def get_samples(
     
     keep_columns = ["sen_str"]
     full_df["sen_str"] = [" ".join(sen) for sen in full_df["sen"]]
-
-    tb_links = list()
-    map_to_x = {i: x for i, x in enumerate([chr(i) for i in range(ord('A'), ord('Z')+1)])}
-    for i, row in full_df.iterrows():
-        base_query = f"<a href='https://universal.grew.fr/?corpus={row['treebank']}@2.18&request=pattern {{ meta.sent_id = \"{row['sent_id']}\" ;QUERYSLOT_PLACEHOLDER }}' target='_blank'>{row['treebank']}</a>"
-        tb_links.append(base_query.replace("QUERYSLOT_PLACEHOLDER", ";".join(
-            [f' {map_to_x[j]} [form="{form}"] '
-            for j, form in enumerate(dict(row[[x for x in full_df.columns if x.endswith("_form")]]).values())]
-            )))
-    full_df["treebank_link"] = tb_links
+    full_df["treebank_link"] = build_treebank_links(full_df)
 
     if show_features:
         feat_collect = {}
@@ -168,7 +160,7 @@ def get_samples(
             for label, val in row.items():
                 prefix, feature = label.split("_")
                 mf[f"{prefix}_features"] = mf.get(f"{prefix}_features", list())
-                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if ("Person" in label and str(val).endswith(".0")) else val)}")
+                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}")
             for k, v in mf.items():
                 feat_collect[k] = feat_collect.get(k, list())
                 feat_collect[k].append(v)
@@ -274,6 +266,169 @@ def interpolate_color(hex1, hex2, t):
 
     return f"#{r:02x}{g:02x}{b:02x}"
 
+def write_placeholder_html(out_file, predictor_var, label, meta=None, sample_rows=None):
+    meta_rows = ""
+    if meta:
+        for key, val in meta.items():
+            meta_rows += f'<div class="meta-row"><span class="meta-key">{key}</span><span class="meta-val">{val}</span></div>'
+
+    table_html = ""
+    if sample_rows:
+            cols = list(sample_rows[0].keys())
+            table_html += "<table class='ex-table'><thead><tr>"
+            for c in cols:
+                table_html += f"<th>{c}</th>"
+            table_html += "</tr></thead><tbody>"
+            for row in sample_rows:
+                table_html += "<tr>"
+                for c in cols:
+                    val = row[c]
+                    if val is None:
+                        content = ""
+                    elif c.endswith("_features"):
+                        # unpack list the same way as tree pages
+                        if isinstance(val, list):
+                            items = "<br>".join(v for v in val if not str(v).endswith("=nan"))
+                        else:
+                            # stored as string repr of list
+                            import ast
+                            try:
+                                items = "<br>".join(v for v in ast.literal_eval(str(val)) if not str(v).endswith("=nan"))
+                            except Exception:
+                                items = str(val)
+                        content = f"<details><summary>features...</summary>{items}</details>"
+                    else:
+                        content = str(val)
+                    table_html += f"<td>{content}</td>"
+                table_html += "</tr>"
+            table_html += "</tbody></table>"
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>No decision tree to display</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {{ font-family: "DM Sans", sans-serif; margin: 0; background: #f5f5f4; color: #1c1917; }}
+    .layout {{ display: flex; height: 100vh; }}
+    .sidebar {{
+        width: 260px; flex-shrink: 0; background: white;
+        border-right: 1px solid #e7e5e4; padding: 1.5rem; display: flex;
+        flex-direction: column; gap: 1rem;
+    }}
+    h2 {{ font-size: 1.1rem; margin: 0; }}
+    p  {{ color: #78716c; font-size: 0.875rem; margin: 0; line-height: 1.5; }}
+    .label {{ display: inline-block; padding: 0.3rem 0.9rem;
+              background: #f5f5f4; border-radius: 999px; font-weight: 600;
+              font-size: 1rem; border: 1px solid #e7e5e4; }}
+    .meta {{ font-size: 0.8rem; }}
+    .meta-row {{ display: flex; justify-content: space-between; padding: 0.2rem 0;
+                 border-bottom: 1px solid #e7e5e4; }}
+    .meta-key {{ color: #a8a29e; }}
+    .meta-val {{ font-family: "JetBrains Mono", monospace; color: #78716c; }}
+    .main {{ flex: 1; overflow-y: auto; padding: 1.5rem; }}
+    .main h3 {{ font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+                letter-spacing: 0.05em; color: #78716c; margin: 0 0 0.75rem; }}
+    .ex-table {{ border-collapse: collapse; width: 100%; font-size: 0.8rem;
+                 border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; }}
+    .ex-table th {{ background: #fafaf9; color: #78716c; font-size: 0.7rem; font-weight: 600;
+                    text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px;
+                    text-align: left; border-bottom: 1px solid #e7e5e4; white-space: nowrap; }}
+    .ex-table td {{ padding: 5px 10px; border-bottom: 1px solid #f0efee; vertical-align: top;
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }}
+    .ex-table td:first-child {{ white-space: normal; word-break: break-word; max-width: none; }}
+    .ex-table tbody tr:hover td {{ background: #eff6ff; }}
+    .ex-table a {{ color: #2563eb; text-decoration: none; font-weight: 500; }}
+    .ex-table a:hover {{ text-decoration: underline; }}
+    .ex-table tbody tr:last-child td {{ border-bottom: none; }}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div>
+        <h2>Single label</h2>
+        <p>All training samples for <b>{predictor_var}</b> share one agreement label — no decision tree was needed.</p>
+      </div>
+      <div class="label">{label}</div>
+      <div class="meta">{meta_rows}</div>
+    </div>
+    <div class="main">
+      <h3>Example items (sample of {len(sample_rows) if sample_rows else 0})</h3>
+      {table_html}
+    </div>
+  </div>
+</body>
+</html>"""
+
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
+    with open(out_file, "w", encoding="utf-8") as f:
+        f.write(html)
+    
+def has_word_forms(row, form_cols):
+    """True if at least one form column has a real word (not underscore or empty)."""
+    return any(str(row[c]).strip() not in ("_", "", "nan") for c in form_cols)
+
+def build_treebank_links(full_df: pd.DataFrame) -> list[str]:
+    """Build grew.fr query links for each row in full_df."""
+    map_to_x = {i: x for i, x in enumerate([chr(i) for i in range(ord('A'), ord('Z') + 1)])}
+    form_cols = [x for x in full_df.columns if x.endswith("_form")]
+    tb_links = []
+    for _, row in full_df.iterrows():
+        base_query = (
+            f"<a href='https://universal.grew.fr/?corpus={row['treebank']}@2.18"
+            f"&request=pattern {{ meta.sent_id = \"{row['sent_id']}\" ;QUERYSLOT_PLACEHOLDER }}'"
+            f" target='_blank'>{row['treebank']}</a>"
+        )
+        slot = ";".join(
+            f' {map_to_x[j]} [form="{form if row[f"{label.split("_")[0]}_idx"]!=1 else str(form).capitalize()}"] '
+            for j, (label, form) in enumerate(dict(row[form_cols]).items())
+        )
+        tb_links.append(base_query.replace("QUERYSLOT_PLACEHOLDER", slot))
+    return tb_links
+
+def remove_censored(full_df):
+    form_cols = [x for x in full_df.columns if x.endswith("_form")]
+    return full_df[full_df.apply(lambda row: has_word_forms(row, form_cols), axis=1)]
+
+def build_placeholder_args(dt_df, full_df, predictor_var, meta=None, show_features=False):
+    """Compute all arguments needed for write_placeholder_html."""
+    sole_label = dt_df[predictor_var].iloc[0]
+
+    if meta is None:
+        meta = {}
+    meta["Training samples"] = f"{len(dt_df):,}"
+    meta["Predictor"] = predictor_var
+
+    full_df["sen_str"] = [" ".join(sen) for sen in full_df["sen"]]
+    full_df["treebank_link"] = build_treebank_links(full_df)
+
+    keep_columns = ["sen_str"]
+    if show_features:
+        feat_collect = {}
+        for i, row in full_df.filter(regex = r'^[a-z]+_[A-Z][a-z]+$', axis=1).iterrows():
+            mf = dict()
+            for label, val in row.items():
+                prefix, feature = label.split("_")
+                mf[f"{prefix}_features"] = mf.get(f"{prefix}_features", list())
+                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}")
+            for k, v in mf.items():
+                feat_collect[k] = feat_collect.get(k, list())
+                feat_collect[k].append(v)
+
+        for k, v in feat_collect.items():
+            full_df[k] = v
+            keep_columns.extend([f"{k.split("_")[0]+"_form"}",  k ])
+    else:
+        keep_columns.extend([col for col in full_df if col.endswith("_form") ])
+
+    keep_columns.append("treebank_link")
+
+    sample_rows = full_df.sample(min(50, len(full_df)), random_state=42)[keep_columns].to_dict("records")
+
+    return sole_label, meta, sample_rows
+
 
 def tree2html(
     pipeline_model,
@@ -286,7 +441,9 @@ def tree2html(
     meta=None,
     only_show_real_orders=False,
     correlate_features=True,
-    show_features=False
+    show_features=False,
+    full_tree_html=True,
+    palette_map=None
 ):
     """
     pipeline_model:
@@ -307,6 +464,10 @@ def tree2html(
             }
         If not provided, these values are computed automatically where possible.
     """
+    if full_tree_html==False:       
+        write_placeholder_html(out_file, predictor_var, 
+                               *build_placeholder_args(dt_df, full_df, predictor_var, meta, show_features=show_features))
+        return
 
     prep = pipeline_model.named_steps["preprocessor"]
     clf = pipeline_model.named_steps["clf"]
@@ -358,11 +519,13 @@ def tree2html(
 
     # Expand label_distribution to full display_classes (missing classes get 0)
     label_distribution = []
+    label_distribution2 = dict()
     for dist in label_distribution_model:
         full_dist = []
-        for cls in classes:
+        for cls in sorted(classes):
             if cls in class2idx_model:
                 full_dist.append(dist[class2idx_model[cls]])
+                label_distribution2[cls] = dist[class2idx_model[cls]]
             else:
                 full_dist.append(0)
         label_distribution.append(full_dist)
@@ -413,16 +576,33 @@ def tree2html(
     else:
         correlated_features = {}
 
-    # Always generate palette across full SVO space so colours are stable
-    palette = sns.color_palette("husl", n_colors=max(n_classes, len(all_orders)))
-    hex_colors = [to_hex(c) for c in palette[:n_classes]]
+    if palette_map:
+        # Fix canonical order and colors from palette_map, regardless of what's in the data
+        classes = list(palette_map.keys())
+        hex_colors = list(palette_map.values())
+    else:
+        palette = sns.color_palette("husl", n_colors=max(n_classes, len(all_orders)))[:n_classes]
+        hex_colors = [to_hex(c) for c in palette]
 
-    # Grey out classes with zero samples at the root (absent from this language)
+    # Grey out classes absent from this language (only for dynamic palette)
     root_dist = label_distribution[0]
-    hex_colors = [
-        color if root_dist[idx] > 0 else "#d4d4d4"
-        for idx, color in enumerate(hex_colors)
-    ]
+    if not palette_map:
+        hex_colors = [
+            color if root_dist[idx] > 0 else "#d4d4d4"
+            for idx, color in enumerate(hex_colors)
+        ]
+
+    # Rebuild class2idx from the canonical classes list
+    class2idx = {c: idx for idx, c in enumerate(classes)}
+
+    # Rebuild label_distribution to match canonical classes order
+    label_distribution = []
+    for dist in label_distribution_model:
+        full_dist = [
+            dist[class2idx_model[cls]] if cls in class2idx_model else 0
+            for cls in classes
+        ]
+        label_distribution.append(full_dist)
 
     annotations = []
     node_data = {}
@@ -481,10 +661,12 @@ def tree2html(
             # Leaf: include all classes with count >= 50% of the majority
             sorted_dist = sorted(zip(dist_i, classes), key=lambda x: x[0], reverse=True)
             top_cnt, top_cls = sorted_dist[0]
+            # print(sorted_dist)
             qualifying = [top_cls] + [
                 cls for cnt, cls in sorted_dist[1:] if cnt > 0 and cnt >= 0.5 * top_cnt
             ]
             qualifying = [str(x) for x in qualifying if not type(x)==str]
+            # if not all([type(x)==str for x in qualifying])
             leaf_label = f"<b>{' / '.join(qualifying)}</b>"
             label = (
                 f"{leaf_label}<br>"

@@ -28,6 +28,8 @@ if __name__ == "__main__":
             )
 
             print(lang, len(treebank))
+            if len(treebank)==0:
+                continue
 
             if remove_typo:
                 pickle_path = os.path.join(resource_dir, "ud/ud_pickles")
