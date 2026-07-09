@@ -1,0 +1,1503 @@
+Abbr
+Abbr
+
+Yes: Arabic, Armenian, Belarusian, Czech, Danish, Dutch, English, Erzya, Estonian, Finnish, Georgian, German, Greek, Hebrew, Indonesian, Irish, Javanese, Karelian, Kiche, Komi Zyrian, Kyrgyz, Latin, Latvian, Lithuanian, Malayalam, Moksha, Norwegian, Old East Slavic, Old Irish, Polish, Pomak, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish, Turkish, Ukrainian, Umbrian, Upper Sorbian, Uzbek, Vietnamese, Welsh, Western Armenian, Xibe
+Accomp
+Accomp
+
+Yes: Teko
+AdjType
+AdjType
+
+Attr: Afrikaans
+Pred: Afrikaans
+AdpType
+AdpType
+
+Ambi: Armenian, Western Armenian
+Circ: German
+Comadp: Armenian
+Comprep: Czech
+Post: Armenian, Bhojpuri, Erzya, Estonian, Finnish, Georgian, German, Hindi, Kangri, Komi Permyak, Komi Zyrian, Kurmanji, Latin, Livvi, Low Saxon, Moksha, Nheengatu, Polish, Sinhala, Skolt Sami, Tamil, Urdu, Veps, Western Armenian
+Prep: Afrikaans, Arabic, Armenian, Czech, Danish, Estonian, Finnish, Galician, German, Kurmanji, Latin, Lithuanian, Low Saxon, Maghrebi Arabic French, Nheengatu, Old Irish, Polish, Romanian, Sinhala, Skolt Sami, Slovak, Veps, Western Armenian
+Voc: Czech, Slovak
+AdvType
+AdvType
+
+Cau: Albanian, Classical Chinese, Georgian, Nheengatu, Vietnamese
+Con: Nheengatu
+Deg: Albanian, Bhojpuri, Classical Chinese, Erzya, Georgian, Hindi, Komi Permyak, Komi Zyrian, Moksha, Nheengatu, Urdu, Vietnamese
+Dir: Kiche
+Ideoph: Erzya, Pesh
+Int: Georgian
+Loc: Albanian, Bororo, Egyptian, Erzya, Georgian, Komi Permyak, Komi Zyrian, Latin, Moksha, Nheengatu, Sinhala, Vietnamese
+Man: Albanian, Bororo, Egyptian, Erzya, Georgian, Komi Permyak, Komi Zyrian, Moksha, Nheengatu, Sinhala, Vietnamese
+Mod: Bororo, Erzya, Moksha, Nheengatu, Upper Sorbian, Vietnamese
+Rel: Georgian
+Sta: Erzya, Moksha
+Temp: Tupinamba
+Tim: Albanian, Apurina, Bororo, Classical Chinese, Egyptian, Erzya, Georgian, Komi Zyrian, Latin, Moksha, Nheengatu, Sinhala, Skolt Sami, Vietnamese
+Advlz
+Advlz
+
+Yes: Yakut
+Agglutination
+Agglutination
+
+Agl: Polish
+Nagl: Polish
+Also
+Also
+
+Yes: Teko
+Analyt
+Analyt
+
+Yes: Old East Slavic
+Animacy
+Animacy
+
+Anim: Basque, Belarusian, Bulgarian, Classical Armenian, Croatian, Czech, Erzya, Georgian, Kaapor, Kiche, Komi Permyak, Malayalam, Old East Slavic, Russian, Serbian, Sinhala, Slovak, Slovenian, Tamil, Ukrainian, Upper Sorbian
+Hum: Abkhaz, Armenian, Erzya, Kaapor, Komi Permyak, Komi Zyrian, Moksha, Norwegian, Pashto, Pesh, Polish, Pomak, Skolt Sami, Tupinamba, Western Armenian
+Inan: Basque, Belarusian, Classical Armenian, Croatian, Czech, Georgian, Komi Permyak, Malayalam, Old East Slavic, Polish, Russian, Serbian, Sinhala, Slovak, Slovenian, Ukrainian, Upper Sorbian
+Nhum: Abkhaz, Armenian, Komi Permyak, Pashto, Polish, Pomak, Upper Sorbian, Western Armenian
+Animacy[gram]
+Animacy[gram]
+
+Anim: Ukrainian
+Inan: Ukrainian
+Animacy[obj]
+Animacy[obj]
+
+Hum: Highland Puebla Nahuatl, Western Sierra Puebla Nahuatl
+Nhum: Highland Puebla Nahuatl, Western Sierra Puebla Nahuatl
+Aspect
+Aspect
+
+Aor: Beja, Hausa, Zaar
+Compl: Munduruku, Nheengatu, Teko, Tupinamba
+Conc: Zaar
+Cons: Naija
+Cont: Teko
+Dec: Munduruku
+Dur: Armenian, Munduruku, Turkish, Western Armenian
+DurIprf: Munduruku
+Freq: Nheengatu
+Frus: Kaapor, Nheengatu
+Hab: Akuntsu, Breton, Buryat, Egyptian, Erzya, Hausa, Irish, Kazakh, Lithuanian, Madi, Makurap, Marathi, Moksha, Nheengatu, Old Irish, Ottoman Turkish, Tagalog, Turkish, Turkish German, Uyghur, Wolof, Yupik
+Imp: Albanian, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bulgarian, Buryat, Cappadocian, Cebuano, Classical Armenian, Czech, Georgian, Greek, Highland Puebla Nahuatl, Hindi, Hittite, Irish, Italian, Kangri, Kazakh, Kiche, Kyrgyz, Latin, Latvian, Macedonian, Makurap, Malayalam, Marathi, Munduruku, Naija, Nheengatu, Northwest Gbaya, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Polish, Pomak, Russian, Slovak, Slovenian, Tagalog, Turkish, Turkish German, Ukrainian, Urdu, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Zaar
+ImpIter: Zaar
+Inc: Bororo
+IncProg: Bororo
+Inch: Erzya, Latin, Zaar
+Iter: Abkhaz, Akuntsu, Armenian, Bororo, Hausa, Hungarian, Karo, Munduruku, Nheengatu, Northwest Gbaya, Pomak, Tatar, Teko, Tupinamba, Western Armenian, Xavante, Zaar
+Lus: Tupinamba
+Perf: Albanian, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bulgarian, Buryat, Cappadocian, Cebuano, Chinese, Classical Armenian, Classical Chinese, Czech, Egyptian, Georgian, German, Gothic, Greek, Guajajara, Hausa, Highland Puebla Nahuatl, Hindi, Italian, Kaapor, Kangri, Kazakh, Kiche, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Low Saxon, Macedonian, Makurap, Malayalam, Marathi, Moksha, Munduruku, Naija, Nheengatu, North Sami, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Phrygian, Polish, Pomak, Russian, Sanskrit, Sinhala, Skolt Sami, Slovak, Slovenian, Tagalog, Tatar, Thai, Turkish, Turkish German, Ukrainian, Umbrian, Urdu, Uyghur, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Zaar
+PerfBkg: Hausa
+PerfNeg: Hausa
+Prog: Albanian, Apurina, Armenian, Bambara, Basque, Bororo, Buryat, Chinese, Guajajara, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Kiche, Kurmanji, Kyrgyz, Malayalam, Ottoman Turkish, Pomak, Sinhala, Tagalog, Tatar, Thai, Turkish, Turkish German, Uzbek, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yupik, Zaar
+ProgBkg: Hausa
+ProgLocBkg: Hausa
+ProgNeg: Hausa
+Prosp: Armenian, Basque, Cebuano, Guajajara, Latin, Marathi, Naija, Ottoman Turkish, Sinhala, Tagalog, Turkish, Turkish German, Western Armenian
+Rapid: Turkish
+Res: Zaar
+BadStyle
+BadStyle
+
+Yes: Ukrainian
+Case
+Case
+
+Abe: Abkhaz, Erzya, Estonian, Finnish, Guajajara, Karelian, Karo, Komi Permyak, Komi Zyrian, Livvi, Moksha, North Sami, Skolt Sami
+Abl: Akuntsu, Albanian, Amharic, Armenian, Basque, Beja, Buryat, Classical Armenian, Egyptian, Erzya, Estonian, Finnish, Gheg, Guajajara, Guarani, Gujarati, Hindi, Hittite, Hungarian, Karelian, Karo, Kazakh, Komi Zyrian, Kyrgyz, Latin, Livvi, Malayalam, Marathi, Moksha, Ottoman Turkish, Pashto, Sanskrit, Sinhala, Tamil, Tatar, Teko, Turkish, Turkish German, Umbrian, Uyghur, Uzbek, Veps, Western Armenian, Xibe, Yakut, Yupik
+Abs: Basque, Gujarati, Highland Puebla Nahuatl, Hittite, Hungarian, Marathi, Pesh, Warlpiri, Western Sierra Puebla Nahuatl, Yupik
+Acc: Afrikaans, Akkadian, Albanian, Ancient Greek, Arabic, Armenian, Assyrian, Beja, Belarusian, Bengali, Bhojpuri, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Classical Armenian, Croatian, Czech, Danish, Dutch, Egyptian, English, Estonian, Faroese, Finnish, Galician, German, Gheg, Gothic, Greek, Gujarati, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Italian, Kangri, Karelian, Kazakh, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Livvi, Low Saxon, Macedonian, Malayalam, Marathi, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yakut, Yoruba
+Add: Estonian
+Ade: Estonian, Finnish, Hungarian, Karelian, Livvi, Veps
+Adp: Komi Zyrian
+Aff: Kaapor
+All: Akuntsu, Basque, Egyptian, Estonian, Finnish, Guarani, Gujarati, Hittite, Hungarian, Karo, Livvi, Malayalam, Teko, Tupinamba, Veps, Warlpiri, Yupik
+Apr: Komi Permyak, Komi Zyrian
+AprIll: Komi Zyrian
+Ben: Abkhaz, Amharic, Basque, Egyptian, Hausa, Malayalam, Sinhala, Tamil
+Cau: Basque, Egyptian, Hungarian, Moksha, Warlpiri
+Cmp: Egyptian, Erzya, Gujarati, Komi Permyak, Komi Zyrian, Malayalam, Moksha, Xibe, Yakut
+Cns: Komi Zyrian, Sinhala, Warlpiri
+Com: Apurina, Basque, Beja, Buryat, Egyptian, Erzya, Estonian, Finnish, Karelian, Karo, Komi Permyak, Komi Zyrian, Livvi, Malayalam, Marathi, Moksha, North Sami, Skolt Sami, Spanish, Tamil, Veps, Warlpiri, Xibe
+Con: Kurmanji
+Dat: Akuntsu, Albanian, Ancient Greek, Apurina, Armenian, Basque, Beja, Belarusian, Bhojpuri, Bulgarian, Buryat, Catalan, Cebuano, Classical Armenian, Croatian, Czech, Dutch, Egyptian, Erzya, Estonian, Faroese, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Gujarati, Hausa, Hindi, Hittite, Hungarian, Icelandic, Irish, Kangri, Karo, Kazakh, Komi Permyak, Komi Zyrian, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Low Saxon, Macedonian, Malayalam, Marathi, Moksha, Nheengatu, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Phrygian, Polish, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Slovak, Slovenian, Spanish, Tagalog, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Warlpiri, Western Armenian, Xavante, Xibe, Yakut
+Del: Hungarian
+Dis: Beja, Egyptian, Hungarian
+Disp: Karo
+Egr: Komi Permyak, Komi Zyrian
+Ela: Egyptian, Erzya, Estonian, Finnish, Hungarian, Karelian, Komi Permyak, Komi Zyrian, Livvi, Moksha, Veps, Warlpiri
+Equ: Egyptian, Guajajara, Kyrgyz, Ottoman Turkish, Tatar, Turkish, Turkish German, Yupik
+Erg: Basque, Bhojpuri, Georgian, Gujarati, Hindi, Marathi, Pesh, Urdu, Warlpiri, Yupik
+Ess: Abkhaz, Basque, Egyptian, Estonian, Finnish, Georgian, Hungarian, Karelian, Livvi, North Sami, Skolt Sami, Veps
+Gen: Akkadian, Albanian, Ancient Greek, Arabic, Armenian, Basque, Beja, Belarusian, Bengali, Bhojpuri, Buryat, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, Georgian, German, Gheg, Gothic, Greek, Gujarati, Hausa, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Irish, Kangri, Karelian, Kazakh, Komi Permyak, Komi Zyrian, Korean, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Livvi, Low Saxon, Makurap, Malayalam, Manx, Moksha, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Phrygian, Polish, Pomak, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Swedish, Tagalog, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Warlpiri, Western Armenian, Wolof, Xibe, Yoruba, Yupik
+Ill: Egyptian, Erzya, Estonian, Finnish, Hungarian, Karelian, Komi Permyak, Komi Zyrian, Lithuanian, Livvi, Moksha, North Sami, Sinhala, Skolt Sami, Veps
+Ine: Abkhaz, Basque, Erzya, Estonian, Finnish, Hindi, Hungarian, Karelian, Karo, Komi Permyak, Komi Zyrian, Livvi, Moksha, Sinhala, Veps
+Ins: Abaza, Abkhaz, Amharic, Armenian, Basque, Belarusian, Classical Armenian, Croatian, Czech, Egyptian, Finnish, Georgian, Hindi, Hittite, Hungarian, Kangri, Karelian, Karo, Kazakh, Komi Permyak, Komi Zyrian, Kyrgyz, Lithuanian, Livvi, Malayalam, Marathi, Munduruku, Old Church Slavonic, Old East Slavic, Ottoman Turkish, Polish, Russian, Sanskrit, Serbian, Sinhala, Slovak, Slovenian, Tamil, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Warlpiri, Western Armenian, Xavante, Xibe, Yakut
+Lat: Abkhaz, Basque, Egyptian, Erzya, Finnish, Moksha, Xibe
+Loc: Abkhaz, Akkadian, Akuntsu, Amharic, Ancient Greek, Apurina, Armenian, Basque, Beja, Belarusian, Bengali, Catalan, Classical Armenian, Classical Chinese, Croatian, Czech, Egyptian, Erzya, Guajajara, Guarani, Gujarati, Hindi, Hungarian, Karo, Kazakh, Khunsari, Komi Zyrian, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Malayalam, Marathi, Moksha, Nayini, North Sami, Northwest Gbaya, Old Church Slavonic, Old East Slavic, Ottoman Turkish, Pashto, Persian, Polish, Russian, Sanskrit, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Uyghur, Uzbek, Warlpiri, Western Armenian, Xibe, Yupik
+Mal: Amharic
+Nom: Afrikaans, Akkadian, Albanian, Ancient Greek, Apurina, Arabic, Armenian, Assyrian, Beja, Belarusian, Bengali, Bhojpuri, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Classical Armenian, Croatian, Czech, Danish, Dutch, English, Erzya, Estonian, Faroese, Finnish, Galician, Georgian, German, Gheg, Gothic, Greek, Gujarati, Hausa, Hindi, Hittite, Hungarian, Icelandic, Irish, Italian, Kangri, Karelian, Kazakh, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Livvi, Low Saxon, Macedonian, Malayalam, Marathi, Moksha, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Pesh, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Western Armenian, Wolof, Yakut, Yoruba
+Par: Basque, Estonian, Finnish, Karelian, Livvi, Russian, Skolt Sami, Veps, Yakut
+Per: Tupinamba, Warlpiri, Yupik
+Prl: Erzya, Komi Permyak, Komi Zyrian, Moksha
+Prp: Komi Permyak, Komi Zyrian
+Ref: Guajajara, Guarani, Teko, Tupinamba
+Sbl: Hungarian
+Sim: Karo
+Sub: Egyptian
+Sup: Egyptian, Hungarian
+Tem: Apurina, Classical Chinese, Egyptian, Erzya, Guajajara, Gujarati, Hebrew, Hungarian, Khunsari, Moksha, Nayini, Persian, Soi
+Ter: Abkhaz, Estonian, Gujarati, Hungarian, Komi Zyrian, Livvi, Veps
+Tra: Akuntsu, Erzya, Estonian, Finnish, Guajajara, Hungarian, Karelian, Komi Zyrian, Livvi, Moksha, Teko, Tupinamba, Veps
+Voc: Ancient Greek, Beja, Belarusian, Bulgarian, Cappadocian, Croatian, Czech, Egyptian, Georgian, Gothic, Greek, Hittite, Irish, Kurmanji, Latgalian, Latin, Latvian, Lithuanian, Malayalam, Marathi, Old Church Slavonic, Old East Slavic, Old Irish, Pashto, Persian, Polish, Pomak, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Slovak, Tupinamba, Ukrainian, Vietnamese, Yupik
+Caus
+Caus
+
+Yes: Abaza
+Cfm
+Cfm
+
+Morning: Madi
+Clas
+Clas
+
+Bds: Karo
+Bss: Karo
+Ccv: Karo
+Cylb: Karo
+Cylm: Karo
+Cyls: Karo
+Fem: Karo
+Flat: Karo
+Rd: Karo
+Tflat: Karo
+X: Karo
+Class
+Class
+
+Adorn: Bororo
+CilFlx: Munduruku
+CilRig: Munduruku
+DA: Bororo
+Food: Bororo
+Liquid: Munduruku
+Neckl: Bororo
+Round: Munduruku
+Seed: Munduruku
+Clitic
+Clitic
+
+A: Komi Zyrian
+Add: Erzya, Komi Zyrian, Moksha
+AddGA: Moksha
+AddI: Skolt Sami
+AddKige: Moksha
+AddNgA: Moksha
+AddVok: Moksha
+Gi: Livvi
+Go: Livvi
+Han: Finnish, Skolt Sami
+I: Moksha
+Ik: Veps
+Ka: Finnish
+Kaan: Finnish
+Ki: Karelian, Veps
+Kin: Finnish
+Ko: Finnish, Karelian, Livvi
+O: Komi Zyrian
+Os: Skolt Sami
+Pa: Finnish
+QstA: Skolt Sami
+S: Finnish
+Se: Veps
+So: Komi Zyrian
+To: Komi Zyrian
+Yes: Cappadocian, Galician, Italian, Kiche, Nheengatu, Old East Slavic, Warlpiri
+Clusivity
+Clusivity
+
+Ex: Bororo, Cebuano, Guajajara, Guarani, Indonesian, Karo, Madi, Mbya Guarani, Munduruku, Pesh, Teko, Tupinamba, Xibe
+In: Akuntsu, Bororo, Cebuano, Guajajara, Guarani, Gujarati, Indonesian, Karo, Madi, Malayalam, Marathi, Mbya Guarani, Pesh, Tagalog, Teko, Tupinamba, Xibe
+Clusivity[obj]
+Clusivity[obj]
+
+Ex: Mbya Guarani
+In: Mbya Guarani
+Clusivity[psor]
+Clusivity[psor]
+
+Ex: Mbya Guarani
+In: Mbya Guarani
+Clusivity[subj]
+Clusivity[subj]
+
+Ex: Mbya Guarani
+In: Mbya Guarani
+Compound
+Compound
+
+Yes: Latin, Nheengatu, Romanian, Sanskrit
+Comt
+Comt
+
+Yes: Madi
+Conces
+Conces
+
+Yes: Teko
+ConjType
+ConjType
+
+Comp: Armenian, German, Polish, Western Armenian
+Disj: Tupinamba
+Oper: Arabic, Czech, Polish, Slovak
+Pred: Polish
+Connegative
+Connegative
+
+Yes: Armenian, Classical Armenian, Erzya, Estonian, Finnish, Karelian, Komi Permyak, Komi Zyrian, Livvi, Moksha, North Sami, Skolt Sami, Veps, Western Armenian
+Contrast
+Contrast
+
+Yes: Teko
+Contv
+Contv
+
+Yes: Munduruku
+Corf
+Corf
+
+Yes: Guarani, Karo, Teko, Tupinamba
+Decl
+Decl
+
+Assert: Karo
+AssertFoc: Karo
+F: Madi
+Definite
+Definite
+
+2: Hungarian
+Com: Arabic, Middle French
+Cons: Arabic, Egyptian, Hausa, Hebrew, Hittite, Zaar
+Def: Abaza, Abkhaz, Afrikaans, Albanian, Ancient Greek, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Bulgarian, Cappadocian, Catalan, Classical Armenian, Coptic, Croatian, Danish, Dutch, English, Erzya, Estonian, Faroese, French, Galician, German, Gheg, Greek, Haitian Creole, Hausa, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kiche, Kurmanji, Kyrgyz, Latgalian, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Manx, Middle French, Moksha, Naija, Norwegian, Old French, Old Irish, Ottoman Turkish, Pomak, Portuguese, Romanian, Scottish Gaelic, Serbian, Sinhala, Slovenian, Spanish, Swedish, Turkish, Turkish German, Western Armenian, Wolof, Zaar
+Ind: Abaza, Afrikaans, Albanian, Arabic, Armenian, Assyrian, Basque, Beja, Bengali, Bororo, Bulgarian, Cappadocian, Catalan, Classical Armenian, Coptic, Croatian, Danish, Dutch, English, Erzya, Estonian, Faroese, French, Galician, German, Gheg, Greek, Haitian Creole, Hindi, Hungarian, Icelandic, Indonesian, Italian, Javanese, Kiche, Komi Permyak, Komi Zyrian, Kyrgyz, Latgalian, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Malayalam, Middle French, Moksha, Naija, Nheengatu, Norwegian, Old French, Old Irish, Ottoman Turkish, Pomak, Portuguese, Romanian, Serbian, Sinhala, Slovenian, Spanish, Swedish, Turkish, Turkish German, Western Armenian, Wolof, Zaar
+Spec: Classical Armenian, Hausa, Naija, Zaar
+Definitizer
+Definitizer
+
+Yes: Cebuano
+Degree
+Degree
+
+Abs: Armenian, Basque, Danish, Greek, Italian, Latin, Ligurian, Macedonian, Portuguese, Spanish, Ukrainian, Western Armenian
+Aug: Nheengatu, Northwest Gbaya, Pomak, Teko, Tupinamba
+Cmp: Afrikaans, Ancient Greek, Armenian, Basque, Beja, Belarusian, Breton, Bulgarian, Catalan, Classical Chinese, Croatian, Czech, Danish, Dutch, English, Erzya, Estonian, Faroese, Finnish, Galician, Georgian, German, Gheg, Gothic, Greek, Hungarian, Icelandic, Irish, Italian, Karelian, Kazakh, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Manx, Moksha, Naija, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Persian, Polish, Pomak, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tatar, Teko, Turkish, Ukrainian, Upper Sorbian, Uzbek, Veps, Welsh, Western Armenian
+Dim: Afrikaans, Beja, Bororo, Erzya, Greek, Guajajara, Highland Puebla Nahuatl, Komi Permyak, Latin, Moksha, Nheengatu, Pomak, Portuguese, Skolt Sami, Spanish, Teko, Western Sierra Puebla Nahuatl, Xavante
+Equ: Beja, Classical Chinese, Sanskrit, Welsh
+Ints: Kiche
+Pos: Afrikaans, Albanian, Ancient Greek, Armenian, Belarusian, Bengali, Bulgarian, Cebuano, Classical Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Faroese, Finnish, Georgian, German, Gothic, Hungarian, Icelandic, Irish, Khunsari, Kurmanji, Latgalian, Latin, Latvian, Lithuanian, Livvi, Low Saxon, Macedonian, Nayini, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Persian, Polish, Romanian, Russian, Serbian, Sinhala, Slovak, Slovenian, Spanish, Swedish, Tagalog, Ukrainian, Upper Sorbian, Veps, Welsh, Western Armenian, Xibe
+Sup: Afrikaans, Ancient Greek, Armenian, Basque, Belarusian, Breton, Bulgarian, Cebuano, Classical Chinese, Croatian, Czech, Danish, Dutch, English, Erzya, Estonian, Faroese, Finnish, Galician, Georgian, German, Gheg, Gothic, Greek, Hungarian, Icelandic, Indonesian, Irish, Italian, Karelian, Komi Zyrian, Kurmanji, Kyrgyz, Latin, Latvian, Lithuanian, Low Saxon, Macedonian, Manx, Moksha, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Persian, Polish, Pomak, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Slovak, Slovenian, Spanish, Swedish, Teko, Turkish, Ukrainian, Upper Sorbian, Welsh, Western Armenian
+Deixis
+Deixis
+
+Dist: Akuntsu
+Med: Armenian, Bororo, Cebuano, Classical Armenian, Tagalog, Western Armenian, Wolof, Xavante
+Prox: Akuntsu, Armenian, Beja, Bororo, Cebuano, Classical Armenian, Hausa, Makurap, Malayalam, Marathi, Nheengatu, Pashto, Pomak, Tagalog, Vietnamese, Western Armenian, Wolof, Xavante, Zaar
+Remt: Armenian, Beja, Bororo, Cebuano, Classical Armenian, Hausa, Malayalam, Marathi, Nheengatu, Pashto, Pomak, Tagalog, Vietnamese, Western Armenian, Wolof, Xavante, Zaar
+DeixisRef
+DeixisRef
+
+1: Pomak, Wolof
+2: Pomak, Wolof
+Deixis[psor]
+Deixis[psor]
+
+Prox: Armenian, Western Armenian
+Delib
+Delib
+
+Yes: Tupinamba
+Deo
+Deo
+
+Yes: Guajajara
+Derivation
+Derivation
+
+AdvstO: Erzya
+Al: Komi Zyrian
+An: Komi Zyrian
+Ana: Komi Permyak, Komi Zyrian
+Anin: Komi Zyrian
+Coll: Nheengatu
+CompMod: Komi Permyak, Komi Zyrian
+Cond: Moksha
+Dimin: Skolt Sami
+F: Moksha
+GenAttr: Erzya, Moksha
+Ig: Komi Zyrian
+Igdyrji: Komi Zyrian
+Igkost: Komi Zyrian
+Igkosta: Komi Zyrian
+Igkosti: Komi Zyrian
+Igmoz: Komi Zyrian
+Igtyr: Komi Zyrian
+Igtyrji: Komi Zyrian
+Ik: Komi Permyak, Komi Zyrian
+InchL: Skolt Sami
+Inen: Finnish
+Ja: Finnish
+Ko: Komi Zyrian
+La: Komi Zyrian
+Lainen: Finnish
+Llinen: Finnish
+Men: Skolt Sami
+Minen: Finnish
+OkshnOms: Erzya
+Oma: Komi Zyrian
+Omka: Erzya
+Omon: Komi Permyak, Komi Zyrian
+OvOms: Erzya, Moksha
+Ovt: Erzya
+Ozj: Erzya, Moksha
+Poss: Moksha
+Priv: Nheengatu
+PrivMod: Komi Zyrian
+PronGak: Erzya
+Proprietive: Apurina
+ProprietiveMod: Komi Zyrian
+Shka: Erzya
+Sjuro: Komi Zyrian
+Sti: Finnish
+Tar: Finnish
+TempMod: Komi Zyrian
+Ton: Finnish
+Ttain: Finnish
+U: Finnish
+VAbe: Komi Permyak, Komi Zyrian
+VGen: Erzya
+VSj: Erzya
+VTer: Komi Zyrian
+VerbYks: Erzya
+Voc: Erzya, Komi Zyrian, Moksha
+VocKaj: Erzya
+Vs: Finnish
+Wife: Moksha
+Determ
+Determ
+
+Yes: Akuntsu
+Detrans
+Detrans
+
+Ind: Guajajara
+Dev
+Dev
+
+Pass: Guarani, Tupinamba
+Dialect
+Dialect
+
+Connaught: Irish
+Munster: Irish
+Ulster: Irish
+Dist
+Dist
+
+Yes: Madi
+Dyn
+Dyn
+
+No: Abkhaz
+Yes: Abkhaz
+Echo
+Echo
+
+Ech: Armenian, Western Armenian
+Rdp: Bhojpuri, Hindi, Kangri, Turkish, Urdu
+Ego
+Ego
+
+Yes: Xavante
+Emph
+Emph
+
+No: French
+Yes: French, Guajajara, Guarani, Teko, Tupinamba, Xavante
+Emphatic
+Emphatic
+
+Yes: Polish
+Evident
+Evident
+
+Fh: Buryat, Guajajara, Karo, Kazakh, Kyrgyz, Latgalian, Latvian, Madi, Makurap, Ottoman Turkish, Tupinamba, Turkish, Turkish German
+Nfh: Abkhaz, Erzya, Georgian, Guajajara, Guarani, Karo, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latvian, Madi, Makurap, Munduruku, Nheengatu, Ottoman Turkish, Turkish, Turkish German, Yakut
+Nfh2: Abkhaz
+Rep: Bororo
+Excl
+Excl
+
+Yes: Teko
+ExtPos
+ExtPos
+
+ADJ: French, Hausa, Naija, Portuguese
+ADP: English, French, Hausa, Naija, Portuguese
+ADV: Beja, English, French, Hausa, Naija, Nheengatu, Portuguese
+AUX: Portuguese
+CCONJ: English, French, Haitian Creole, Naija, Portuguese
+DET: French, Nheengatu
+INTJ: Beja, French, Naija, Portuguese
+NOUN: French, Hausa, Naija, Portuguese
+NUM: French, Portuguese
+PART: Naija
+PRON: Beja, English, French, Hausa, Nheengatu
+PROPN: French, Naija, Portuguese
+SCONJ: Beja, English, French, Hausa, Naija, Nheengatu, Portuguese
+VERB: French, Hausa, Naija
+Fact
+Fact
+
+Yes: Xavante
+False
+False
+
+Yes: Guajajara
+Foc
+Foc
+
+Yes: Akuntsu, Bororo, Guajajara, Nheengatu, Teko, Tupinamba
+Focus
+Focus
+
+Yes: Kiche
+FocusType
+FocusType
+
+Compl: Wolof
+Subj: Wolof
+Verb: Wolof
+Foreign
+Foreign
+
+Yes: Arabic, Armenian, Beja, Belarusian, Bhojpuri, Bulgarian, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Greek, Guajajara, Hausa, Hebrew, Hindi, Icelandic, Indonesian, Irish, Italian, Japanese, Javanese, Kangri, Kiche, Komi Zyrian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Malayalam, Old East Slavic, Old French, Old Irish, Polish, Pomak, Portuguese, Romanian, Russian, Scottish Gaelic, Serbian, Sinhala, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tatar, Tupinamba, Turkish, Turkish German, Ukrainian, Urdu, Uzbek, Vietnamese, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Xibe, Zaar
+Form
+Form
+
+Adn: Korean
+Aux: Korean
+Compl: Korean
+Direct: Irish
+Ecl: Irish, Manx
+Emp: Irish, Latin, Manx, Scottish Gaelic
+HPref: Irish, Manx
+Indirect: Irish
+Len: Irish, Manx
+VF: Irish
+Gender
+Gender
+
+Com: Akkadian, Danish, Dutch, Egyptian, Galician, Hittite, Lithuanian, Swedish, Tamil
+Fem: Abkhaz, Akkadian, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Assyrian, Basque, Beja, Belarusian, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Coptic, Croatian, Czech, Egyptian, English, Erzya, Estonian, Faroese, French, Galician, German, Gheg, Gothic, Greek, Gujarati, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Icelandic, Irish, Italian, Kangri, Kazakh, Kiche, Kurmanji, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Malayalam, Manx, Marathi, Moksha, Naija, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tamil, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Vietnamese, Welsh, Western Sierra Puebla Nahuatl, Wolof
+Masc: Abkhaz, Akkadian, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Assyrian, Basque, Beja, Belarusian, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Coptic, Croatian, Czech, Egyptian, English, Erzya, Estonian, Faroese, French, Galician, German, Gheg, Gothic, Greek, Gujarati, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Icelandic, Irish, Italian, Kangri, Kazakh, Kiche, Kurmanji, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Malayalam, Manx, Marathi, Moksha, Naija, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Pashto, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tamil, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Vietnamese, Welsh, Western Sierra Puebla Nahuatl, Wolof
+Neut: Amharic, Ancient Greek, Belarusian, Bulgarian, Cappadocian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Faroese, Galician, German, Gothic, Greek, Gujarati, Hittite, Icelandic, Latin, Lithuanian, Low Saxon, Macedonian, Malayalam, Marathi, Naija, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Phrygian, Polish, Pomak, Russian, Sanskrit, Serbian, Sinhala, Slovak, Slovenian, Swedish, Tamil, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Vietnamese
+Gender[abs]
+Gender[abs]
+
+Com: Abaza
+Masc: Abaza
+Neut: Abaza
+Gender[cs]
+Gender[cs]
+
+Fem: Abkhaz
+Masc: Abkhaz
+Neut: Abkhaz
+Gender[dat]
+Gender[dat]
+
+Masc: Basque
+Gender[erg]
+Gender[erg]
+
+Fem: Abaza, Basque
+Masc: Abaza, Basque
+Neut: Abaza
+Gender[io]
+Gender[io]
+
+Fem: Abaza, Abkhaz
+Masc: Abaza, Abkhaz
+Neut: Abaza, Abkhaz
+Gender[lo]
+Gender[lo]
+
+Fem: Abkhaz
+Masc: Abkhaz
+Neut: Abkhaz
+Gender[obj]
+Gender[obj]
+
+Com: Abkhaz
+Fem: Abkhaz
+Masc: Abkhaz, Apurina
+Gender[po]
+Gender[po]
+
+Fem: Abkhaz
+Masc: Abkhaz
+Neut: Abkhaz
+Gender[psor]
+Gender[psor]
+
+Fem: Abaza, Abkhaz, Apurina, Breton, Coptic, Croatian, Czech, German, Hindi, Low Saxon, Serbian, Slovak, Slovenian, Upper Sorbian
+Masc: Abaza, Abkhaz, Apurina, Breton, Coptic, Croatian, Czech, German, Hindi, Low Saxon, Macedonian, Serbian, Slovak, Slovenian, Upper Sorbian
+Neut: Abaza, Abkhaz, Croatian, Czech, German, Serbian, Slovak, Slovenian, Upper Sorbian
+Gender[refl]
+Gender[refl]
+
+Fem: Abkhaz
+Masc: Abkhaz
+Neut: Abkhaz
+Gender[ro]
+Gender[ro]
+
+Fem: Abkhaz
+Masc: Abkhaz
+Neut: Abkhaz
+Gender[subj]
+Gender[subj]
+
+Com: Abkhaz
+Fem: Abkhaz, Apurina
+Masc: Abkhaz, Apurina
+Neut: Abkhaz
+HebBinyan
+HebBinyan
+
+HIFIL: Ancient Hebrew, Hebrew
+HITPAEL: Ancient Hebrew, Hebrew
+HUFAL: Hebrew
+NIFAL: Ancient Hebrew, Hebrew
+NITPAEL: Hebrew
+PAAL: Ancient Hebrew, Hebrew
+PIEL: Ancient Hebrew, Hebrew
+PUAL: Ancient Hebrew, Hebrew
+HebExistential
+HebExistential
+
+Yes: Hebrew
+Hnfc
+Hnfc
+
+Yes: Xavante
+Htp
+Htp
+
+Yes: Xavante
+Hum
+Hum
+
+Yes: Tupinamba
+Hyph
+Hyph
+
+Yes: Armenian, Czech, Estonian, German, Lithuanian, Polish, Slovak, Spanish, Ukrainian, Upper Sorbian, Western Armenian
+Imprs
+Imprs
+
+Yes: Teko
+Incorp
+Incorp
+
+Yes: Munduruku, Tupinamba
+InfForm
+InfForm
+
+1: Finnish
+2: Finnish
+3: Finnish
+Dict: Marathi
+Incp: Marathi
+InflClass
+InflClass
+
+Ind: Belarusian, Latin, Old East Slavic, Russian, Ukrainian
+IndEurA: Latin
+IndEurE: Latin
+IndEurI: Estonian, Latin
+IndEurO: Estonian, Latin
+IndEurU: Latin
+IndEurX: Latin
+LatA: Latin
+LatAnom: Latin
+LatE: Latin
+LatI: Latin
+LatI2: Latin
+LatPron: Latin
+LatX: Latin
+InflClass[nominal]
+InflClass[nominal]
+
+Ind: Latin
+IndEurA: Latin
+IndEurI: Latin
+IndEurO: Latin
+IndEurU: Latin
+IndEurX: Latin
+Int
+Int
+
+Yes: Abaza, Bororo, Guajajara, Guarani, Karo, Teko, Tupinamba, Xavante, Yakut
+Intens
+Intens
+
+Yes: Bororo, Guarani, Teko, Tupinamba, Xavante
+Intense
+Intense
+
+Yes: Kaapor
+Intension
+Intension
+
+Yes: Madi
+LangId
+LangId
+
+Hy: Western Armenian
+Language
+Language
+
+Akk: Hittite
+Sum: Hittite
+Link
+Link
+
+Yes: Tagalog
+Modality
+Modality
+
+Cond: Nheengatu
+Proh: Nheengatu
+Mood
+Mood
+
+Adm: Gheg
+Cn1: Yupik
+Cn2: Yupik
+Cnc: Yupik
+Cnd: Abkhaz, Armenian, Bambara, Basque, Belarusian, Bengali, Breton, Bulgarian, Buryat, Catalan, Croatian, Czech, Erzya, Estonian, Finnish, French, Galician, Haitian Creole, Highland Puebla Nahuatl, Hungarian, Irish, Italian, Karelian, Kazakh, Kyrgyz, Latvian, Ligurian, Lithuanian, Livvi, Macedonian, Malayalam, Manx, Naija, North Sami, Old East Slavic, Ottoman Turkish, Polish, Portuguese, Romanian, Russian, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Tamil, Tatar, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Uyghur, Uzbek, Veps, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yupik, Zaar
+Cnd2: Abkhaz
+CndGen: Turkish
+CndGenPot: Turkish
+CndPot: Turkish
+CndSub: Erzya
+Ctm: Yupik
+Des: Bororo, Buryat, Classical Chinese, Erzya, Guajajara, Kazakh, Marathi, Mbya Guarani, Moksha, Ottoman Turkish, Teko, Turkish, Turkish German, Xavante
+DesPot: Turkish
+Dub: Teko
+Gen: Turkish, Turkish German
+GenNec: Turkish
+GenNecPot: Turkish
+GenPot: Turkish, Turkish German
+GenPotPot: Turkish
+Imp: Abaza, Abkhaz, Akkadian, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bororo, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Classical Armenian, Croatian, Czech, Danish, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gothic, Greek, Guajajara, Guarani, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Karelian, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Nayini, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Serbian, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tagalog, Tamil, Tatar, Teko, Thai, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Vietnamese, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yakut
+Ind: Akkadian, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Basque, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Classical Armenian, Croatian, Czech, Danish, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Karelian, Kazakh, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yupik
+Int: Abkhaz, Chinese, Irish, Macedonian, Scottish Gaelic, Uyghur, Uzbek, Yupik
+Irr: Bororo, Hebrew, Javanese, Kiche, Tatar, Teko, Tupinamba, Zaar
+Jus: Amharic, Arabic, Hausa, Sanskrit, Teko
+Nec: Armenian, Classical Chinese, Erzya, Gujarati, Latvian, Lithuanian, Malayalam, Moksha, Naija, Ottoman Turkish, Sinhala, Turkish, Turkish German, Western Armenian
+NecPot: Turkish
+NegCndSub: Moksha
+Opt: Abkhaz, Ancient Greek, Beja, Bororo, Breton, Erzya, Finnish, Gothic, Highland Puebla Nahuatl, Hindi, Karo, Kazakh, Kurmanji, Moksha, Naija, Ottoman Turkish, Sanskrit, Tamil, Tupinamba, Turkish, Turkish German, Uzbek, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yupik
+Per: Teko, Tupinamba
+Perm: Guarani
+Pot: Basque, Beja, Cebuano, Classical Chinese, Egyptian, Finnish, Hungarian, Kazakh, Kyrgyz, Livvi, Malayalam, Naija, North Sami, Ottoman Turkish, Pashto, Sanskrit, Sinhala, Skolt Sami, Tagalog, Turkish, Turkish German, Uzbek, Vietnamese
+PotPot: Turkish
+Prc: Yupik
+Prec: Akkadian, Erzya, Moksha
+Proh: Akkadian
+Prp: Abkhaz, Guajajara, Highland Puebla Nahuatl, Western Sierra Puebla Nahuatl
+Prs: Turkish, Turkish German
+Ptc: Yupik
+Qot: Estonian, Latvian, Zaar
+Sbr: Yupik
+Sub: Abkhaz, Albanian, Ancient Greek, Arabic, Armenian, Bambara, Basque, Bhojpuri, Bororo, Cappadocian, Catalan, Classical Armenian, Egyptian, English, Erzya, Faroese, French, Galician, Georgian, German, Gheg, Hindi, Icelandic, Irish, Italian, Kangri, Khunsari, Kurmanji, Latin, Ligurian, Low Saxon, Maghrebi Arabic French, Marathi, Moksha, Nayini, Old Church Slavonic, Old Irish, Pashto, Persian, Phrygian, Portuguese, Romanian, Sanskrit, Spanish, Swedish, Tupinamba, Turkish German, Umbrian, Urdu, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Xavante, Xibe, Zaar
+Morph
+Morph
+
+VFin: Old French
+VInf: Old French
+VPar: Old French
+Movement
+Movement
+
+Abl: Kiche
+Lat: Kiche
+Ven: Highland Puebla Nahuatl, Western Sierra Puebla Nahuatl
+Mutation
+Mutation
+
+AM: Welsh
+NM: Welsh
+SM: Welsh
+NCount
+NCount
+
+Yes: Madi
+NameType
+NameType
+
+Ast: Latin
+Cal: Latin
+Com: Armenian, Belarusian, Czech, Latin, Russian, Vietnamese, Western Armenian
+Geo: Abkhaz, Armenian, Belarusian, Classical Chinese, Czech, Erzya, Georgian, Komi Permyak, Latin, Moksha, Old East Slavic, Russian, Skolt Sami, Ukrainian, Vietnamese, Western Armenian
+Giv: Armenian, Belarusian, Classical Chinese, Czech, Erzya, Komi Permyak, Latin, Moksha, Old East Slavic, Russian, Skolt Sami, Ukrainian, Vietnamese, Western Armenian
+Hom: Erzya
+Hus: Old East Slavic
+Let: Latin
+Lit: Latin
+Met: Latin
+Nat: Classical Chinese, Czech, Latin, Old East Slavic, Vietnamese
+Oth: Abkhaz, Armenian, Belarusian, Czech, Erzya, Latin, Old East Slavic, Russian, Vietnamese, Western Armenian
+Pat: Belarusian, Erzya, Moksha, Old East Slavic, Russian, Ukrainian
+Pro: Armenian, Belarusian, Czech, Old East Slavic, Russian, Vietnamese, Western Armenian
+Prs: Abkhaz, Armenian, Belarusian, Classical Chinese, Georgian, Old East Slavic, Russian, Skolt Sami, Vietnamese, Western Armenian
+Rel: Latin
+Sur: Armenian, Belarusian, Classical Chinese, Czech, Erzya, Georgian, Komi Permyak, Latin, Moksha, Old East Slavic, Russian, Skolt Sami, Ukrainian, Vietnamese, Western Armenian
+Zoo: Russian
+NegationType
+NegationType
+
+Contrastive: Erzya
+Neutral
+Neutral
+
+Yes: Cebuano
+Nmzr
+Nmzr
+
+Adv: Teko
+Ag: Teko
+Inst: Teko
+Nomzr
+Nomzr
+
+Abs: Guajajara
+Action: Yakut
+Ag: Erzya, Guajajara, Guarani, Komi Zyrian, Makurap, Moksha, Munduruku, Tupinamba, Xavante
+CCirc: Guarani, Tupinamba
+Circ: Akuntsu, Guajajara, Guarani, Kaapor, Karo, Tupinamba
+Clau: Bororo
+DevPass: Guajajara, Guarani, Tupinamba
+Hab: Tupinamba
+Obj: Akuntsu
+Pa: Munduruku
+Pas: Guajajara, Guarani, Tupinamba
+Rel: Bororo, Guarani, Tupinamba
+NonFoc
+NonFoc
+
+Yes: Guajajara, Tupinamba
+NounBase
+NounBase
+
+Bound: Akkadian
+Free: Akkadian
+Suffixal: Akkadian
+Terminal: Akkadian
+NounClass
+NounClass
+
+Bantu1: Tswana
+Bantu14: Tswana
+Bantu15: Tswana
+Bantu17: Tswana
+Bantu2: Tswana
+Bantu3: Tswana
+Bantu5: Tswana
+Bantu7: Tswana
+Bantu9: Tswana
+Wol1: Wolof
+Wol10: Wolof
+Wol11: Wolof
+Wol12: Wolof
+Wol2: Wolof
+Wol3: Wolof
+Wol4: Wolof
+Wol5: Wolof
+Wol6: Wolof
+Wol7: Wolof
+Wol8: Wolof
+Wol9: Wolof
+NounType
+NounType
+
+Clf: Cantonese, Chinese, Classical Chinese, Kiche, Vietnamese
+Het: Albanian
+NotSlender: Irish
+Relat: Erzya, Highland Puebla Nahuatl, Kiche, Komi Permyak, Komi Zyrian, Moksha, Western Sierra Puebla Nahuatl
+Slender: Irish
+Strong: Irish
+Weak: Irish
+NumForm
+NumForm
+
+Armenian: Armenian, Western Armenian
+Combi: Armenian, English, Lithuanian, Old East Slavic, Romanian, Russian, Welsh, Western Armenian
+Cyril: Old East Slavic
+Digit: Arabic, Armenian, Catalan, Czech, English, Estonian, Georgian, Lithuanian, Malayalam, Moksha, Old East Slavic, Polish, Romanian, Russian, Scottish Gaelic, Slovak, Slovenian, Spanish, Tamil, Veps, Welsh, Western Armenian
+Roman: Armenian, Catalan, Czech, English, Estonian, Georgian, Latin, Lithuanian, Old East Slavic, Polish, Romanian, Russian, Scottish Gaelic, Slovenian, Spanish, Welsh
+Word: Arabic, Armenian, Catalan, Czech, English, Estonian, Latin, Lithuanian, Malayalam, Old East Slavic, Polish, Romanian, Russian, Scottish Gaelic, Slovenian, Spanish, Veps, Welsh, Western Armenian
+NumType
+NumType
+
+Appr: Erzya, Komi Zyrian
+Card: Abkhaz, Akuntsu, Albanian, Amharic, Ancient Hebrew, Armenian, Bambara, Basque, Belarusian, Bengali, Bhojpuri, Bulgarian, Buryat, Cappadocian, Catalan, Chinese, Classical Armenian, Coptic, Croatian, Czech, Danish, English, Erzya, Estonian, Finnish, French, Galician, Georgian, German, Gheg, Greek, Guarani, Haitian Creole, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Karelian, Kazakh, Khunsari, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Malayalam, Mbya Guarani, Middle French, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Norwegian, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tamil, Tatar, Telugu, Telugu English, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uzbek, Veps, Vietnamese, Welsh, Western Armenian, Wolof, Xibe, Yakut, Yoruba
+Coll: Kazakh, Moksha, North Sami
+Dist: Armenian, Classical Armenian, Erzya, Hungarian, Komi Permyak, Komi Zyrian, Latin, Moksha, Ottoman Turkish, Turkish, Turkish German, Western Armenian, Xavante
+Frac: Armenian, Catalan, Czech, English, Erzya, Estonian, Greek, Hungarian, Icelandic, Latvian, Malayalam, Old East Slavic, Polish, Portuguese, Romanian, Russian, Spanish, Uzbek, Western Armenian, Xibe
+Mult: Classical Armenian, Croatian, Czech, English, Erzya, Georgian, Greek, Komi Zyrian, Latin, Latvian, Lithuanian, Moksha, Portuguese, Romanian, Serbian, Slovak, Slovenian, Upper Sorbian, Xibe
+MultDist: Komi Permyak
+Ord: Abkhaz, Ancient Hebrew, Arabic, Armenian, Bambara, Basque, Bengali, Bhojpuri, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Chinese, Classical Armenian, Classical Chinese, Croatian, Czech, Danish, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Greek, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Karelian, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kyrgyz, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Malayalam, Middle French, Moksha, Naija, Nheengatu, Norwegian, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Welsh, Western Armenian, Wolof, Xibe, Yoruba
+OrdMult: Erzya, Komi Permyak, Komi Zyrian
+OrdSets: Erzya
+Range: Abkhaz, Armenian, Estonian, Italian, Portuguese, Uzbek
+Sets: Belarusian, Classical Armenian, Czech, Erzya, Greek, Komi Permyak, Komi Zyrian, Lithuanian, Moksha, Old East Slavic, Polish, Portuguese, Russian, Slovenian, Uzbek, Xibe
+NumValue
+NumValue
+
+1: Arabic, Latin
+2: Arabic, Latin
+3: Arabic
+Number
+Number
+
+Assoc: Armenian
+Card: Abkhaz
+Coll: Armenian, Beja, Egyptian, Guajajara, Latvian, Pomak, Western Armenian, Xavante
+Count: Bulgarian, Macedonian, Old East Slavic, Pomak
+Dual: Ancient Greek, Ancient Hebrew, Arabic, Cebuano, Czech, Egyptian, Gothic, Hebrew, Lithuanian, North Sami, Old Church Slavonic, Old East Slavic, Old Irish, Sanskrit, Scottish Gaelic, Skolt Sami, Slovenian, Tagalog, Upper Sorbian, Warlpiri, Xavante, Yupik
+Pauc: Warlpiri
+Plur: Abaza, Abkhaz, Afrikaans, Akkadian, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Gujarati, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kaapor, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tagalog, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+Ptan: Bulgarian, English, Latvian, Polish, Sinhala, Ukrainian, Upper Sorbian, Western Armenian
+Sing: Abaza, Abkhaz, Afrikaans, Akkadian, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Gujarati, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kaapor, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Makurap, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tagalog, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+Number[abs]
+Number[abs]
+
+Plur: Abaza, Basque
+Sing: Abaza, Basque, Xavante
+Number[cs]
+Number[cs]
+
+Plur: Abkhaz
+Sing: Abkhaz
+Number[dat]
+Number[dat]
+
+Plur: Basque, Western Sierra Puebla Nahuatl
+Sing: Basque, Warlpiri, Western Sierra Puebla Nahuatl
+Number[erg]
+Number[erg]
+
+Plur: Abaza, Basque
+Sing: Abaza, Basque
+Number[grnd]
+Number[grnd]
+
+Sing: Nheengatu
+Number[io]
+Number[io]
+
+Plur: Abaza, Abkhaz, Georgian
+Sing: Abaza, Abkhaz, Georgian
+Number[lo]
+Number[lo]
+
+Plur: Abkhaz
+Sing: Abkhaz
+Number[obj]
+Number[obj]
+
+Dual: Warlpiri, Yupik
+Plur: Abkhaz, Apurina, Bororo, Erzya, Georgian, Highland Puebla Nahuatl, Kiche, Madi, Moksha, Teko, Warlpiri, Western Sierra Puebla Nahuatl, Yupik
+Sing: Abkhaz, Apurina, Bororo, Erzya, Georgian, Guajajara, Highland Puebla Nahuatl, Kiche, Madi, Moksha, Munduruku, Teko, Tupinamba, Warlpiri, Western Sierra Puebla Nahuatl, Yupik
+Number[po]
+Number[po]
+
+Plur: Abkhaz
+Sing: Abkhaz
+Number[psed]
+Number[psed]
+
+Sing: Hungarian
+Number[psor]
+Number[psor]
+
+Dual: North Sami, Slovenian, Upper Sorbian, Yupik
+Plur: Abaza, Abkhaz, Apurina, Armenian, Bororo, Catalan, Coptic, Croatian, Czech, Danish, Erzya, Finnish, French, Galician, German, Highland Puebla Nahuatl, Hindi, Hungarian, Italian, Kazakh, Kiche, Komi Zyrian, Kyrgyz, Latin, Low Saxon, Mbya Guarani, Moksha, North Sami, Ottoman Turkish, Polish, Pomak, Portuguese, Romanian, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Tatar, Tupinamba, Turkish, Turkish German, Upper Sorbian, Uyghur, Western Armenian, Western Sierra Puebla Nahuatl, Yakut, Yupik
+Sing: Abaza, Abkhaz, Apurina, Armenian, Bororo, Buryat, Catalan, Coptic, Croatian, Czech, Danish, Erzya, Estonian, Finnish, French, Galician, German, Guarani, Highland Puebla Nahuatl, Hindi, Hungarian, Italian, Karelian, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kyrgyz, Latin, Livvi, Low Saxon, Macedonian, Mbya Guarani, Moksha, Nheengatu, North Sami, Ottoman Turkish, Pashto, Polish, Pomak, Portuguese, Romanian, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Tatar, Tupinamba, Turkish, Turkish German, Umbrian, Upper Sorbian, Uyghur, Western Armenian, Western Sierra Puebla Nahuatl, Xavante, Yakut, Yupik
+Number[refl]
+Number[refl]
+
+Plur: Abkhaz
+Sing: Abkhaz
+Number[ro]
+Number[ro]
+
+Plur: Abkhaz
+Sing: Abkhaz
+Number[subj]
+Number[subj]
+
+Dual: Yupik
+Plur: Abkhaz, Apurina, Bororo, Erzya, Georgian, Guarani, Highland Puebla Nahuatl, Kiche, Komi Permyak, Komi Zyrian, Madi, Moksha, Munduruku, Teko, Tupinamba, Western Sierra Puebla Nahuatl, Yupik
+Sing: Abkhaz, Apurina, Bororo, Erzya, Georgian, Guarani, Highland Puebla Nahuatl, Kiche, Madi, Moksha, Munduruku, Teko, Tupinamba, Western Sierra Puebla Nahuatl, Yupik
+Obl
+Obl
+
+Yes: Akuntsu
+Orth
+Orth
+
+Alt: Ukrainian
+PartForm
+PartForm
+
+Agt: Finnish
+Neg: Finnish, Komi Zyrian
+NegConvPrc: Erzya, Moksha
+Past: Finnish, Karelian, Moksha
+PastDyn: Erzya
+Pres: Finnish, Komi Zyrian
+PrsDet: Erzya
+PrsTra: Erzya
+PartType
+PartType
+
+Ad: Irish, Manx, Scottish Gaelic
+Aug: Old Irish
+Cmpl: Irish, Manx, Scottish Gaelic
+Comp: Irish, Manx, Scottish Gaelic
+Conseq: Ukrainian
+Cop: Irish, Naija
+Dct: Old Irish
+Deg: Irish
+Des: Tagalog
+Disc: Naija
+Emp: Egyptian, Erzya, Georgian, Latin, Nheengatu, Zaar
+Exs: Nheengatu
+Gen: Afrikaans
+Inf: Afrikaans, Danish, German, Irish, Low Saxon, Manx, Romanian, Scottish Gaelic
+Int: Beja, Bengali, Cebuano, Chinese, Egyptian, Georgian, Hausa, Latin, Nheengatu, Polish, Tagalog, Zaar
+Mod: Egyptian, Nheengatu, Polish
+Neg: Afrikaans, Bengali, Cappadocian, Egyptian, Georgian, Low Saxon, Nheengatu
+Nfh: Tagalog
+Num: Irish, Scottish Gaelic
+Pat: Irish, Scottish Gaelic
+Prs: Nheengatu
+Rel: Old Irish
+Res: German
+Sub: Romanian
+Sup: Irish
+Vb: Irish, Manx, Old Irish, Scottish Gaelic
+Vbp: German
+Voc: Irish, Old Irish, Scottish Gaelic
+PartTypeQpm
+PartTypeQpm
+
+Ind: Pomak
+Neg: Pomak
+Tot: Pomak
+Pcl
+Pcl
+
+Dub: Makurap
+Person
+Person
+
+0: Breton, Finnish, Irish, Karo, Livvi, Polish, Scottish Gaelic, Ukrainian, Welsh, Wolof
+1: Abkhaz, Afrikaans, Akkadian, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kaapor, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Makurap, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Pesh, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Tagalog, Tamil, Tatar, Teko, Thai, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+13: Munduruku
+2: Abkhaz, Afrikaans, Akkadian, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kaapor, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Makurap, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Pesh, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Tagalog, Tamil, Tatar, Teko, Thai, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+3: Abkhaz, Afrikaans, Akkadian, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kaapor, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Madi, Maghrebi Arabic French, Makurap, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Pesh, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Tagalog, Tamil, Tatar, Teko, Thai, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+33: Munduruku
+3Imp: Karo
+4: Hausa
+Person[abs]
+Person[abs]
+
+1: Abaza, Basque, Xavante
+2: Abaza, Basque, Xavante
+3: Abaza, Basque, Xavante
+Person[cs]
+Person[cs]
+
+1: Abkhaz
+2: Abkhaz
+3: Abkhaz
+Person[dat]
+Person[dat]
+
+1: Basque, Western Sierra Puebla Nahuatl
+2: Basque, Western Sierra Puebla Nahuatl
+3: Basque, Warlpiri, Western Sierra Puebla Nahuatl
+Person[erg]
+Person[erg]
+
+1: Abaza, Basque
+2: Abaza, Basque
+3: Abaza, Basque
+Person[grnd]
+Person[grnd]
+
+3: Nheengatu
+Person[io]
+Person[io]
+
+1: Abaza, Abkhaz, Georgian
+2: Abaza, Abkhaz, Georgian
+3: Abaza, Abkhaz, Georgian
+Rec: Abkhaz
+Rel: Abkhaz
+Person[lo]
+Person[lo]
+
+1: Abkhaz
+2: Abkhaz
+3: Abkhaz
+Rec: Abkhaz
+Rel: Abkhaz
+Person[obj]
+Person[obj]
+
+1: Abkhaz, Apurina, Bororo, Erzya, Georgian, Highland Puebla Nahuatl, Kiche, Madi, Mbya Guarani, Moksha, Teko, Tupinamba, Warlpiri, Western Sierra Puebla Nahuatl, Yupik
+2: Abkhaz, Bororo, Erzya, Georgian, Guajajara, Highland Puebla Nahuatl, Kiche, Madi, Mbya Guarani, Moksha, Teko, Tupinamba, Warlpiri, Western Sierra Puebla Nahuatl, Yupik
+3: Abkhaz, Apurina, Bororo, Erzya, Georgian, Guarani, Highland Puebla Nahuatl, Kiche, Mbya Guarani, Moksha, Munduruku, Tupinamba, Warlpiri, Western Sierra Puebla Nahuatl, Yupik
+Rel: Abkhaz
+Person[po]
+Person[po]
+
+1: Abkhaz
+2: Abkhaz
+3: Abkhaz
+Person[psor]
+Person[psor]
+
+1: Abaza, Abkhaz, Akuntsu, Apurina, Armenian, Bororo, Erzya, Finnish, French, Guajajara, Guarani, Highland Puebla Nahuatl, Hungarian, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kyrgyz, Latin, Low Saxon, Madi, Moksha, North Sami, Ottoman Turkish, Skolt Sami, Tatar, Tupinamba, Turkish, Turkish German, Uyghur, Western Armenian, Western Sierra Puebla Nahuatl, Yakut, Yupik
+2: Abaza, Abkhaz, Akuntsu, Apurina, Armenian, Erzya, Finnish, French, Guajajara, Guarani, Highland Puebla Nahuatl, Karelian, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kyrgyz, Latin, Low Saxon, Madi, Moksha, North Sami, Ottoman Turkish, Skolt Sami, Tatar, Tupinamba, Turkish, Turkish German, Uyghur, Western Armenian, Western Sierra Puebla Nahuatl, Yakut, Yupik
+3: Abaza, Abkhaz, Akuntsu, Apurina, Armenian, Bororo, Buryat, Erzya, Estonian, Finnish, French, Guajajara, Highland Puebla Nahuatl, Hungarian, Karelian, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kyrgyz, Latin, Livvi, Low Saxon, Moksha, Nheengatu, North Sami, Ottoman Turkish, Skolt Sami, Tatar, Tupinamba, Turkish, Turkish German, Umbrian, Uyghur, Western Armenian, Western Sierra Puebla Nahuatl, Yakut, Yupik
+Rel: Abkhaz
+Person[refl]
+Person[refl]
+
+1: Abkhaz
+2: Abkhaz
+3: Abkhaz
+Person[ro]
+Person[ro]
+
+1: Abkhaz
+2: Abkhaz
+3: Abkhaz
+Rec: Abkhaz
+Rel: Abkhaz
+Person[subj]
+Person[subj]
+
+1: Abkhaz, Apurina, Bororo, Erzya, Georgian, Guajajara, Guarani, Highland Puebla Nahuatl, Kiche, Madi, Mbya Guarani, Moksha, Teko, Tupinamba, Western Sierra Puebla Nahuatl, Yupik
+2: Abkhaz, Akuntsu, Apurina, Bororo, Erzya, Georgian, Guajajara, Guarani, Highland Puebla Nahuatl, Kiche, Madi, Mbya Guarani, Moksha, Teko, Tupinamba, Western Sierra Puebla Nahuatl, Yupik
+3: Abkhaz, Apurina, Bororo, Erzya, Georgian, Guajajara, Guarani, Highland Puebla Nahuatl, Kiche, Mbya Guarani, Moksha, Munduruku, Tupinamba, Western Sierra Puebla Nahuatl, Yupik
+Rec: Abkhaz
+Rel: Abkhaz
+Polarity
+Polarity
+
+Aff: Scottish Gaelic
+Neg: Abaza, Abkhaz, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Bambara, Basque, Beja, Belarusian, Bhojpuri, Bororo, Breton, Bulgarian, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Egyptian, English, Erzya, Estonian, Finnish, French, Galician, German, Gheg, Gothic, Greek, Guajajara, Guarani, Haitian Creole, Hausa, Hebrew, Hindi, Indonesian, Irish, Italian, Japanese, Javanese, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Livvi, Macedonian, Maghrebi Arabic French, Makurap, Malayalam, Manx, Marathi, Mbya Guarani, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tagalog, Tamil, Tatar, Teko, Thai, Tswana, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yupik, Zaar
+Pos: Armenian, Bambara, Basque, Croatian, Czech, English, French, Greek, Guajajara, Hebrew, Italian, Kyrgyz, Latgalian, Latvian, Lithuanian, Malayalam, Marathi, Nheengatu, Old Irish, Ottoman Turkish, Polish, Romanian, Slovak, Slovenian, Tagalog, Tamil, Turkish, Turkish German, Vietnamese, Western Armenian
+Polite
+Polite
+
+Depr: Polish
+Elev: Javanese, Vietnamese, Xibe
+Form: Armenian, Beja, Bhojpuri, Catalan, Danish, German, Gujarati, Hindi, Indonesian, Javanese, Kangri, Kazakh, Kiche, Korean, Low Saxon, Malayalam, Northwest Gbaya, Romanian, Sanskrit, Spanish, Tamil, Turkish, Urdu, Uyghur, Vietnamese, Western Armenian, Western Sierra Puebla Nahuatl, Xavante
+Humb: Javanese
+Infm: Armenian, Basque, Catalan, Hindi, Indonesian, Javanese, Ottoman Turkish, Turkish, Urdu, Vietnamese
+Polite[abs]
+Polite[abs]
+
+Infm: Basque
+Polite[dat]
+Polite[dat]
+
+Infm: Basque
+Polite[erg]
+Polite[erg]
+
+Infm: Basque
+Position
+Position
+
+Postnom: Romanian
+Prenom: Romanian
+Poss
+Poss
+
+Ali: Munduruku
+Hum: Tupinamba
+Ina: Munduruku
+Yes: Afrikaans, Albanian, Amharic, Ancient Greek, Armenian, Assyrian, Beja, Belarusian, Bhojpuri, Bororo, Breton, Bulgarian, Cappadocian, Catalan, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Estonian, French, Galician, Georgian, German, Gothic, Greek, Guajajara, Guarani, Haitian Creole, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Irish, Italian, Kangri, Latgalian, Latin, Latvian, Ligurian, Low Saxon, Macedonian, Manx, Middle French, Naija, Nheengatu, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Pashto, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Slovak, Slovenian, Spanish, Swedish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uzbek, Welsh, Western Armenian, Wolof, Xavante, Xibe, Zaar
+Possessed
+Possessed
+
+No: Apurina
+Yes: Apurina
+Pred
+Pred
+
+AtrEq: Bororo
+Yes: Teko
+Prefix
+Prefix
+
+Yes: Hebrew, Old Irish
+PrepCase
+PrepCase
+
+Npr: Catalan, Czech, Polish, Spanish
+Pre: Catalan, Czech, Polish, Spanish
+PrepForm
+PrepForm
+
+Cmpd: Irish
+Priv
+Priv
+
+Yes: Guarani, Tupinamba
+PronClass
+PronClass
+
+A: Old Irish
+C: Old Irish
+PronType
+PronType
+
+Add: Mbya Guarani
+Ana: Old Irish
+Art: Afrikaans, Albanian, Ancient Hebrew, Armenian, Assyrian, Bengali, Bororo, Cappadocian, Catalan, Classical Armenian, Coptic, English, Estonian, French, Galician, German, Greek, Haitian Creole, Hausa, Hebrew, Hungarian, Indonesian, Irish, Italian, Javanese, Kiche, Latin, Ligurian, Low Saxon, Malayalam, Manx, Middle French, Naija, Nheengatu, Norwegian, Old French, Old Irish, Ottoman Turkish, Portuguese, Romanian, Scottish Gaelic, Spanish, Swedish, Turkish, Turkish German, Western Armenian, Wolof
+Bi: Bororo
+Con: Latin
+Dem: Abaza, Abkhaz, Afrikaans, Albanian, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Bambara, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Greek, Guajajara, Guarani, Haitian Creole, Hausa, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Manx, Marathi, Mbya Guarani, Middle French, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Norwegian, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tagalog, Tatar, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+Emp: Akuntsu, Albanian, Armenian, Bambara, Belarusian, Czech, Egyptian, English, German, Greek, Hebrew, Indonesian, Irish, Javanese, Karo, Lithuanian, Manx, Nheengatu, Old East Slavic, Old Irish, Phrygian, Pomak, Portuguese, Romanian, Russian, Slovak, Tagalog, Welsh, Western Armenian, Yoruba
+Exc: Armenian, Belarusian, French, Italian, Ligurian, Old East Slavic, Russian, Spanish, Western Armenian
+Gnc: Xavante
+Ind: Abkhaz, Afrikaans, Akuntsu, Albanian, Armenian, Belarusian, Bengali, Bhojpuri, Bororo, Bulgarian, Buryat, Cappadocian, Catalan, Chinese, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, English, Erzya, Estonian, Finnish, French, Galician, Georgian, German, Greek, Guajajara, Guarani, Hausa, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Karelian, Kazakh, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Marathi, Mbya Guarani, Middle French, Moksha, Munduruku, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Serbian, Sinhala, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tamil, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uzbek, Vietnamese, Welsh, Western Armenian, Wolof, Xavante, Xibe, Yakut, Yoruba, Zaar
+Int: Afrikaans, Albanian, Ancient Greek, Ancient Hebrew, Apurina, Armenian, Assyrian, Bambara, Basque, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Chinese, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Hausa, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latin, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Marathi, Mbya Guarani, Moksha, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Pesh, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tamil, Thai, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Welsh, Western Armenian, Wolof, Xavante, Xibe, Yakut, Yoruba, Yupik, Zaar
+Loc: Turkish
+Neg: Armenian, Belarusian, Bhojpuri, Bulgarian, Croatian, Czech, English, Estonian, French, Georgian, German, Gheg, Greek, Haitian Creole, Hebrew, Hindi, Hungarian, Italian, Kangri, Kazakh, Kyrgyz, Latin, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Mbya Guarani, Middle French, Old East Slavic, Pashto, Persian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swedish, Tatar, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uzbek, Western Armenian, Wolof
+Prs: Abkhaz, Afrikaans, Akuntsu, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Apurina, Arabic, Armenian, Assyrian, Bambara, Basque, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Cebuano, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Irish, Italian, Javanese, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Madi, Makurap, Malayalam, Marathi, Mbya Guarani, Middle French, Moksha, Munduruku, Naija, Nayini, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tagalog, Tamil, Tatar, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yoruba, Zaar
+Rcp: Afrikaans, Ancient Greek, Armenian, Bambara, Bororo, Classical Armenian, Coptic, Danish, Dutch, English, Erzya, Estonian, Finnish, Georgian, German, Gothic, Hungarian, Kazakh, Komi Zyrian, Kurmanji, Kyrgyz, Latin, Low Saxon, Moksha, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Pashto, Persian, Russian, Sinhala, Swedish, Teko, Tupinamba, Turkish, Uzbek, Vietnamese, Welsh, Western Armenian
+Rel: Afrikaans, Albanian, Ancient Greek, Arabic, Armenian, Bambara, Beja, Belarusian, Bengali, Bororo, Breton, Bulgarian, Cappadocian, Catalan, Classical Armenian, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Indonesian, Irish, Italian, Javanese, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Marathi, Middle French, Moksha, Naija, Nheengatu, North Sami, Northwest Gbaya, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Turkish German, Ukrainian, Upper Sorbian, Uzbek, Vietnamese, Welsh, Western Armenian, Wolof, Yoruba, Zaar
+Tot: Albanian, Armenian, Belarusian, Bororo, Bulgarian, Catalan, Classical Armenian, Coptic, Croatian, Czech, English, Erzya, Estonian, Georgian, German, Greek, Guajajara, Guarani, Hausa, Hebrew, Hittite, Hungarian, Indonesian, Italian, Javanese, Kazakh, Komi Permyak, Komi Zyrian, Latin, Latvian, Ligurian, Lithuanian, Low Saxon, Macedonian, Madi, Malayalam, Marathi, Mbya Guarani, Moksha, Munduruku, Nheengatu, Norwegian, Old East Slavic, Pashto, Persian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tagalog, Tatar, Teko, Tupinamba, Ukrainian, Upper Sorbian, Uzbek, Veps, Vietnamese, Western Armenian, Wolof, Xavante, Xibe, Yakut, Zaar
+Proper
+Proper
+
+Yes: Latin
+Prp
+Prp
+
+False: Guajajara
+PunctSide
+PunctSide
+
+Fin: Catalan, Erzya, Finnish, Icelandic, Moksha, Polish, Spanish
+Ini: Catalan, Erzya, Finnish, Icelandic, Moksha, Polish, Spanish
+PunctType
+PunctType
+
+Brck: Catalan, Georgian, German, Polish, Spanish
+Bull: Ukrainian
+Colo: Catalan, Georgian, Greek, Polish, Spanish
+Comm: Catalan, Georgian, German, Greek, Polish, Spanish, Tamil
+Dash: Catalan, Georgian, Greek, Polish, Spanish, Ukrainian
+Elip: Georgian, Greek, Nheengatu, Polish, Spanish
+Excl: Catalan, Georgian, Greek, Polish, Spanish
+Hyph: Ukrainian
+Peri: Catalan, Georgian, German, Greek, Lithuanian, Polish, Spanish, Tamil
+Qest: Catalan, Georgian, Greek, Polish, Spanish
+Quot: Catalan, Georgian, Greek, Polish, Spanish, Ukrainian
+Semi: Catalan, Georgian, Polish, Spanish
+Slsh: Polish
+Purp
+Purp
+
+Trans: Bororo
+Yes: Bororo
+RcpType
+RcpType
+
+Io: Abaza
+Recip
+Recip
+
+Yes: Tupinamba
+Red
+Red
+
+Di: Guajajara, Guarani, Tupinamba
+Ex: Munduruku
+Mo: Guajajara, Tupinamba
+Yes: Nheengatu, Teko
+Redup
+Redup
+
+Yes: Akuntsu, Karo, Madi
+Reflex
+Reflex
+
+Yes: Afrikaans, Akuntsu, Albanian, Ancient Greek, Armenian, Beja, Belarusian, Bororo, Breton, Bulgarian, Buryat, Catalan, Classical Armenian, Classical Chinese, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, German, Gheg, Gothic, Guajajara, Guarani, Hausa, Hebrew, Hungarian, Indonesian, Irish, Italian, Javanese, Karelian, Karo, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Livvi, Low Saxon, Macedonian, Makurap, Malayalam, Manx, Moksha, Munduruku, Naija, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Skolt Sami, Slovak, Slovenian, Spanish, Tagalog, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Upper Sorbian, Uyghur, Uzbek, Veps, Vietnamese, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yupik, Zaar
+Reflex[obj]
+Reflex[obj]
+
+Yes: Yupik
+Reflex[subj]
+Reflex[subj]
+
+Yes: Yupik
+Rel
+Rel
+
+Abs: Guajajara, Guarani, Nheengatu, Teko, Tupinamba
+Cont: Akuntsu, Guajajara, Guarani, Kaapor, Makurap, Munduruku, Nheengatu, Teko, Tupinamba
+Corf: Guajajara, Tupinamba
+Hum: Tupinamba
+NCont: Guajajara, Guarani, Kaapor, Munduruku, Nheengatu, Teko, Tupinamba
+RelType
+RelType
+
+Abs: Abaza
+Cause: Abkhaz
+Erg: Abaza
+Io: Abaza
+Loc: Abaza, Abkhaz
+Mnr: Abaza, Abkhaz
+Pr: Abaza
+Rsn: Abaza
+Tmp: Abaza, Abkhaz
+Reln
+Reln
+
+Ben: Abkhaz
+Com: Abkhaz
+Ins: Abkhaz
+Mal: Abkhaz
+Pot: Abkhaz
+Report
+Report
+
+Yes: Madi
+Speech
+Speech
+
+FF: Guajajara
+Fem: Guajajara
+Ind: Bororo
+MM: Guajajara
+Man: Tupinamba
+Masc: Guajajara
+Strength
+Strength
+
+Strong: Gothic, Romanian
+Weak: Gothic, Romanian
+Style
+Style
+
+Arch: Armenian, Danish, English, Erzya, Finnish, Nheengatu, Vietnamese, Western Armenian
+Coll: Armenian, Czech, English, Finnish, Western Armenian
+Expr: Armenian, Czech, English, Western Armenian
+Form: Danish
+Ped: Moksha
+Rare: Armenian, Czech, Nheengatu, Western Armenian
+Slng: Armenian, Czech, English, Estonian, Western Armenian
+Vrnc: Armenian, Czech, English, Western Armenian
+Vulg: Armenian, Czech, Vietnamese
+SubGender
+SubGender
+
+Masc1: Polish
+Masc2: Polish
+Masc3: Polish
+Subcat
+Subcat
+
+Ditr: Mbya Guarani
+Indir: Georgian, Mbya Guarani
+Intr: Abkhaz, Afrikaans, Armenian, Georgian, Highland Puebla Nahuatl, Kiche, Mbya Guarani, Western Armenian, Western Sierra Puebla Nahuatl, Yupik
+Prep: Afrikaans
+Tran: Abkhaz, Afrikaans, Armenian, Georgian, Highland Puebla Nahuatl, Kiche, Mbya Guarani, Western Armenian, Western Sierra Puebla Nahuatl, Yupik
+Subord
+Subord
+
+Yes: Bororo, Teko
+Subordinative
+Subordinative
+
+Yes: Akkadian
+Tense
+Tense
+
+Aor: Abaza, Abkhaz
+Cnd: Abkhaz
+Cnd2: Abkhaz
+Fut: Abaza, Abkhaz, Akuntsu, Ancient Greek, Arabic, Bambara, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Cappadocian, Catalan, Classical Chinese, Czech, Egyptian, French, Galician, Georgian, Greek, Guajajara, Guarani, Haitian Creole, Hausa, Hebrew, Highland Puebla Nahuatl, Hindi, Irish, Italian, Kaapor, Kangri, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Macedonian, Madi, Makurap, Malayalam, Manx, Marathi, Munduruku, Nayini, Nheengatu, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Persian, Polish, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Slovak, Slovenian, Soi, Spanish, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uzbek, Vietnamese, Warlpiri, Welsh, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yupik, Zaar
+Fut2: Abaza, Abkhaz
+FutPast: Guarani
+IPast: Madi
+Imm: Zaar
+Imp: Abaza, Abkhaz, Armenian, Bulgarian, Catalan, Croatian, Faroese, French, Galician, Georgian, Gheg, Italian, Ligurian, Macedonian, Old East Slavic, Portuguese, Romanian, Sanskrit, Spanish, Welsh, Western Armenian, Wolof
+NearPast: Yakut
+Past: Abaza, Abkhaz, Afrikaans, Akkadian, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Bambara, Belarusian, Bengali, Bhojpuri, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Classical Armenian, Classical Chinese, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Guajajara, Guarani, Haitian Creole, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Irish, Italian, Kangri, Karelian, Karo, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Makurap, Malayalam, Manx, Marathi, Middle French, Moksha, Naija, Nayini, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Soi, Spanish, Swedish, Tamil, Tatar, Teko, Tupinamba, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yupik
+PastPerf: Georgian, Yakut
+PastResultI: Yakut
+Pqp: Abkhaz, Ancient Greek, Galician, Georgian, Highland Puebla Nahuatl, Kurmanji, Latin, Old East Slavic, Portuguese, Romanian, Sanskrit, Turkish, Turkish German, Welsh, Western Sierra Puebla Nahuatl
+Pred: Hausa
+Pres: Abaza, Abkhaz, Afrikaans, Akkadian, Albanian, Ancient Greek, Arabic, Armenian, Assyrian, Belarusian, Bengali, Bhojpuri, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Classical Armenian, Classical Chinese, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Hebrew, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Irish, Italian, Kangri, Karelian, Kazakh, Khunsari, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Manx, Marathi, Middle French, Moksha, Naija, Nayini, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Old Irish, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xavante, Xibe, Yakut, Yupik
+Prf: Abkhaz
+RPast: Karo, Madi
+Rec: Zaar
+Rem: Zaar
+Subj: Abaza
+Subj2: Abaza
+Top
+Top
+
+Yes: Teko
+Trans
+Trans
+
+Yes: Akuntsu, Munduruku
+Tv
+Tv
+
+Yes: Akuntsu
+Typo
+Typo
+
+Yes: Amharic, Armenian, Belarusian, Czech, Egyptian, English, Erzya, Estonian, Finnish, French, German, Gujarati, Haitian Creole, Hebrew, Highland Puebla Nahuatl, Hungarian, Indonesian, Irish, Italian, Javanese, Karelian, Korean, Kurmanji, Latin, Latvian, Livvi, Maghrebi Arabic French, Malayalam, Manx, Marathi, Moksha, Nheengatu, Old East Slavic, Old Irish, Ottoman Turkish, Pashto, Phrygian, Portuguese, Romanian, Russian, Scottish Gaelic, Sinhala, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Thai, Turkish, Turkish German, Ukrainian, Uyghur, Veps, Vietnamese, Western Armenian, Western Sierra Puebla Nahuatl, Xibe, Yoruba
+Uninflect
+Uninflect
+
+Yes: Ukrainian
+Valency
+Valency
+
+1: Bambara
+2: Bambara
+Variant
+Variant
+
+Bound: Slovenian
+Dir: Pashto
+Greek: Latin
+Long: Erzya, Moksha, Pashto, Polish, Romanian
+Nomin: Komi Permyak, Komi Zyrian
+Short: Belarusian, Czech, Erzya, German, Lithuanian, Moksha, Old Church Slavonic, Old East Slavic, Pashto, Polish, Romanian, Russian, Slovenian, Ukrainian
+Uncontr: Ukrainian
+Vclause: Komi Permyak, Komi Zyrian
+Weak: Pashto
+Ventive
+Ventive
+
+Yes: Akkadian
+VerbClass
+VerbClass
+
+1: Beja
+2: Beja
+VerbForm
+VerbForm
+
+Conv: Abaza, Amharic, Apurina, Armenian, Beja, Belarusian, Bhojpuri, Buryat, Classical Armenian, Classical Chinese, Croatian, Czech, Erzya, Estonian, Greek, Hindi, Hungarian, Italian, Kangri, Kazakh, Komi Permyak, Komi Zyrian, Kyrgyz, Latin, Latvian, Lithuanian, Marathi, Moksha, Old East Slavic, Ottoman Turkish, Polish, Pomak, Russian, Sanskrit, Serbian, Sinhala, Slovak, Slovenian, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Western Armenian, Xibe, Yakut
+Cop: Irish
+Fin: Abaza, Abkhaz, Afrikaans, Akkadian, Amharic, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Basque, Belarusian, Bengali, Bhojpuri, Breton, Bulgarian, Buryat, Cappadocian, Catalan, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Estonian, Finnish, French, Galician, German, Gheg, Gothic, Greek, Highland Puebla Nahuatl, Hindi, Hittite, Hungarian, Icelandic, Italian, Kangri, Karelian, Kazakh, Kiche, Komi Zyrian, Korean, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Macedonian, Maghrebi Arabic French, Malayalam, Marathi, Mbya Guarani, Middle French, Moksha, Naija, Nheengatu, North Sami, Northwest Gbaya, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Slovak, Slovenian, Spanish, Swedish, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Warlpiri, Welsh, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe
+FinRel: Welsh
+Gdv: Ancient Greek, Armenian, Latin, Sanskrit
+Ger: Albanian, Bororo, Buryat, Catalan, Danish, English, Estonian, Galician, Guajajara, Guarani, Italian, Karelian, Karo, Kazakh, Korean, Latin, Ligurian, Lithuanian, Livvi, North Sami, Portuguese, Romanian, Sinhala, Skolt Sami, Spanish, Tamil, Teko, Tupinamba, Uyghur
+Inf: Afrikaans, Akkadian, Albanian, Ancient Greek, Ancient Hebrew, Armenian, Basque, Belarusian, Bengali, Bhojpuri, Bororo, Breton, Buryat, Cappadocian, Catalan, Classical Armenian, Coptic, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, German, Gheg, Gothic, Greek, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Irish, Italian, Kangri, Karelian, Kazakh, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Maghrebi Arabic French, Malayalam, Marathi, Mbya Guarani, Middle French, Moksha, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Pashto, Persian, Pesh, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Scottish Gaelic, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Spanish, Swedish, Tamil, Tatar, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Warlpiri, Western Armenian, Western Sierra Puebla Nahuatl, Wolof, Xibe, Yakut
+NomAg: Moksha, Tatar
+NonFin: Abaza, Abkhaz
+Part: Afrikaans, Albanian, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Bambara, Basque, Belarusian, Bengali, Bhojpuri, Breton, Bulgarian, Cappadocian, Catalan, Classical Armenian, Classical Chinese, Croatian, Czech, Danish, Dutch, Egyptian, English, Erzya, Estonian, Faroese, Finnish, French, Galician, Georgian, German, Gheg, Gothic, Greek, Hausa, Hebrew, Hindi, Hittite, Icelandic, Irish, Italian, Kangri, Karelian, Kazakh, Khunsari, Kiche, Komi Permyak, Komi Zyrian, Kurmanji, Kyrgyz, Latgalian, Latin, Latvian, Ligurian, Lithuanian, Livvi, Low Saxon, Macedonian, Maghrebi Arabic French, Malayalam, Marathi, Mbya Guarani, Middle French, Moksha, Naija, Nayini, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old French, Ottoman Turkish, Pashto, Persian, Phrygian, Polish, Pomak, Portuguese, Romanian, Russian, Sanskrit, Serbian, Sinhala, Skolt Sami, Slovak, Slovenian, Soi, Spanish, Swedish, Tamil, Tatar, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Western Armenian, Xibe, Yakut
+PartFut: Hungarian
+PartPast: Hungarian
+PartPres: Hungarian
+PartRes: Old Church Slavonic, Old East Slavic
+Post: Mbya Guarani
+Prov: Mbya Guarani
+Ser: Mbya Guarani, Teko
+Stat: Akkadian
+Stem: Swedish
+Sup: Estonian, Faroese, Hittite, Icelandic, Latin, Marathi, Moksha, North Sami, Old Church Slavonic, Old East Slavic, Slovenian, Swedish, Umbrian, Veps
+Vnoun: Abkhaz, Amharic, Apurina, Bambara, Bengali, Classical Armenian, Czech, Erzya, Georgian, Hausa, Hittite, Irish, Komi Zyrian, Kyrgyz, Malayalam, Mbya Guarani, Moksha, Nheengatu, Northwest Gbaya, Ottoman Turkish, Polish, Scottish Gaelic, Sinhala, Skolt Sami, Tatar, Turkish, Turkish German, Uzbek, Welsh, Xibe, Zaar
+VerbStem
+VerbStem
+
+D: Akkadian
+Dt: Akkadian
+G: Akkadian
+Gt: Akkadian
+Gtn: Akkadian
+N: Akkadian
+Ntn: Akkadian
+S: Akkadian
+St: Akkadian
+Stn: Akkadian
+VerbType
+VerbType
+
+Aux: Afrikaans, Egyptian, Erzya, Komi Permyak, Low Saxon, Moksha, Vietnamese
+Cop: Afrikaans, Beja, Classical Chinese, Hebrew, Low Saxon, Naija, Old Irish, Vietnamese
+Ideo: Gujarati
+Light: Beja
+Mod: Afrikaans, German, Hebrew, Low Saxon, Polish, Upper Sorbian, Vietnamese
+Pas: Afrikaans
+Quasi: Polish
+Vido: Apurina
+Voice
+Voice
+
+Act: Albanian, Ancient Greek, Arabic, Armenian, Belarusian, Bhojpuri, Bulgarian, Cappadocian, Cebuano, Classical Armenian, Croatian, Czech, Danish, Egyptian, Estonian, Finnish, French, Georgian, Gheg, Gothic, Greek, Hebrew, Hindi, Hittite, Hungarian, Icelandic, Indonesian, Italian, Javanese, Kangri, Karelian, Komi Zyrian, Latgalian, Latin, Latvian, Lithuanian, Livvi, Macedonian, Malayalam, Northwest Gbaya, Old Church Slavonic, Old East Slavic, Old Irish, Persian, Phrygian, Polish, Pomak, Russian, Sanskrit, Serbian, Sinhala, Slovak, Swedish, Tagalog, Tamil, Ukrainian, Upper Sorbian, Urdu, Veps, Western Armenian, Western Sierra Puebla Nahuatl, Xibe
+AgFoc: Kiche
+Antip: Guajajara, Kiche
+Appl: Pesh
+Bfoc: Tagalog
+Cau: Abkhaz, Akuntsu, Amharic, Armenian, Bambara, Basque, Bororo, Buryat, Chinese, Classical Armenian, Egyptian, Guajajara, Guarani, Hausa, Hungarian, Kaapor, Karo, Korean, Kyrgyz, Malayalam, Marathi, Munduruku, Ottoman Turkish, Pesh, Sanskrit, Tatar, Teko, Tupinamba, Turkish, Turkish German, Western Armenian, Xibe, Zaar
+CauCau: Turkish, Turkish German
+CauCauPass: Turkish
+CauInc: Bororo
+CauPass: Bororo, Classical Armenian, Tatar, Turkish, Turkish German
+CauPassRcp: Turkish
+CauRcp: Turkish, Turkish German
+Com: Guajajara, Guarani
+Ifoc: Cebuano, Tagalog
+Lfoc: Cebuano, Tagalog
+Mid: Albanian, Ancient Greek, Armenian, Beja, Belarusian, Georgian, Hebrew, Hittite, Icelandic, Munduruku, Nheengatu, Northwest Gbaya, Old East Slavic, Pesh, Phrygian, Russian, Sanskrit, Tatar, Tupinamba, Western Armenian
+MidCau: Munduruku
+Pass: Abkhaz, Albanian, Amharic, Ancient Greek, Ancient Hebrew, Arabic, Armenian, Assyrian, Beja, Belarusian, Bengali, Bhojpuri, Bororo, Bulgarian, Cappadocian, Cebuano, Chinese, Classical Armenian, Classical Chinese, Croatian, Czech, Danish, Egyptian, English, Estonian, Faroese, Finnish, French, Georgian, German, Gheg, Gothic, Greek, Hebrew, Hindi, Icelandic, Indonesian, Italian, Javanese, Kangri, Karelian, Karo, Kazakh, Kiche, Korean, Kyrgyz, Latgalian, Latin, Latvian, Lithuanian, Livvi, Macedonian, Malayalam, Naija, Nheengatu, North Sami, Norwegian, Old Church Slavonic, Old East Slavic, Old Irish, Ottoman Turkish, Persian, Polish, Pomak, Portuguese, Russian, Sanskrit, Serbian, Sinhala, Skolt Sami, Slovak, Swedish, Tagalog, Tamil, Tatar, Thai, Turkish, Turkish German, Ukrainian, Umbrian, Upper Sorbian, Urdu, Uyghur, Uzbek, Veps, Vietnamese, Western Armenian, Xibe
+PassPass: Turkish, Turkish German
+PassRcp: Turkish
+PassRfl: Turkish
+Rcp: Abaza, Amharic, Armenian, Buryat, Kazakh, Pesh, Tatar, Tupinamba, Turkish, Turkish German, Western Armenian, Xibe
+Rfl: Abaza, Turkish, Turkish German
+SCau: Teko, Tupinamba
+Stat: Hausa
+Trans: Amharic
