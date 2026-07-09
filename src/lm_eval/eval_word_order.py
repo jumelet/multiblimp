@@ -13,6 +13,7 @@ Usage:
 """
 
 import argparse
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -95,6 +96,7 @@ def run_eval(
     result_df["sen_nll"] = [-sum(p) for p in sen_probs]
     result_df["swapped_sen_nll"] = [-sum(p) for p in swapped_probs]
 
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     result_df.to_csv(output_path, index=False)
     print(f"Saved to {output_path}")
 

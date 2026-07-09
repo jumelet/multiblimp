@@ -136,13 +136,11 @@ convert_arabic_to_latin_langs = {
 }
 
 skip_langs = {
-    # "Frisian Dutch",
-    # "Turkish German",
-    # "Maghrebi Arabic French",
-    # "Telugu English",
-    # "Turkish English",
-    # "Cappadocian",
-    # "Pomak",
+    "Frisian Dutch",
+    "Turkish German",
+    "Maghrebi Arabic French",
+    "Telugu English",
+    "Turkish English",
     "Spanish Sign Language",
     "Swedish Sign Language",
 }

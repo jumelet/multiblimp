@@ -3,6 +3,7 @@ import pickle
 import re
 from glob import glob
 import urllib.request
+from pathlib import Path
 
 from arabic2latin import arabic_to_latin
 from conllu import parse_incr
@@ -168,7 +169,7 @@ class Treebank:
         if use_selected_treebanks and selected_treebanks is not None:
             selected_paths = []
             for path in treebank_paths:
-                treebank_name = path.split("/")[-2].split("-")[-1]
+                treebank_name = Path(path).parent.name.split("-")[-1]
                 if treebank_name in selected_treebanks:
                     selected_paths.append(path)
             treebank_paths = selected_paths

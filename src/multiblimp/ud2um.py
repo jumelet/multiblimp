@@ -5,7 +5,7 @@ from glob import glob
 from typing import *
 
 from .languages import lang2langcode, skip_langs
-from .treebank import Treebank, has_typo
+from .treebank import Treebank, is_malformed
 
 ud_upos2um_upos = {
     "VERB": "V",
@@ -151,7 +151,7 @@ def create_unimorph_from_ud(
             if skip_prep_lemma and "_" in lemma:
                 continue
 
-            if has_typo(token):
+            if is_malformed(token):
                 continue
 
             if upos in ud_upos2um_upos:

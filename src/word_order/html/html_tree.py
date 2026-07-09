@@ -1,4 +1,5 @@
 import json
+import os
 import numpy as np
 
 
@@ -1060,3 +1061,113 @@ def create_html(meta, node_samples, node_data, hex_colors, classes, div_id):
     }});
     </script>
     """
+
+
+def write_placeholder_html(out_file, predictor_var, label, meta=None, sample_rows=None):
+    meta_rows = ""
+    if meta:
+        for key, val in meta.items():
+            meta_rows += f'<div class="meta-row"><span class="meta-key">{key}</span><span class="meta-val">{val}</span></div>'
+
+    table_html = ""
+    if sample_rows:
+        cols = list(sample_rows[0].keys())
+        table_html += "<table class='ex-table'><thead><tr>"
+        for c in cols:
+            table_html += f"<th>{c}</th>"
+        table_html += "</tr></thead><tbody>"
+        for row in sample_rows:
+            table_html += "<tr>"
+            for c in cols:
+                val = row[c]
+                if val is None:
+                    content = ""
+                elif c.endswith("_features"):
+                    # unpack list the same way as tree pages
+                    if isinstance(val, list):
+                        items = "<br>".join(
+                            v for v in val if not str(v).endswith("=nan")
+                        )
+                    else:
+                        # stored as string repr of list
+                        import ast
+
+                        try:
+                            items = "<br>".join(
+                                v
+                                for v in ast.literal_eval(str(val))
+                                if not str(v).endswith("=nan")
+                            )
+                        except Exception:
+                            items = str(val)
+                    content = (
+                        f"<details><summary>features...</summary>{items}</details>"
+                    )
+                else:
+                    content = str(val)
+                table_html += f"<td>{content}</td>"
+            table_html += "</tr>"
+        table_html += "</tbody></table>"
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>No decision tree to display</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {{ font-family: "DM Sans", sans-serif; margin: 0; background: #f5f5f4; color: #1c1917; }}
+    .layout {{ display: flex; height: 100vh; }}
+    .sidebar {{
+        width: 260px; flex-shrink: 0; background: white;
+        border-right: 1px solid #e7e5e4; padding: 1.5rem; display: flex;
+        flex-direction: column; gap: 1rem;
+    }}
+    h2 {{ font-size: 1.1rem; margin: 0; }}
+    p  {{ color: #78716c; font-size: 0.875rem; margin: 0; line-height: 1.5; }}
+    .label {{ display: inline-block; padding: 0.3rem 0.9rem;
+              background: #f5f5f4; border-radius: 999px; font-weight: 600;
+              font-size: 1rem; border: 1px solid #e7e5e4; }}
+    .meta {{ font-size: 0.8rem; }}
+    .meta-row {{ display: flex; justify-content: space-between; padding: 0.2rem 0;
+                 border-bottom: 1px solid #e7e5e4; }}
+    .meta-key {{ color: #a8a29e; }}
+    .meta-val {{ font-family: "JetBrains Mono", monospace; color: #78716c; }}
+    .main {{ flex: 1; overflow-y: auto; padding: 1.5rem; }}
+    .main h3 {{ font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+                letter-spacing: 0.05em; color: #78716c; margin: 0 0 0.75rem; }}
+    .ex-table {{ border-collapse: collapse; width: 100%; font-size: 0.8rem;
+                 border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; }}
+    .ex-table th {{ background: #fafaf9; color: #78716c; font-size: 0.7rem; font-weight: 600;
+                    text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px;
+                    text-align: left; border-bottom: 1px solid #e7e5e4; white-space: nowrap; }}
+    .ex-table td {{ padding: 5px 10px; border-bottom: 1px solid #f0efee; vertical-align: top;
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }}
+    .ex-table td:first-child {{ white-space: normal; word-break: break-word; max-width: none; }}
+    .ex-table tbody tr:hover td {{ background: #eff6ff; }}
+    .ex-table a {{ color: #2563eb; text-decoration: none; font-weight: 500; }}
+    .ex-table a:hover {{ text-decoration: underline; }}
+    .ex-table tbody tr:last-child td {{ border-bottom: none; }}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div>
+        <h2>Single label</h2>
+        <p>All training samples for <b>{predictor_var}</b> share one agreement label — no decision tree was needed.</p>
+      </div>
+      <div class="label">{label}</div>
+      <div class="meta">{meta_rows}</div>
+    </div>
+    <div class="main">
+      <h3>Example items (sample of {len(sample_rows) if sample_rows else 0})</h3>
+      {table_html}
+    </div>
+  </div>
+</body>
+</html>"""
+
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
+    with open(out_file, "w", encoding="utf-8") as f:
+        f.write(html)

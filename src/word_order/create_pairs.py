@@ -68,10 +68,7 @@ def move_indices_relative(sen, indices, head_idx):
 
 
 def get_sen_str(tree, sen):
-    no_space_afters = [
-        (tok['misc'] or {}).get('SpaceAfter') == "No"
-        for tok in tree
-    ]
+    no_space_afters = [(tok["misc"] or {}).get("SpaceAfter") == "No" for tok in tree]
     sen_str = ""
     for tok, no_space_after in zip(sen, no_space_afters):
         sen_str += tok if no_space_after else f"{tok} "
@@ -165,7 +162,9 @@ def _build_swap_logic(target, dep_ids, h_ids):
     }
 
 
-def create_all_constituent_swaps(df, treebank, target: PredictionTarget, max_sen_len=100):
+def create_all_constituent_swaps(
+    df, treebank, target: PredictionTarget, max_sen_len=100
+):
     assert len(target.child_deprels) in (1, 2)
 
     result_rows = []
@@ -288,19 +287,17 @@ def create_pairs(
     print(items_per_leaf)
 
     keep_df["sen_len"] = [len(sen) for sen in keep_df.sen]
-    
+
     # Sample `max_per_leaf` items for each leaf_id that has entropy below threshold
     if balance_features is not None:
         selected_idx = (
-            keep_df
-            .groupby("leaf_id", group_keys=False)
+            keep_df.groupby("leaf_id", group_keys=False)
             .apply(lambda g: balance_df(g, items_per_leaf, balance_features))
             .index
         )
     else:
         selected_idx = (
-            keep_df
-            .groupby("leaf_id", group_keys=False)
+            keep_df.groupby("leaf_id", group_keys=False)
             .apply(
                 lambda g: g.sample(
                     n=min(items_per_leaf, len(g)),
@@ -313,7 +310,9 @@ def create_pairs(
 
     keep_df = keep_df.loc[selected_idx]
 
-    swap_df = create_all_constituent_swaps(keep_df, treebank, target, max_sen_len=max_sen_len)
+    swap_df = create_all_constituent_swaps(
+        keep_df, treebank, target, max_sen_len=max_sen_len
+    )
 
     if len(swap_df) > 0:
         if save_to_pairs_only is not None:

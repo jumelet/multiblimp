@@ -11,10 +11,11 @@ from matplotlib.colors import to_hex
 
 from .entropy import order_entropy, calculate_base_entropy, calculate_tree_entropy
 from .utils import get_all_orders
-from .html.html_tree import create_html
+from .html.html_tree import create_html, write_placeholder_html
 
 
-def clean_rule(rule):
+def clean_rule(rule, threshold=None, is_binary=False):
+    numerical = rule.startswith("num__")
     rule = (
         rule.replace("num__", "")
         .replace("cat__", "")
@@ -48,6 +49,9 @@ def clean_rule(rule):
     else:
         rule = "_".join(rule_elements[:-1]) + f" = {rule_elements[-1]}"
 
+    if numerical and threshold is not None and not is_binary:
+        rule += f" ≤ {threshold:.2f}"
+
     return rule
 
 
@@ -70,6 +74,7 @@ def get_correlated_features(prep, clf, dt_df):
 
     X = X.astype(np.float64)
     feature_names = prep.get_feature_names_out()
+
     rule_names = [clean_rule(f) for f in feature_names]
 
     tree = clf.tree_
@@ -145,32 +150,44 @@ def get_samples(
     predictor_var,
     max_rows=100,
     seed=42,
-    show_features=False
+    show_features=False,
+    extra_columns=None,
 ):
     sample_ids = get_sample_ids(prep, clf, dt_df, predictor_var, max_rows, seed)
-    
+
     keep_columns = ["sen_str"]
     full_df["sen_str"] = [" ".join(sen) for sen in full_df["sen"]]
     full_df["treebank_link"] = build_treebank_links(full_df)
 
     if show_features:
         feat_collect = {}
-        for i, row in full_df.filter(regex = r'^[a-z]+_[A-Z][a-z]+$', axis=1).iterrows():
+        for i, row in full_df.filter(regex=r"^[a-z]+_[A-Z][a-z]+$", axis=1).iterrows():
             mf = dict()
             for label, val in row.items():
                 prefix, feature = label.split("_")
                 mf[f"{prefix}_features"] = mf.get(f"{prefix}_features", list())
-                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}")
+                mf[f"{prefix}_features"].append(
+                    f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}"
+                )
             for k, v in mf.items():
                 feat_collect[k] = feat_collect.get(k, list())
                 feat_collect[k].append(v)
 
         for k, v in feat_collect.items():
             full_df[k] = v
-            keep_columns.extend([f"{k.split("_")[0]+"_form"}",  k ])
+            keep_columns.extend([f"{k.split("_")[0]+"_form"}", k])
     else:
-        keep_columns.extend([col for col in full_df if col.endswith("_form") ])
+        keep_columns.extend([col for col in full_df if col.endswith("_form")])
     keep_columns.extend(["treebank_link"])
+
+    if extra_columns:
+        keep_columns.extend(
+            [
+                col
+                for col in extra_columns
+                if col in full_df.columns and col not in keep_columns
+            ]
+        )
 
     predictor_samples = {}
     for predictor, node_sample_ids in sample_ids.items():
@@ -266,113 +283,19 @@ def interpolate_color(hex1, hex2, t):
 
     return f"#{r:02x}{g:02x}{b:02x}"
 
-def write_placeholder_html(out_file, predictor_var, label, meta=None, sample_rows=None):
-    meta_rows = ""
-    if meta:
-        for key, val in meta.items():
-            meta_rows += f'<div class="meta-row"><span class="meta-key">{key}</span><span class="meta-val">{val}</span></div>'
 
-    table_html = ""
-    if sample_rows:
-            cols = list(sample_rows[0].keys())
-            table_html += "<table class='ex-table'><thead><tr>"
-            for c in cols:
-                table_html += f"<th>{c}</th>"
-            table_html += "</tr></thead><tbody>"
-            for row in sample_rows:
-                table_html += "<tr>"
-                for c in cols:
-                    val = row[c]
-                    if val is None:
-                        content = ""
-                    elif c.endswith("_features"):
-                        # unpack list the same way as tree pages
-                        if isinstance(val, list):
-                            items = "<br>".join(v for v in val if not str(v).endswith("=nan"))
-                        else:
-                            # stored as string repr of list
-                            import ast
-                            try:
-                                items = "<br>".join(v for v in ast.literal_eval(str(val)) if not str(v).endswith("=nan"))
-                            except Exception:
-                                items = str(val)
-                        content = f"<details><summary>features...</summary>{items}</details>"
-                    else:
-                        content = str(val)
-                    table_html += f"<td>{content}</td>"
-                table_html += "</tr>"
-            table_html += "</tbody></table>"
-
-    html = f"""<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>No decision tree to display</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    body {{ font-family: "DM Sans", sans-serif; margin: 0; background: #f5f5f4; color: #1c1917; }}
-    .layout {{ display: flex; height: 100vh; }}
-    .sidebar {{
-        width: 260px; flex-shrink: 0; background: white;
-        border-right: 1px solid #e7e5e4; padding: 1.5rem; display: flex;
-        flex-direction: column; gap: 1rem;
-    }}
-    h2 {{ font-size: 1.1rem; margin: 0; }}
-    p  {{ color: #78716c; font-size: 0.875rem; margin: 0; line-height: 1.5; }}
-    .label {{ display: inline-block; padding: 0.3rem 0.9rem;
-              background: #f5f5f4; border-radius: 999px; font-weight: 600;
-              font-size: 1rem; border: 1px solid #e7e5e4; }}
-    .meta {{ font-size: 0.8rem; }}
-    .meta-row {{ display: flex; justify-content: space-between; padding: 0.2rem 0;
-                 border-bottom: 1px solid #e7e5e4; }}
-    .meta-key {{ color: #a8a29e; }}
-    .meta-val {{ font-family: "JetBrains Mono", monospace; color: #78716c; }}
-    .main {{ flex: 1; overflow-y: auto; padding: 1.5rem; }}
-    .main h3 {{ font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-                letter-spacing: 0.05em; color: #78716c; margin: 0 0 0.75rem; }}
-    .ex-table {{ border-collapse: collapse; width: 100%; font-size: 0.8rem;
-                 border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; }}
-    .ex-table th {{ background: #fafaf9; color: #78716c; font-size: 0.7rem; font-weight: 600;
-                    text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px;
-                    text-align: left; border-bottom: 1px solid #e7e5e4; white-space: nowrap; }}
-    .ex-table td {{ padding: 5px 10px; border-bottom: 1px solid #f0efee; vertical-align: top;
-                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }}
-    .ex-table td:first-child {{ white-space: normal; word-break: break-word; max-width: none; }}
-    .ex-table tbody tr:hover td {{ background: #eff6ff; }}
-    .ex-table a {{ color: #2563eb; text-decoration: none; font-weight: 500; }}
-    .ex-table a:hover {{ text-decoration: underline; }}
-    .ex-table tbody tr:last-child td {{ border-bottom: none; }}
-  </style>
-</head>
-<body>
-  <div class="layout">
-    <div class="sidebar">
-      <div>
-        <h2>Single label</h2>
-        <p>All training samples for <b>{predictor_var}</b> share one agreement label — no decision tree was needed.</p>
-      </div>
-      <div class="label">{label}</div>
-      <div class="meta">{meta_rows}</div>
-    </div>
-    <div class="main">
-      <h3>Example items (sample of {len(sample_rows) if sample_rows else 0})</h3>
-      {table_html}
-    </div>
-  </div>
-</body>
-</html>"""
-
-    os.makedirs(os.path.dirname(out_file), exist_ok=True)
-    with open(out_file, "w", encoding="utf-8") as f:
-        f.write(html)
-    
 def has_word_forms(row, form_cols):
     """True if at least one form column has a real word (not underscore or empty)."""
+
     return any(str(row[c]).strip() not in ("_", "", "nan") for c in form_cols)
+
 
 def build_treebank_links(full_df: pd.DataFrame) -> list[str]:
     """Build grew.fr query links for each row in full_df."""
-    map_to_x = {i: x for i, x in enumerate([chr(i) for i in range(ord('A'), ord('Z') + 1)])}
+
+    map_to_x = {
+        i: x for i, x in enumerate([chr(i) for i in range(ord("A"), ord("Z") + 1)])
+    }
     form_cols = [x for x in full_df.columns if x.endswith("_form")]
     tb_links = []
     for _, row in full_df.iterrows():
@@ -388,11 +311,15 @@ def build_treebank_links(full_df: pd.DataFrame) -> list[str]:
         tb_links.append(base_query.replace("QUERYSLOT_PLACEHOLDER", slot))
     return tb_links
 
+
 def remove_censored(full_df):
     form_cols = [x for x in full_df.columns if x.endswith("_form")]
     return full_df[full_df.apply(lambda row: has_word_forms(row, form_cols), axis=1)]
 
-def build_placeholder_args(dt_df, full_df, predictor_var, meta=None, show_features=False):
+
+def build_placeholder_args(
+    dt_df, full_df, predictor_var, meta=None, show_features=False
+):
     """Compute all arguments needed for write_placeholder_html."""
     sole_label = dt_df[predictor_var].iloc[0]
 
@@ -407,68 +334,56 @@ def build_placeholder_args(dt_df, full_df, predictor_var, meta=None, show_featur
     keep_columns = ["sen_str"]
     if show_features:
         feat_collect = {}
-        for i, row in full_df.filter(regex = r'^[a-z]+_[A-Z][a-z]+$', axis=1).iterrows():
+        for i, row in full_df.filter(regex=r"^[a-z]+_[A-Z][a-z]+$", axis=1).iterrows():
             mf = dict()
             for label, val in row.items():
                 prefix, feature = label.split("_")
                 mf[f"{prefix}_features"] = mf.get(f"{prefix}_features", list())
-                mf[f"{prefix}_features"].append(f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}")
+                mf[f"{prefix}_features"].append(
+                    f"{feature}={(str(val)[:-2] if str(val).endswith(".0") else val)}"
+                )
             for k, v in mf.items():
                 feat_collect[k] = feat_collect.get(k, list())
                 feat_collect[k].append(v)
 
         for k, v in feat_collect.items():
             full_df[k] = v
-            keep_columns.extend([f"{k.split("_")[0]+"_form"}",  k ])
+            keep_columns.extend([f"{k.split("_")[0]+"_form"}", k])
     else:
-        keep_columns.extend([col for col in full_df if col.endswith("_form") ])
+        keep_columns.extend([col for col in full_df if col.endswith("_form")])
 
     keep_columns.append("treebank_link")
 
-    sample_rows = full_df.sample(min(50, len(full_df)), random_state=42)[keep_columns].to_dict("records")
+    sample_rows = full_df.sample(min(50, len(full_df)), random_state=42)[
+        keep_columns
+    ].to_dict("records")
 
     return sole_label, meta, sample_rows
 
 
-def tree2html(
+def _finalize_tree_html(
     pipeline_model,
-    dt_df,
-    full_df,
-    predictor_var,
-    target,
+    data_df,
+    classes,
+    label_distribution,
+    predictor_samples,
+    meta,
     out_file,
-    max_rows=100,
-    meta=None,
-    only_show_real_orders=False,
     correlate_features=True,
-    show_features=False,
-    full_tree_html=True,
-    palette_map=None
+    n_palette_colors=None,
+    palette_map=None,
 ):
     """
-    pipeline_model:
-        sklearn Pipeline with steps:
-            - "preprocessor"
-            - "clf" (DecisionTree*)
+    Core visualization engine shared by tree2html and pipeline2html.
 
-    dt_df / full_df:
-        pandas DataFrames
-
-    meta (optional dict):
-        Extra info shown in the info panel, e.g.:
-            {
-                "Language": "Kurmanji",
-                "Nodes": 23,
-                "Depth": 5,
-                "Training samples": 4486,
-            }
-        If not provided, these values are computed automatically where possible.
+    pipeline_model: fitted sklearn Pipeline with "preprocessor" and "clf" steps.
+    data_df: feature DataFrame used for correlated-feature computation.
+    classes: ordered display class list (determines legend order and colors).
+    label_distribution: list[list[int]], shape (n_nodes, len(classes)).
+    predictor_samples: per-class example dicts from get_samples(), or {} to skip.
+    meta: info-panel key/value dict; must contain "accuracy".
+    n_palette_colors: palette size override for color-stable cross-dataset comparisons.
     """
-    if full_tree_html==False:       
-        write_placeholder_html(out_file, predictor_var, 
-                               *build_placeholder_args(dt_df, full_df, predictor_var, meta, show_features=show_features))
-        return
-
     prep = pipeline_model.named_steps["preprocessor"]
     clf = pipeline_model.named_steps["clf"]
 
@@ -489,120 +404,60 @@ def tree2html(
     # Node metadata
     feature = tree.feature
     n_samples = tree.n_node_samples
-    model_classes = list(pipeline_model.classes_)
-    class2idx_model = {c: idx for idx, c in enumerate(model_classes)}
+    model_classes = list(clf.classes_)
     n_model_classes = len(model_classes)
-    n_nodes = len(node_ids)
     impurity = tree.impurity
     max_impurity = np.log2(n_model_classes) or 1
     tree_values = tree.value
     predicted_class_ids = [value[0].argmax() for value in tree_values]
-    predicted_class = [clf.classes_[idx] for idx in predicted_class_ids]
-    label_distribution_model = [
-        (tree_values[i][0] * n_samples[i]).astype(int).tolist() for i in range(n_nodes)
-    ]
+    predicted_class = [str(clf.classes_[idx]) for idx in predicted_class_ids]
 
-    # Pad to full classes permutation set so legend & nodes always show all classes.
-    # Build display_classes in canonical class order; append any extras.
-    
-    all_orders = get_all_orders(predictor_var, target)
-
-    if only_show_real_orders:
-        all_orders = [order for order in all_orders if order in full_df[predictor_var].unique()]
-
-    classes = list(all_orders)
-    for c in model_classes:
-        if c not in classes:
-            classes.append(c)
-
+    classes = [
+        str(c) for c in classes
+    ]  # normalize to str (clf.classes_ may be numpy ints)
     n_classes = len(classes)
-
-    # Expand label_distribution to full display_classes (missing classes get 0)
-    label_distribution = []
-    label_distribution2 = dict()
-    for dist in label_distribution_model:
-        full_dist = []
-        for cls in sorted(classes):
-            if cls in class2idx_model:
-                full_dist.append(dist[class2idx_model[cls]])
-                label_distribution2[cls] = dist[class2idx_model[cls]]
-            else:
-                full_dist.append(0)
-        label_distribution.append(full_dist)
-
     class2idx = {c: idx for idx, c in enumerate(classes)}
-
-    # Auto-build meta if not provided
-    if meta is None:
-        meta = {}
-
-    accuracy = pipeline_model.score(dt_df, dt_df[predictor_var])
-    meta["accuracy"] = f"{accuracy * 100:.1f}%"
-
-    base_ent = calculate_base_entropy(dt_df, predictor_var, binary=True)
-    reduced_ent = calculate_tree_entropy(pipeline_model, dt_df, predictor_var, binary=True)
-    meta["base entropy"] = f"{base_ent:.3f}"
-    meta["reduced entropy"] = f"{reduced_ent:.3f}"
-
-    tree_depth = clf.get_depth()
-    n_leaves = clf.get_n_leaves()
-    root_samples = n_samples[0]
-
-    if "Nodes" not in meta:
-        meta["Nodes"] = f"{n_nodes} ({n_leaves} leaves)"
-    if "Depth" not in meta:
-        meta["Depth"] = str(tree_depth)
-    if "Training samples" not in meta:
-        meta["Training samples"] = f"{root_samples:,}"
-    if "Predictor" not in meta:
-        meta["Predictor"] = predictor_var
-
-    predictor_samples = get_samples(
-        prep,
-        clf,
-        full_df,
-        label_distribution,
-        class2idx,
-        dt_df,
-        predictor_var,
-        max_rows=max_rows,
-        show_features=show_features
-    )
 
     feature_names = prep.get_feature_names_out()
 
+    X_trans = prep.transform(data_df)
+    if hasattr(X_trans, "toarray"):
+        X_trans = X_trans.toarray()
+    binary_feature_indices = {
+        i
+        for i in range(X_trans.shape[1])
+        if set(np.unique(X_trans[:, i])).issubset({0, 1, 0.0, 1.0})
+    }
+
     if correlate_features:
-        correlated_features = get_correlated_features(prep, clf, dt_df)
+        correlated_features = get_correlated_features(prep, clf, data_df)
     else:
         correlated_features = {}
 
     if palette_map:
-        # Fix canonical order and colors from palette_map, regardless of what's in the data
-        classes = list(palette_map.keys())
+        # Fixed canonical order & colours from palette_map, regardless of the data.
+        # classes get reordered to palette_map's keys, so realign the passed-in
+        # label_distribution (currently in `classes` order) to the new order.
+        old_class2idx = {c: idx for idx, c in enumerate(classes)}
+        classes = [str(c) for c in palette_map.keys()]
         hex_colors = list(palette_map.values())
+        label_distribution = [
+            [dist[old_class2idx[cls]] if cls in old_class2idx else 0 for cls in classes]
+            for dist in label_distribution
+        ]
+        n_classes = len(classes)
+        class2idx = {c: idx for idx, c in enumerate(classes)}
     else:
-        palette = sns.color_palette("husl", n_colors=max(n_classes, len(all_orders)))[:n_classes]
-        hex_colors = [to_hex(c) for c in palette]
+        # Always generate palette across full SVO space so colours are stable
+        palette = sns.color_palette("husl", n_colors=n_palette_colors or n_classes)
+        hex_colors = [to_hex(c) for c in palette[:n_classes]]
 
-    # Grey out classes absent from this language (only for dynamic palette)
-    root_dist = label_distribution[0]
-    if not palette_map:
+        # Grey out classes with zero samples at the root (absent from this language)
+        root_dist = label_distribution[0]
         hex_colors = [
             color if root_dist[idx] > 0 else "#d4d4d4"
             for idx, color in enumerate(hex_colors)
         ]
-
-    # Rebuild class2idx from the canonical classes list
-    class2idx = {c: idx for idx, c in enumerate(classes)}
-
-    # Rebuild label_distribution to match canonical classes order
-    label_distribution = []
-    for dist in label_distribution_model:
-        full_dist = [
-            dist[class2idx_model[cls]] if cls in class2idx_model else 0
-            for cls in classes
-        ]
-        label_distribution.append(full_dist)
 
     annotations = []
     node_data = {}
@@ -624,7 +479,12 @@ def tree2html(
 
             # Store the rule text for this internal node
             if feature[node_id] != -2:
-                rule_text = clean_rule(feature_names[feature[node_id]])
+                raw_feat = feature_names[feature[node_id]]
+                rule_text = clean_rule(
+                    raw_feat,
+                    threshold=tree.threshold[node_id],
+                    is_binary=feature[node_id] in binary_feature_indices,
+                )
                 rule_map[left_child] = (rule_text, False)  # False branch (left)
                 rule_map[right_child] = (rule_text, True)  # True branch (right)
 
@@ -648,7 +508,11 @@ def tree2html(
 
         if feature[i] != -2:
             # Internal node: rule on top, [n] n= H= on second line
-            rule = clean_rule(feature_names[feature[i]])
+            rule = clean_rule(
+                feature_names[feature[i]],
+                threshold=tree.threshold[i],
+                is_binary=feature[i] in binary_feature_indices,
+            )
             corr = correlated_features.get(i, [])
             corr_note = " [+]" if corr else ""
             label = (
@@ -661,12 +525,9 @@ def tree2html(
             # Leaf: include all classes with count >= 50% of the majority
             sorted_dist = sorted(zip(dist_i, classes), key=lambda x: x[0], reverse=True)
             top_cnt, top_cls = sorted_dist[0]
-            # print(sorted_dist)
             qualifying = [top_cls] + [
                 cls for cnt, cls in sorted_dist[1:] if cnt > 0 and cnt >= 0.5 * top_cnt
             ]
-            qualifying = [str(x) for x in qualifying if not type(x)==str]
-            # if not all([type(x)==str for x in qualifying])
             leaf_label = f"<b>{' / '.join(qualifying)}</b>"
             label = (
                 f"{leaf_label}<br>"
@@ -822,6 +683,155 @@ def tree2html(
     )
 
 
+def tree2html(
+    pipeline_model,
+    dt_df,
+    full_df,
+    predictor_var,
+    out_file,
+    target=None,
+    max_rows=100,
+    meta=None,
+    only_show_real_orders=False,
+    correlate_features=True,
+    extra_columns=None,
+    show_features=False,
+    full_tree_html=True,
+    palette_map=None,
+):
+    """
+    pipeline_model:
+        sklearn Pipeline with steps:
+            - "preprocessor"
+            - "clf" (DecisionTree*)
+
+    dt_df / full_df:
+        pandas DataFrames
+
+    meta (optional dict):
+        Extra info shown in the info panel, e.g.:
+            {
+                "Language": "Kurmanji",
+                "Nodes": 23,
+                "Depth": 5,
+                "Training samples": 4486,
+            }
+        If not provided, these values are computed automatically where possible.
+    """
+    if not full_tree_html:
+        write_placeholder_html(
+            out_file,
+            predictor_var,
+            *build_placeholder_args(
+                dt_df, full_df, predictor_var, meta, show_features=show_features
+            ),
+        )
+        return
+
+    prep = pipeline_model.named_steps["preprocessor"]
+    clf = pipeline_model.named_steps["clf"]
+    tree = clf.tree_
+
+    # Node metadata needed for class expansion
+    model_classes = list(pipeline_model.classes_)
+    class2idx_model = {c: idx for idx, c in enumerate(model_classes)}
+    n_nodes = tree.node_count
+    n_samples = tree.n_node_samples
+    tree_values = tree.value
+    label_distribution_model = [
+        (tree_values[i][0] * n_samples[i]).astype(int).tolist() for i in range(n_nodes)
+    ]
+
+    # Pad to full classes permutation set so legend & nodes always show all classes.
+    # Build display_classes in canonical class order; append any extras.
+    # When target is None (e.g. binary attachment classifier) skip the canonical
+    # word-order enumeration and use the model's own class list directly.
+    if target is not None:
+        all_orders = get_all_orders(predictor_var, target)
+        if only_show_real_orders:
+            all_orders = [
+                order
+                for order in all_orders
+                if order in full_df[predictor_var].unique()
+            ]
+    else:
+        all_orders = list(model_classes)
+
+    classes = list(all_orders)
+    for c in model_classes:
+        if c not in classes:
+            classes.append(c)
+
+    n_classes = len(classes)
+
+    # Expand label_distribution to full display_classes (missing classes get 0)
+    label_distribution = []
+    for dist in label_distribution_model:
+        full_dist = []
+        for cls in classes:
+            if cls in class2idx_model:
+                full_dist.append(dist[class2idx_model[cls]])
+            else:
+                full_dist.append(0)
+        label_distribution.append(full_dist)
+
+    class2idx = {c: idx for idx, c in enumerate(classes)}
+
+    # Auto-build meta if not provided
+    if meta is None:
+        meta = {}
+
+    accuracy = pipeline_model.score(dt_df, dt_df[predictor_var])
+    meta["accuracy"] = f"{accuracy * 100:.1f}%"
+
+    base_ent = calculate_base_entropy(dt_df, predictor_var, binary=True)
+    reduced_ent = calculate_tree_entropy(
+        pipeline_model, dt_df, predictor_var, binary=True
+    )
+    meta["base entropy"] = f"{base_ent:.3f}"
+    meta["reduced entropy"] = f"{reduced_ent:.3f}"
+
+    tree_depth = clf.get_depth()
+    n_leaves = clf.get_n_leaves()
+    root_samples = n_samples[0]
+
+    if "Nodes" not in meta:
+        meta["Nodes"] = f"{n_nodes} ({n_leaves} leaves)"
+    if "Depth" not in meta:
+        meta["Depth"] = str(tree_depth)
+    if "Training samples" not in meta:
+        meta["Training samples"] = f"{root_samples:,}"
+    if "Predictor" not in meta:
+        meta["Predictor"] = predictor_var
+
+    predictor_samples = get_samples(
+        prep,
+        clf,
+        full_df,
+        label_distribution,
+        class2idx,
+        dt_df,
+        predictor_var,
+        max_rows=max_rows,
+        extra_columns=extra_columns,
+        show_features=show_features,
+    )
+
+    _finalize_tree_html(
+        pipeline_model,
+        dt_df,
+        classes,
+        label_distribution,
+        predictor_samples,
+        meta,
+        out_file,
+        correlate_features=correlate_features,
+        # Palette sized to all_orders so colours are stable across languages
+        n_palette_colors=max(n_classes, len(all_orders)),
+        palette_map=palette_map,
+    )
+
+
 def write_html(
     fig,
     node_samples,
@@ -841,12 +851,10 @@ def write_html(
     )
 
     # Build legend items: swatch + label + count + horizontal bar
-    total_root = sum(root_dist_counts) or 1
     max_root = max(root_dist_counts) or 1
     legend_items = ""
     for cls, color, cnt in zip(classes, hex_colors, root_dist_counts):
         bar_w = round((cnt / max_root) * 80)  # max 80px wide bar
-        pct = cnt / total_root * 100
         dimmed = "opacity:0.35;" if cnt == 0 else ""
         legend_items += f"""
         <div class="legend-item" style="{dimmed}">
@@ -864,11 +872,11 @@ def write_html(
         for key, val in meta.items():
             meta_rows += f'<div class="meta-row"><span class="meta-key">{key}</span><span class="meta-val">{val}</span></div>'
 
-    meta['legend_items'] = legend_items
-    meta['rows'] = meta_rows
+    meta["legend_items"] = legend_items
+    meta["rows"] = meta_rows
 
     html += create_html(meta, node_samples, node_data, hex_colors, classes, div_id)
-    
+
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(html)

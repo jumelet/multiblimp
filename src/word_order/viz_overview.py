@@ -8,7 +8,7 @@ from .html.html_overview import create_html
 def _extract_plot_data(html_content: str) -> dict | None:
     """Extract plotData.six and plotData.binary from a deprel index HTML page."""
     match = re.search(
-        r'six:\s*(\[.+?\]),\s*\n\s*binary:\s*(\[.+?\])',
+        r"six:\s*(\[.+?\]),\s*\n\s*binary:\s*(\[.+?\])",
         html_content,
     )
     if not match:
@@ -20,7 +20,7 @@ def _extract_plot_data(html_content: str) -> dict | None:
 
 
 def _safe_id(deprel: str) -> str:
-    return re.sub(r'[^a-zA-Z0-9_-]', '_', deprel)
+    return re.sub(r"[^a-zA-Z0-9_-]", "_", deprel)
 
 
 def generate_html_overview_index(html_directory: str) -> None:
@@ -43,14 +43,16 @@ def generate_html_overview_index(html_directory: str) -> None:
             deprels[deprel] = data
 
     if not deprels:
-        raise ValueError(f"No deprel index pages with plot data found in {html_directory}")
+        raise ValueError(
+            f"No deprel index pages with plot data found in {html_directory}"
+        )
 
     panels_html = "\n".join(
         f'            <div class="panel">\n'
         f'                <div id="plot-{_safe_id(deprel)}" class="mini-plot"'
         f' data-url="/multiblimp/{deprel}" data-deprel="{deprel}"></div>\n'
         f'                <div class="panel-label"><a href="/multiblimp/{deprel}">{deprel}</a></div>\n'
-        f'            </div>'
+        f"            </div>"
         for deprel in deprels
     )
 

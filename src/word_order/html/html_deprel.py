@@ -1,5 +1,6 @@
-def create_html(rows_six, rows_binary, plot_data_six_json, plot_data_binary_json,
-                trivial_note=""):
+def create_html(
+    rows_six, rows_binary, plot_data_six_json, plot_data_binary_json, trivial_note=""
+):
     return f"""<!DOCTYPE html>
     <html lang="en">
     <head>

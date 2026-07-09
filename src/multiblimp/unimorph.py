@@ -864,7 +864,7 @@ class UnimorphInflector:
             df_ufeat = self.ufeat if ufeat is None else ufeat
             if df_ufeat is not None:
                 form_rows = self.partial_df_match(
-                    self.form_groups, form, um_features, 
+                    self.form_groups, form, um_features,
                     prefer_tight_match=prefer_tight_match
                 )
                 if self.verbose:

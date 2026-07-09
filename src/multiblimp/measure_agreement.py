@@ -187,6 +187,6 @@ def get_feature_combinations(
                 f"{head_rel_combs[childfeat, headfeat, order, cop_lemma] * 100:<17.1f}"
             )
 
-    print(feature_combinations)
+        print(feature_combinations)
 
     return feature_combinations, rel_combs, child_rel_combs, head_rel_combs

@@ -63,6 +63,12 @@ obl_target = PredictionTarget(
     child_pos=["NOUN", "PROPN", "PRON"],
 )
 
+obl_noun_target = PredictionTarget(
+    child_deprels=["obl"],
+    head_pos=["VERB"],
+    child_pos=["NOUN", "PROPN", "PRON"],
+)
+
 case_target = PredictionTarget(
     child_deprels=["case"],
     head_pos=["NOUN"],
@@ -78,5 +84,11 @@ advmod_target = PredictionTarget(
 nmod_noun_target = PredictionTarget(
     child_deprels=["nmod"],
     head_pos=["NOUN"],
+    child_pos=["NOUN"],
+)
+
+advcl_noun_verb_target = PredictionTarget(
+    child_deprels=["advcl"],
+    head_pos=["VERB"],
     child_pos=["NOUN"],
 )
