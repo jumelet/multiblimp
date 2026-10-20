@@ -1,11 +1,13 @@
 import os
 import random as _random
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import conllu
+import joblib
+import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 from .decision_tree import fit_dt, _infer_column_types, _fill_missing
 from .process_treebank import (
@@ -181,6 +183,7 @@ def collect_training_data(
     random_state: int = 42,
     lexicalize: bool = False,
     sample_from_same_head: bool = False,
+    verbose: bool = True,
 ) -> pd.DataFrame:
     """
     Sample n_samples balanced (positive, negative) pairs from the treebank.
@@ -209,7 +212,9 @@ def collect_training_data(
     max_attempts = n_samples * 20
     sampled_pairs: set[tuple[int, int]] = set()
 
-    with tqdm(total=n_samples, desc="Collecting training pairs") as pbar:
+    with tqdm(
+        total=n_samples, desc="Collecting training pairs", disable=not verbose
+    ) as pbar:
         while len(records) < 2 * n_samples and attempts < max_attempts:
             attempts += 1
 
@@ -373,6 +378,7 @@ def fit_joint_classifier(
     verbose: bool = False,
     viz_dir: str | None = None,
     sample_from_same_head: bool = False,
+    save_to: str | None = None,
     **pipeline_kwargs,
 ) -> tuple[JointClassifier | None, pd.DataFrame]:
     """
@@ -394,6 +400,7 @@ def fit_joint_classifier(
             random_state=random_state,
             lexicalize=lexicalize,
             sample_from_same_head=sample_from_same_head,
+            verbose=verbose,
         )
 
     extra_omit = {"orig_deprel", "dir_label"}
@@ -434,6 +441,10 @@ def fit_joint_classifier(
         all_pos=all_pos,
         lexicalize=lexicalize,
     )
+
+    if save_to is not None:
+        os.makedirs(os.path.dirname(save_to) or ".", exist_ok=True)
+        joblib.dump(classifier, save_to + ".joblib")
 
     return classifier, train_df
 
@@ -583,9 +594,24 @@ def score_heads(
     return results, leaves, all_df, data.hyp_maps, data.child_feats
 
 
+def _probs_to_records(probs: dict[int, float] | None) -> list[dict] | None:
+    if probs is None:
+        return None
+    return [{"head_id": head_id, "prob": prob} for head_id, prob in probs.items()]
+
+
+def probs_from_records(records) -> dict[int, float] | None:
+    """Turn an *_attachment_probs cell back into a {head_id: prob} dict."""
+    if records is None:
+        return None
+    return {int(r["head_id"]): float(r["prob"]) for r in records}
+
+
 def score_swap_df(
     swap_df: pd.DataFrame,
     classifier: JointClassifier,
+    omit_orig_head: bool = True,
+    show_progress: bool = False,
 ) -> pd.DataFrame:
     """
     Score all rows of swap_df (as returned by create_pairs_tree) in two phases:
@@ -596,15 +622,24 @@ def score_swap_df(
     are skipped, since the moved root is then the head rather than a child and the
     attachment validation is not meaningful; their score columns are set to None.
 
-    Returns a copy of swap_df with four new columns:
-      attachment_probs, head_prob, swapped_head_prob, max_swapped_head_prob.
+    If omit_orig_head is True, the original head (swapped_head_id) is excluded when
+    computing max_swapped_head_prob, so only novel rival heads are considered.
+
+    Returns a copy of swap_df with five new columns:
+      orig_attachment_probs, swapped_attachment_probs, head_prob,
+      swapped_head_prob, max_swapped_head_prob.
+    The two attachment_probs columns hold [{"head_id": ..., "prob": ...}, ...]
+    records; use probs_from_records to turn a cell back into a dict.
     """
     # Phase 1: feature extraction (skip head-moving swaps)
     all_orig_data: list[HeadData | None] = []
     all_swap_data: list[HeadData | None] = []
 
     for _, row in tqdm(
-        swap_df.iterrows(), total=len(swap_df), desc="Extracting features"
+        swap_df.iterrows(),
+        total=len(swap_df),
+        desc="Extracting features",
+        disable=not show_progress,
     ):
         if row.get("head_was_moved", False):
             all_orig_data.append(None)
@@ -629,11 +664,15 @@ def score_swap_df(
         all_feature_rows.extend(orig_d.feature_rows)
         all_feature_rows.extend(swap_d.feature_rows)
 
-    batch_df = _scoring_df(all_feature_rows, classifier.model)
+    # Can be empty, e.g. when every row moves the head; nothing to score then.
+    if all_feature_rows:
+        batch_df = _scoring_df(all_feature_rows, classifier.model)
+        proba_matrix = classifier.model.predict_proba(batch_df)
+    else:
+        batch_df, proba_matrix = None, None
     classes = list(classifier.model.named_steps["clf"].classes_)
-    proba_matrix = classifier.model.predict_proba(batch_df)
 
-    is_dt = classifier.model_type == "decision_tree"
+    is_dt = classifier.model_type == "decision_tree" and batch_df is not None
     if is_dt:
         X_trans = classifier.model.named_steps["preprocessor"].transform(batch_df)
         leaf_ids = classifier.model.named_steps["clf"].apply(X_trans)
@@ -641,7 +680,8 @@ def score_swap_df(
         leaf_ids = None
 
     # Phase 3: unpack results per row
-    all_attachment_probs = []
+    orig_attachment_probs = []
+    swapped_attachment_probs = []
     head_probs = []
     swapped_head_probs = []
     max_swapped_head_probs = []
@@ -651,7 +691,8 @@ def score_swap_df(
         swap_df.iterrows(), all_orig_data, all_swap_data
     ):
         if orig_d is None or swap_d is None:
-            all_attachment_probs.append(None)
+            orig_attachment_probs.append(None)
+            swapped_attachment_probs.append(None)
             head_probs.append(None)
             swapped_head_probs.append(None)
             max_swapped_head_probs.append(None)
@@ -666,14 +707,312 @@ def score_swap_df(
         )
         offset += len(swap_d.candidates)
 
-        all_attachment_probs.append((orig_scores, swap_scores))
+        orig_attachment_probs.append(orig_scores)
+        swapped_attachment_probs.append(swap_scores)
         head_probs.append(orig_scores.get(row.original_head_id, 0.0))
         swapped_head_probs.append(swap_scores.get(row.swapped_head_id, 0.0))
-        max_swapped_head_probs.append(max(swap_scores.values()) if swap_scores else 0.0)
+        if omit_orig_head:
+            rival_scores = {
+                cand_id: prob
+                for cand_id, prob in swap_scores.items()
+                if cand_id != row.swapped_head_id
+            }
+        else:
+            rival_scores = swap_scores
+        max_swapped_head_probs.append(
+            max(rival_scores.values()) if rival_scores else 0.0
+        )
 
-    swap_df["attachment_probs"] = all_attachment_probs
+    # Stored as a list of {"head_id", "prob"} records rather than {head_id: prob}:
+    # pyarrow can't write dicts with int keys to parquet, and [head_id, prob] pairs
+    # would be coerced to floats.
+    swap_df["orig_attachment_probs"] = [
+        _probs_to_records(d) for d in orig_attachment_probs
+    ]
+    swap_df["swapped_attachment_probs"] = [
+        _probs_to_records(d) for d in swapped_attachment_probs
+    ]
     swap_df["head_prob"] = head_probs
     swap_df["swapped_head_prob"] = swapped_head_probs
     swap_df["max_swapped_head_prob"] = max_swapped_head_probs
 
     return swap_df
+
+
+# ── SHAP explanation of a single swap_df row ──────────────────────────────────
+
+
+@dataclass
+class SwapExplanation:
+    """
+    SHAP attributions for every candidate head of one swap_df row, on both the
+    original and the swapped tree.
+
+    Each candidate is attributed on *its own* direction class ("L" if the child
+    precedes the candidate head, "R" otherwise) — the same class whose
+    probability score_swap_df records, so the numbers line up with head_prob /
+    swapped_head_prob / max_swapped_head_prob.
+
+    Attributes:
+        shap_df:      tidy top-k table, one row per (side, head_id, feature).
+        explanations: (side, head_id) -> shap.Explanation, full feature vector.
+        probs:        (side, head_id) -> probability of that candidate's direction class.
+        directions:   (side, head_id) -> "L" or "R".
+        highlights:   the three candidates plotted by default, as
+                      (side, head_id, label) triples.
+    """
+
+    shap_df: pd.DataFrame
+    explanations: dict
+    probs: dict
+    directions: dict
+    highlights: list
+    sen_str: str = ""
+    swapped_sen_str: str = ""
+    child_forms: dict = field(default_factory=dict)
+
+    def waterfall(self, side: str, head_id: int, max_display: int = 15, show=True):
+        """Draw the SHAP waterfall for one candidate. side is 'original'/'swapped'."""
+        import matplotlib.pyplot as plt
+        import shap
+
+        key = (side, int(head_id))
+        if key not in self.explanations:
+            available = sorted(h for s, h in self.explanations if s == side)
+            raise KeyError(
+                f"No candidate head {head_id} on the {side} tree. "
+                f"Available: {available}"
+            )
+
+        # waterfall draws into the current figure; give each call its own.
+        fig = plt.figure()
+        shap.plots.waterfall(self.explanations[key], max_display=max_display, show=False)
+        _swap_waterfall_labels(plt.gca())
+        label = next(
+            (lab for s, h, lab in self.highlights if (s, h) == key), "candidate"
+        )
+        plt.title(
+            f"{side}: child {self.child_forms.get(side, '')} → head {head_id}"
+            f"  [{label}]  p({self.directions[key]})={self.probs[key]:.3f}",
+            fontsize=10,
+        )
+        plt.tight_layout()
+        if show:
+            plt.show()
+        return fig
+
+    def plot(self, max_display: int = 15, show=True):
+        """Draw the default waterfalls: the true head, the swapped head, and the
+        best-scoring candidate on the swapped tree."""
+        return [
+            self.waterfall(side, head_id, max_display=max_display, show=show)
+            for side, head_id, _ in self.highlights
+        ]
+
+
+def _swap_waterfall_labels(ax):
+    """
+    Rewrite shap's y-tick labels from "value = feature_name" to "feature_name = value".
+
+    shap.plots.waterfall draws the y-ticks twice — the full label in grey, then the
+    part after "=" overlaid in black — so both sets have to be rewritten, and the
+    black overlay has to stay the *suffix* of the grey label for it to line up.
+    """
+    labels = [t.get_text() for t in ax.get_yticklabels()]
+    half = len(labels) // 2
+    if half == 0:
+        return
+
+    for i in range(half):
+        if " = " not in labels[i]:
+            continue
+        # value may itself contain " = "; the feature name never does.
+        value, name = labels[i].rsplit(" = ", 1)
+        labels[i] = f"{name} = {value}"
+        labels[i + half] = value
+
+    ax.set_yticklabels(labels)
+
+
+def _shap_feature_space(classifier: JointClassifier):
+    """
+    Return (ordered original feature names, cleaned names) in the column order the
+    LightGBM booster sees, i.e. categorical columns followed by numeric columns.
+    """
+    prep = classifier.model.named_steps["preprocessor"]
+    rec = prep.named_steps["reconstruct"]
+    original = list(rec.categorical_cols) + list(rec.numeric_cols)
+    return original, list(rec.clean_cols_)
+
+
+def _shap_for_side(
+    data: HeadData,
+    classifier: JointClassifier,
+    explainer,
+    original_names: list[str],
+):
+    """
+    Compute per-candidate shap values, base values and probabilities for one HeadData.
+
+    Returns (values, base, proba, display) with values shaped
+    (n_candidates, n_features, n_classes) and base (n_candidates, n_classes).
+    """
+    batch_df = _scoring_df(data.feature_rows, classifier.model)
+    prep = classifier.model.named_steps["preprocessor"]
+    clf = classifier.model.named_steps["clf"]
+
+    X_t = prep.transform(batch_df)
+    proba = clf.predict_proba(X_t)
+
+    n_classes = len(clf.classes_)
+    explanation = explainer(X_t)
+
+    values = np.asarray(explanation.values)
+    if values.ndim == 2:  # older shap may return a list stacked per class
+        values = values.reshape(values.shape[0], -1, n_classes)
+
+    # base_values arrives as (n, n_classes), (n_classes,) or a scalar depending on
+    # the shap version; broadcast whatever we get to (n_candidates, n_classes).
+    base = np.asarray(explanation.base_values, dtype=float)
+    base = np.broadcast_to(
+        base.reshape(-1, n_classes) if base.size % n_classes == 0 else base.reshape(1, 1),
+        (values.shape[0], n_classes),
+    )
+
+    # Pre-transform values, in booster column order, for readable plot labels.
+    display = batch_df[original_names].to_numpy(dtype=object)
+    return values, base, proba, display
+
+
+def explain_swap_row(
+    row,
+    classifier: JointClassifier,
+    top_k: int = 15,
+    plot: bool = True,
+    max_display: int = 15,
+) -> SwapExplanation:
+    """
+    Explain the model's reattachment predictions for a single row of swap_df.
+
+    Rebuilds exactly the features score_swap_df would build for this row — every
+    projectivity-valid candidate head on the original tree (including the true
+    head) and on the swapped tree — then computes exact TreeSHAP attributions for
+    each candidate on its own direction class.
+
+    By default draws three waterfalls: the true head on the original tree
+    (behind head_prob), the swapped head (behind swapped_head_prob), and the
+    best-scoring candidate on the swapped tree (behind max_swapped_head_prob).
+
+    Args:
+        row: one row of swap_df, e.g. swap_df.iloc[42].
+        classifier: the fitted JointClassifier; must be gradient_boosting.
+        top_k: features kept per candidate in shap_df, ranked by |shap value|.
+        plot: draw the default waterfalls.
+        max_display: features shown per waterfall.
+    """
+    import shap
+
+    if classifier.model_type != "gradient_boosting":
+        raise ValueError(
+            "explain_swap_row needs a gradient_boosting (LightGBM) classifier; "
+            f"got model_type={classifier.model_type!r}."
+        )
+    if row.get("head_was_moved", False):
+        raise ValueError(
+            "This row has head_was_moved=True: the moved constituent is the head "
+            "rather than a child, so attachment validation is not meaningful and "
+            "score_swap_df leaves its probabilities as None."
+        )
+
+    orig_tree = deserialize_tree(row.original_tree)
+    swap_tree = deserialize_tree(row.swapped_tree)
+
+    orig_data = _collect_head_features(
+        orig_tree, classifier, row.original_child_id, include_true_head=True
+    )
+    swap_data = _collect_head_features(swap_tree, classifier, row.swapped_child_id)
+
+    original_names, _ = _shap_feature_space(classifier)
+    clf = classifier.model.named_steps["clf"]
+    classes = list(clf.classes_)
+    explainer = shap.TreeExplainer(clf)
+
+    explanations, probs, directions = {}, {}, {}
+    records = []
+
+    for side, data in (("original", orig_data), ("swapped", swap_data)):
+        if not data.candidates:
+            continue
+        sv, base, proba, display = _shap_for_side(
+            data, classifier, explainer, original_names
+        )
+
+        for i, (h_id, direction) in enumerate(zip(data.candidates, data.directions)):
+            c = classes.index(direction)
+            key = (side, int(h_id))
+            values = sv[i, :, c]
+
+            explanations[key] = shap.Explanation(
+                values=values,
+                base_values=float(base[i, c]),
+                data=display[i],
+                feature_names=original_names,
+            )
+            probs[key] = float(proba[i, c])
+            directions[key] = direction
+
+            order = np.argsort(-np.abs(values))[:top_k]
+            for rank, j in enumerate(order):
+                records.append(
+                    {
+                        "side": side,
+                        "head_id": int(h_id),
+                        "direction": direction,
+                        "prob": probs[key],
+                        "rank": rank,
+                        "feature": original_names[j],
+                        "value": display[i][j],
+                        "shap": float(values[j]),
+                    }
+                )
+
+    shap_df = pd.DataFrame(records)
+
+    # The three candidates worth looking at, mirroring score_swap_df's columns.
+    highlights = []
+    true_key = ("original", int(row.original_head_id))
+    if true_key in explanations:
+        highlights.append((*true_key, "true head → head_prob"))
+
+    swapped_key = ("swapped", int(row.swapped_head_id))
+    swap_probs = {h: p for (s, h), p in probs.items() if s == "swapped"}
+    best_h = max(swap_probs, key=swap_probs.get) if swap_probs else None
+
+    if swapped_key in explanations:
+        label = "swapped head → swapped_head_prob"
+        if best_h == swapped_key[1]:
+            label += " (also max_swapped_head_prob)"
+        highlights.append((*swapped_key, label))
+    if best_h is not None and best_h != swapped_key[1]:
+        highlights.append(("swapped", best_h, "best rival → max_swapped_head_prob"))
+
+    child_forms = {
+        "original": orig_tree[int(row.original_child_id) - 1]["form"],
+        "swapped": swap_tree[int(row.swapped_child_id) - 1]["form"],
+    }
+
+    result = SwapExplanation(
+        shap_df=shap_df,
+        explanations=explanations,
+        probs=probs,
+        directions=directions,
+        highlights=highlights,
+        sen_str=row.get("sen_str", ""),
+        swapped_sen_str=row.get("swapped_sen_str", ""),
+        child_forms=child_forms,
+    )
+
+    if plot:
+        result.plot(max_display=max_display)
+
+    return result

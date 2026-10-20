@@ -5,19 +5,38 @@ All functions work with conllu.TokenList objects, as produced by
 load_treebank() or deserialize_tree().
 """
 
+from copy import deepcopy
+
 from conllu import TokenList, parse as conllu_parse
 
 
 # ── Serialisation ─────────────────────────────────────────────────────────────
 
 
+# conllu cannot round trip "=" or "|" inside a misc value (e.g. the multiword form
+# "šar-ti-an-n=a" in Hittite), so multiword forms are percent-escaped when stored.
+_MWT_FORM_ESCAPES = [("%", "%25"), ("=", "%3D"), ("|", "%7C")]
+
+
 def deserialize_tree(serialized: str) -> TokenList:
     """Parse a CoNLL-U string (as stored in the swapped_tree column) back into a TokenList."""
-    return conllu_parse(serialized)[0]
+    tree = conllu_parse(serialized)[0]
+    for tok in tree:
+        misc = tok["misc"] or {}
+        if "MWTForm" in misc:
+            for char, escaped in reversed(_MWT_FORM_ESCAPES):
+                misc["MWTForm"] = misc["MWTForm"].replace(escaped, char)
+    return tree
 
 
 def serialize_tree(tree: TokenList) -> str:
-    """Serialize a TokenList to a CoNLL-U string."""
+    """Serialize a TokenList to a CoNLL-U string; see deserialize_tree."""
+    tree = deepcopy(tree)
+    for tok in tree:
+        misc = tok["misc"] or {}
+        if "MWTForm" in misc:
+            for char, escaped in _MWT_FORM_ESCAPES:
+                misc["MWTForm"] = misc["MWTForm"].replace(char, escaped)
     return tree.serialize()
 
 
@@ -28,11 +47,27 @@ def tree_to_sentence(tree) -> str:
     """
     Reconstruct the surface string from a TokenList, respecting SpaceAfter=No
     annotations in the misc field.
+
+    The words of a multiword token (stored as MWT/MWTForm in misc, see
+    multiblimp.treebank.remove_multiword_tokens) are rendered as its surface form,
+    e.g. "zu" + "dem" as "zum".
     """
+    tokens = list(tree)
     parts = []
-    for tok in tree:
-        no_space = (tok["misc"] or {}).get("SpaceAfter") == "No"
-        parts.append(tok["form"] if no_space else f"{tok['form']} ")
+    i = 0
+    while i < len(tokens):
+        misc = tokens[i]["misc"] or {}
+        form, last = tokens[i]["form"], i
+        if "MWTForm" in misc:
+            form = misc["MWTForm"]
+            while (
+                last + 1 < len(tokens)
+                and (tokens[last + 1]["misc"] or {}).get("MWT") == misc["MWT"]
+            ):
+                last += 1
+        no_space = (tokens[last]["misc"] or {}).get("SpaceAfter") == "No"
+        parts.append(form if no_space else f"{form} ")
+        i = last + 1
     return "".join(parts).strip()
 
 
