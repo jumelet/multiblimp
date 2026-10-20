@@ -378,6 +378,7 @@ class Pipeline:
             load_from_pickle=self.load_from_pickle,
             resource_dir=self.resource_dir,
             test_files_only=self.treebank_args.get("test_files_only", False),
+            remove_cantillation=True,  # for matching UD forms to UniMorph
         )
 
         return treebank

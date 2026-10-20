@@ -15,12 +15,12 @@ from .config import UD_PATH
 from .languages import udlang2treebanks, convert_arabic_to_latin_langs
 
 
-def has_typo(item):
+def has_typo(item, filter_style: bool = True):
     is_reparandum = item["deprel"] == "reparandum"
 
     feats = item.get("feats") or {}
     feats_has_typo = feats.get("Typo", "No") == "Yes"
-    feats_has_style = "Style" in feats
+    feats_has_style = filter_style and "Style" in feats
     feats_has_foreign = "Foreign" in feats
 
     misc = item.get("misc") or {}
@@ -40,12 +40,16 @@ def has_typo(item):
     return False
 
 
-def tree_is_malformed(tree):
+def tree_is_malformed(tree, filter_style: bool = True):
     for item in tree:
-        if has_typo(item):
+        if has_typo(item, filter_style=filter_style):
             return True
 
     if all(item["form"] == "_" for item in tree):
+        return True
+
+    # Broken lines (e.g. a missing column) leave a syntactic word without a head.
+    if any(isinstance(item["id"], int) and item["head"] is None for item in tree):
         return True
 
     return False
@@ -135,6 +139,32 @@ def flag_treebanks(flag_type: str) -> dict[str, list[str]]:
     return results
 
 
+def remove_multiword_tokens(tree):
+    """
+    Remove multiword token lines (e.g. "zum" = "zu" + "dem") and empty nodes from
+    a tree, so that only syntactic words remain. Each multiword token is stored on
+    the misc of its words, so the surface string can still be rendered:
+      MWT=<id of its first word> on every word of the token,
+      MWTForm=<surface form> on its first word,
+      SpaceAfter=No on its last word, if the multiword token had it.
+    """
+    for item in [tok for tok in tree if isinstance(tok["id"], tuple)]:
+        start, sep, end = item["id"]
+        if sep == "-":
+            words = [
+                tok
+                for tok in tree
+                if isinstance(tok["id"], int) and start <= tok["id"] <= end
+            ]
+            for word in words:
+                word["misc"] = word["misc"] or {}
+                word["misc"]["MWT"] = str(start)
+            words[0]["misc"]["MWTForm"] = item["form"]
+            if (item["misc"] or {}).get("SpaceAfter") == "No":
+                words[-1]["misc"]["SpaceAfter"] = "No"
+        tree.remove(item)
+
+
 class Treebank:
     def __new__(
         cls,
@@ -146,7 +176,11 @@ class Treebank:
         test_files_only: bool = False,
         use_selected_treebanks: bool = True,
         remove_typo: bool = True,
+        filter_style: bool = True,
         pickle_path: str = "ud/ud_pickles",
+        # Only needed to match UD forms to UniMorph in the original MultiBLiMP
+        # pipeline; it also removes the maqaf (U+05BE), which joins words.
+        remove_cantillation: bool = False,
     ):
         if resource_dir is None:
             resource_dir = "."
@@ -185,22 +219,21 @@ class Treebank:
                     treebank.append(tree)
 
         if remove_typo:
-            treebank = [tree for tree in treebank if not tree_is_malformed(tree)]
-
-        for tree in treebank:
-            remove_items = [tok for tok in tree if isinstance(tok["id"], tuple)]
-            for item in remove_items:
-                tree.remove(item)
+            treebank = [
+                tree
+                for tree in treebank
+                if not tree_is_malformed(tree, filter_style=filter_style)
+            ]
 
         if lang in convert_arabic_to_latin_langs:
             for tree in treebank:
                 for item in tree:
-                    if item.get("misc", {}).get("Translit"):
+                    if (item["misc"] or {}).get("Translit"):
                         item["form"] = item["misc"]["Translit"]
                     else:
                         item["form"] = arabic_to_latin(item["form"])
 
-                    if item.get("misc", {}).get("LTranslit"):
+                    if (item["misc"] or {}).get("LTranslit"):
                         item["lemma"] = item["misc"]["LTranslit"]
                     else:
                         item["lemma"] = arabic_to_latin(item["lemma"])
@@ -217,7 +250,7 @@ class Treebank:
                     item["form"] = transliterate(item["form"], IAST, DEVANAGARI)
                     item["lemma"] = transliterate(item["lemma"], IAST, DEVANAGARI)
 
-        if lang == "Ancient_Hebrew":
+        if lang == "Ancient_Hebrew" and remove_cantillation:
 
             def remove_hebrew_cantillation(text):
                 # https://stackoverflow.com/q/44479533/351197
@@ -228,5 +261,10 @@ class Treebank:
                 for item in tree:
                     item["form"] = remove_hebrew_cantillation(item["form"])
                     item["lemma"] = remove_hebrew_cantillation(item["lemma"])
+
+        # Done after the form conversions above, so they also apply to the stored
+        # multiword token forms.
+        for tree in treebank:
+            remove_multiword_tokens(tree)
 
         return treebank

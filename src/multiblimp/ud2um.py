@@ -110,6 +110,7 @@ def create_all_unimorph_from_ud(
             resource_dir=resource_dir,
             remove_typo=False,
             pickle_path="ud/ud_typo_pickles",
+            remove_cantillation=True,  # for matching UD forms to UniMorph
         )
 
         df = create_unimorph_from_ud(

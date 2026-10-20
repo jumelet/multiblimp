@@ -10,8 +10,11 @@ from .config import UD_PATH
 
 
 def lang2langcode(name: str):
+    name = name.replace("_", " ")
+    name = udlang2iso639.get(name, name)
+
     try:
-        return Lang(udlang2iso639.get(name, name)).pt3
+        return Lang(name).pt3
     except InvalidLanguageValue:
         return name
 
@@ -21,10 +24,13 @@ udlang2iso639 = {
     "Ancient Greek": "Ancient Greek (to 1453)",
     "Apurina": "Apurinã",
     "Arabic": "Standard Arabic",
-    "Assyrian": "Akkadian",
+    "Assyrian": "Assyrian Neo-Aramaic",  # UD_Assyrian-AS files are aii_*
     "Bororo": "Borôro",
+    "Bokota": "Buglere",
     "Buryat": "Buriat",
     "Cantonese": "Yue Chinese",
+    "Cappadocian": "Cappadocian Greek",
+    "Chintang": "Chhintange",
     "Chukchi": "Chukot",
     "Classical Chinese": "Literary Chinese",
     "Egyptian": "Egyptian (Ancient)",
@@ -32,6 +38,7 @@ udlang2iso639 = {
     "Greek": "Modern Greek (1453-)",
     "Guajajara": "Guajajára",
     "Gwichin": "Gwich'in",
+    "Kadiweu": "Kadiwéu",
     "Karo": "Karo (Ethiopia)",
     "Kiche": "K'iche'",
     "Komi Permyak": "Komi-Permyak",
@@ -42,20 +49,28 @@ udlang2iso639 = {
     "Middle French": "Middle French (ca. 1400-1600)",
     "Munduruku": "Mundurukú",
     "Nheengatu": "Nhengatu",
+    "Naga": "suan1234",
     "Naija": "Nigerian Pidgin",
     "North Sami": "Northern Sami",
+    "Occitan": "Occitan (post 1500)",
+    "Old Occitan": "Old Provençal (to 1500)",
     "Old East Slavic": "Old Russian",
+    "Old English": "Old English (ca. 450-1100)",
     "Old French": "Old French (842-ca. 1400)",
     "Old Irish": "Old Irish (to 900)",
     "Ottoman Turkish": "Ottoman Turkish (1500-1928)",
     "Paumari": "Paumarí",
+    "Pomak": "qpm",
     "Pesh": "Pech",
+    "Runyankore": "Nyankole",
     "Serbian-Croatian-Bosnian": "Serbo-Croatian",
+    "Shanghainese": "Wu Chinese",  # Not happy with this, but no iso-639-3 for it
     "South Levantine Arabic": "Levantine Arabic",
     "Teko": "Tektiteko",
     "Tupinamba": "Tupinambá",
     "Western Sierra Puebla Nahuatl": "Zacatlán-Ahuacatlán-Tepetzintla Nahuatl",  # zaca1241, nhi
     "Xavante": "Xavánte",
+    "isiXhosa": "Xhosa",
     "Yupik": "Central Siberian Yupik",
     "Zaar": "Saya",
 }
@@ -119,11 +134,11 @@ lang2unimorph_lang = {
 }
 
 remove_diacritics_langs = {
-    "Latin",
-    "Slovenian",
-    "Western Farsi",
-    # "Northern Uzbek",
-    # "Kazakh",
+    # Only needed to match UD forms to UniMorph in the original MultiBLiMP
+    # pipeline; the word order pairs keep the actual spelling.
+    # "Latin",
+    # "Slovenian",
+    # "Western Farsi",
 }
 
 remove_multiples_langs = {
@@ -131,10 +146,43 @@ remove_multiples_langs = {
     "Ancient Greek",
 }
 
-convert_arabic_to_latin_langs = {
-    "Uyghur",
+# Historical languages: their treebanks mark archaic/variant forms with the Style
+# feature (e.g. Style=Arch), so the Style filter in has_typo is skipped for them.
+ancient_langs = {
+    "Akkadian",
+    "Ancient Greek",
+    "Ancient Hebrew",
+    "Classical Armenian",
+    "Classical Chinese",
+    "Coptic",
+    "Egyptian",
+    "Gothic",
+    "Hittite",
+    "Latin",
+    "Middle Armenian",
+    "Middle French",
+    "Old Church Slavonic",
+    "Old East Slavic",
+    "Old English",
+    "Old French",
+    "Old Georgian",
+    "Old Irish",
+    "Old Occitan",
+    "Old Turkish",
+    "Ottoman Turkish",
+    "Phrygian",
+    "Sanskrit",
+    "Tupinamba",
+    "Umbrian",
 }
 
+convert_arabic_to_latin_langs = {
+    # Only needed to match UD forms to UniMorph in the original MultiBLiMP
+    # pipeline; the word order pairs keep the script of the treebank.
+    # "Uyghur",
+}
+
+# Code-switched languages and sign languages are omitted from our setup
 skip_langs = {
     "Frisian Dutch",
     "Turkish German",
@@ -285,6 +333,6 @@ def get_ud_langs(resource_dir, ud_dir=None, do_skip_langs=True):
     treebank_langs = sorted(set(treebank_langs))
 
     if do_skip_langs:
-        treebank_langs = [lang for lang in treebank_langs if lang not in skip_langs]
+        treebank_langs = [lang for lang in treebank_langs if lang.replace("_", " ") not in skip_langs]
 
     return treebank_langs

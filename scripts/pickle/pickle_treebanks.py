@@ -11,12 +11,14 @@ from multiblimp.languages import (
     get_ud_langs,
     remove_diacritics_langs,
     gblang2udlang,
+    ancient_langs,
 )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--resource_dir", default="../../resources")
+    parser.add_argument("--overwrite_existing", action="store_true")
     args = parser.parse_args()
     resource_dir = args.resource_dir
     ud_langs = get_ud_langs(resource_dir)
@@ -30,7 +32,7 @@ if __name__ == "__main__":
                 pickle_path = os.path.join(resource_dir, "ud/ud_typo_pickles")
             Path(pickle_path).mkdir(parents=True, exist_ok=True)
             out_path = os.path.join(pickle_path, f"{lang}.pickle")
-            if os.path.exists(out_path):
+            if os.path.exists(out_path) and not args.overwrite_existing:
                 continue
 
             treebank = Treebank(
@@ -38,6 +40,7 @@ if __name__ == "__main__":
                 remove_diacritics=(lang in remove_diacritics_langs),
                 resource_dir=resource_dir,
                 remove_typo=remove_typo,
+                filter_style=(lang.replace("_", " ") not in ancient_langs),
             )
 
             print(lang, len(treebank))
