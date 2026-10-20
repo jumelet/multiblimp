@@ -102,7 +102,7 @@ def extract_node_features(
     all_feats: set,
     all_deprel: set,
     all_pos: set,
-    target: PredictionTarget,
+    target: PredictionTarget | None = None,
     excluded_deprels: set | None = None,
     lexicalize: bool = False,
     encode_positional_features: bool = False,
@@ -117,6 +117,9 @@ def extract_node_features(
 
     # Basic node features
     features[f"{prefix}_deprel"] = node["deprel"]
+    features[f"{prefix}_deprel_subtype"] = (
+        node["deprel"].split(":", 1)[1] if ":" in node["deprel"] else "base"
+    )
     features[f"{prefix}_pos"] = node["upos"]
     features[f"{prefix}_idx"] = node["id"]
 
@@ -133,7 +136,7 @@ def extract_node_features(
             morph_feats[feat] = node["feats"].get(feat, None)
 
     # Further optional filters for head from PredictionTarget; filter is (lamda x: condition)
-    if prefix == "head" and target.head_feats is not None:
+    if prefix == "head" and target is not None and target.head_feats is not None:
         if not all(
             [
                 val_filter(features.get(f"{prefix}_{feat}", None))
@@ -417,20 +420,20 @@ def extract_instances(
     # Group children by head, keeping only those matching target deprels
     head2children = defaultdict(list)
     for child in tree:
-        if child["deprel"] in target.child_deprels:
+        if target.match_deprel(child["deprel"]) in target.child_deprels:
             head2children[child["head"]].append(child)
 
     # For each head that has all required child deprels present
     for head_id, children in head2children.items():
         # Check if we have all required deprels
-        child_deprels_present = {c["deprel"] for c in children}
+        child_deprels_present = {target.match_deprel(c["deprel"]) for c in children}
         if not all(deprel in child_deprels_present for deprel in target.child_deprels):
             continue
 
         head = tree[head_id - 1]
 
-        # Create a mapping from deprel to child for this head
-        deprel2child = {c["deprel"]: c for c in children}
+        # Create a mapping from (target) deprel to child for this head
+        deprel2child = {target.match_deprel(c["deprel"]): c for c in children}
 
         # Optional filters
         if target.head_deprel is not None and head["deprel"] != target.head_deprel:

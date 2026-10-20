@@ -106,6 +106,7 @@ def _build_and_fit_pipeline(
     max_depth: int,
     min_samples_leaf: int,
     min_impurity_decrease: float,
+    verbose: int = 1,
 ) -> Pipeline:
     """Build and fit an OHE + DecisionTree sklearn Pipeline on pre-filled X."""
 
@@ -158,7 +159,10 @@ def _build_and_fit_pipeline(
             y_train,
             categorical_feature=cat_feature,
             eval_set=[(X_test_t, y_test)],
-            callbacks=[lgb.early_stopping(50), lgb.log_evaluation(50)],
+            callbacks=[
+                lgb.early_stopping(50, verbose=verbose > 0),
+                lgb.log_evaluation(50 if verbose > 0 else 0),
+            ],
         )
 
         # Final pipeline that accepts RAW X (steps already fitted, no refit happens)
@@ -204,6 +208,7 @@ def fit_pipeline(
     min_impurity_decrease: float = 0.005,
     test_size: float | None = None,
     random_state: int = RND,
+    verbose: int = 1,
 ) -> tuple[Pipeline, pd.DataFrame, pd.DataFrame | None, pd.Series, pd.Series | None]:
     """
     Infer column types, fill missing values, optionally split, build and fit a DT Pipeline.
@@ -237,6 +242,7 @@ def fit_pipeline(
         max_depth,
         min_samples_leaf,
         min_impurity_decrease,
+        verbose=verbose,
     )
     return model, X_train, X_test, y_train, y_test
 
@@ -254,7 +260,6 @@ def fit_dt(
     test_size=0.1,
     verbose=1,
     min_df_len=10,
-    leaf_threshold=0.1,
     predictor_var="deprel_order",
 ):
     sub_df = full_df.copy()
@@ -277,7 +282,7 @@ def fit_dt(
             if "agreement" in col and not predictor_var in col
         }
     )
-
+ 
     sub_condition_on = list(set(full_df.columns) - omit_feats - {predictor_var})
 
     X = sub_df[sub_condition_on].copy()
@@ -294,6 +299,7 @@ def fit_dt(
         min_samples_leaf=min_samples_leaf,
         min_impurity_decrease=min_impurity_decrease,
         test_size=test_size,
+        verbose=verbose,
     )
 
     if model_type == "decision_tree":
@@ -304,13 +310,12 @@ def fit_dt(
             target,
             predictor_var,
             additional_vars=omit_feats,
-            threshold=leaf_threshold,
         )
 
     if save_to is not None:
         os.makedirs(os.path.dirname(save_to), exist_ok=True)
         joblib.dump(model, save_to + ".joblib")
-        X_train.to_csv(save_to + ".csv")
+        X_train.to_parquet(save_to + ".parquet")
 
     if verbose > 0:
         print("Train acc", model.score(X_train, y_train))
@@ -327,10 +332,12 @@ def set_dt_features_in_df(
     target: PredictionTarget | None,
     predictor_var: str,
     additional_vars: set | None = None,
-    threshold=0.1,
 ):
     """
     Augments df with DT-derived columns and returns the enriched DataFrame.
+
+    These columns only describe what the DT found; which orders a row can be
+    swapped to is decided at pair creation (see create_tree_pairs.swap_candidates).
 
     Args:
         model: fitted sklearn Pipeline with 'preprocessor' and 'clf' steps.
@@ -339,11 +346,10 @@ def set_dt_features_in_df(
         target: PredictionTarget used to enumerate all possible word orders.
         predictor_var: column name of the word-order variable being predicted.
         additional_vars: extra columns from full_df to carry over into the result.
-        threshold: entropy threshold below which a leaf prediction is considered confident.
 
     Returns:
         A new DataFrame with added columns: leaf_id, leaf_full_entropy, leaf_top1_entropy,
-        per-class entropies, leaf_rule, leaf_decision, keep, num_swaps, swap_order_candidates.
+        leaf_rule, leaf_decision, and per-order entropies ({order}_entropy).
     """
     X_trans = model.named_steps["preprocessor"].transform(df)
     leaf_ids = model.named_steps["clf"].apply(X_trans)
@@ -359,8 +365,8 @@ def set_dt_features_in_df(
     leaf_full_entropy = np.array([leaf_entropy_map[node] for node in leaf_ids])
 
     additional_vars = additional_vars or set()
-    additional_vars.union(META_FEATURES)
-    additional_vars.union(OMIT_FEATURES)
+    additional_vars.update(META_FEATURES)
+    additional_vars.update(OMIT_FEATURES)
     additional_vars.add(predictor_var)
 
     new_cols = {col: full_df[col] for col in additional_vars if col in full_df.columns}
@@ -389,13 +395,9 @@ def set_dt_features_in_df(
         order == leaf2var[leaf_id] for leaf_id, order in zip(leaf_ids, predictor_series)
     ]
     new_cols["leaf_decision"] = leaf_decision
-    new_cols["keep"] = [
-        e < threshold and d
-        for e, d in zip(new_cols["leaf_top1_entropy"], leaf_decision)
-    ]
 
     if target is not None:
-        # Word-order-specific columns: per-class entropies and swap candidates.
+        # Per-order entropies: of the row's own order against each other order.
         all_orders = set(get_all_orders(predictor_var, target))
         unseen_classes = list(all_orders - set(model.classes_))
 
@@ -415,22 +417,6 @@ def set_dt_features_in_df(
                     order_entropy(leaf_distribution[deprel_order_idx], n_swapped)
                 )
             new_cols[f"{swapped_class}_entropy"] = class_entropies
-
-        correct_num_swaps = []
-        all_swap_order_candidates = []
-        for i, (deprel_order, decision) in enumerate(
-            zip(predictor_series, leaf_decision)
-        ):
-            swap_orders = all_orders - {deprel_order}
-            swap_order_candidates = [
-                arg_order
-                for arg_order in swap_orders
-                if new_cols[f"{arg_order}_entropy"][i] < threshold and decision
-            ]
-            correct_num_swaps.append(len(swap_order_candidates))
-            all_swap_order_candidates.append(swap_order_candidates)
-        new_cols["num_swaps"] = correct_num_swaps
-        new_cols["swap_order_candidates"] = all_swap_order_candidates
 
     new_df = pd.concat([df, pd.DataFrame(new_cols, index=df.index)], axis=1)
 

@@ -11,6 +11,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 from tqdm import tqdm
 
+from .create_tree_pairs import ORDER_STRENGTHS, swap_candidates
 from .entropy import calculate_base_entropy, calculate_tree_entropy
 from .html.html_deprel import create_html
 
@@ -71,13 +72,14 @@ def calculate_metrics(
         # Number of items
         n_items = len(df)
 
-        # Swap statistics (if num_swaps column exists)
-        if "num_swaps" in df.columns:
-            n_flexible = (df["num_swaps"] >= 1).sum()
-            n_fully_flexible = (df["num_swaps"] == 4).sum()
+        # Swap statistics over strict leaves (if the DT columns exist)
+        if "leaf_decision" in df.columns:
+            _, strict_range = ORDER_STRENGTHS["strict"]
+            num_swaps = swap_candidates(df, *strict_range).str.len()
         else:
-            n_flexible = 0
-            n_fully_flexible = 0
+            num_swaps = pd.Series(0, index=df.index)
+        n_flexible = (num_swaps >= 1).sum()
+        n_fully_flexible = (num_swaps == 4).sum()
 
         metrics.append(
             {
@@ -89,7 +91,7 @@ def calculate_metrics(
                 "n_items": n_items,
                 "n_flexible": n_flexible,
                 "n_fully_flexible": n_fully_flexible,
-                "total_pairs": sum(df["num_swaps"]),
+                "total_pairs": num_swaps.sum(),
             }
         )
 

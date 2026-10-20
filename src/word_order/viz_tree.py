@@ -121,7 +121,7 @@ def get_correlated_features(prep, clf, dt_df):
 def get_sample_ids(prep, clf, dt_df, predictor_var, max_rows=100, seed=42):
     predictor_samples = {}
 
-    for predictor_value, df in dt_df.groupby(predictor_var):
+    for predictor_value, df in dt_df.groupby(predictor_var, observed=True):
         X_model = prep.transform(df)
 
         rng = np.random.default_rng(seed)
