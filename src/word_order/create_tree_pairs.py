@@ -139,7 +139,7 @@ def _set_space_after(token, no_space):
 
 @dataclass
 class Orthography:
-    """How a treebank writes case and word boundaries; see detect_orthography."""
+    """How a treebank writes case and word boundaries; see detect_orthographies."""
 
     # Whether sentences start with a capital (used when the first word of a
     # sentence does not start with a cased letter, e.g. a number).
@@ -180,6 +180,22 @@ def detect_orthography(treebank) -> Orthography:
         dotted_i=n_tokens > 0 and n_dotless / n_tokens > 0.005,
         spaced_words=n_words == 0 or n_glued / n_words < 0.5,
     )
+
+
+def _treebank_name(tree) -> str:
+    return tree.metadata.get("treebank", "").split("/")[0]
+
+
+def detect_orthographies(treebank) -> dict[str, Orthography]:
+    """
+    The orthography (see detect_orthography) of each treebank a language's trees
+    come from: treebanks of one language can differ, e.g. a spoken treebank written
+    without capitals next to a written one in sentence case (Naija).
+    """
+    trees_per_treebank = {}
+    for tree in treebank:
+        trees_per_treebank.setdefault(_treebank_name(tree), []).append(tree)
+    return {name: detect_orthography(trees) for name, trees in trees_per_treebank.items()}
 
 
 def _change_first_case(text, upper, convention):
@@ -541,7 +557,7 @@ def create_all_constituent_swaps_tree(
     target: PredictionTarget,
     max_sen_len=100,
     min_sen_len=6,
-    orthography=Orthography(),
+    orthographies: dict[str, Orthography] | None = None,
 ):
     assert len(target.child_deprels) in (1, 2)
 
@@ -552,6 +568,7 @@ def create_all_constituent_swaps_tree(
             continue
 
         tree = treebank[row.tree_idx]
+        orthography = (orthographies or {}).get(_treebank_name(tree), Orthography())
 
         # "_" forms are placeholders (e.g. compound parts in Sanskrit-Vedic), so the
         # sentence is not real text. Words of a multiword token can have "_" as form
@@ -607,13 +624,14 @@ def create_all_constituent_swaps_tree(
             tree_orders[swap_order] = new_tokens
 
             if swap_order in swap_candidates:
-                new_metadata = dict(tree.metadata)
-                new_metadata["text"] = tree_to_sentence(new_tokens)
+                # The metadata (e.g. the treebank) is needed to render the sentence.
+                swapped_tree = TokenList(new_tokens, metadata=dict(tree.metadata))
+                swapped_tree.metadata["text"] = tree_to_sentence(swapped_tree)
+                new_metadata = swapped_tree.metadata
                 # Swapping two identical forms (e.g. reduplication) leaves the
                 # sentence unchanged (up to casing), so it is not a minimal pair.
                 if new_metadata["text"].lower() == sen_str.lower():
                     continue
-                swapped_tree = TokenList(new_tokens, metadata=new_metadata)
 
                 original_child_id = _moved_root_original_id(base_tokens, ids)
                 swapped_child_id = _moved_root_new_id(base_tokens, ids, pivot_idx)
@@ -738,7 +756,7 @@ def create_pairs_tree(
     is still short of pairs, and scores them in one batched pass.  This stops
     once every stratum is full or has run out of sentences.
     """
-    orthography = detect_orthography(treebank)
+    orthographies = detect_orthographies(treebank)
 
     dt_dfs = {"non_lexical": dt_df, "lexical": lexical_dt_df}
 
@@ -762,7 +780,7 @@ def create_pairs_tree(
             classifier=classifier,
             validate_threshold=validate_threshold,
             seed=seed,
-            orthography=orthography,
+            orthographies=orthographies,
         )
         if swap_df is not None and len(swap_df) >= min_total_items:
             swap_df["order_strength"] = order_strength
@@ -796,7 +814,7 @@ def _sample_pairs(
     classifier: JointClassifier | None,
     validate_threshold: float,
     seed: int,
-    orthography: Orthography,
+    orthographies: dict[str, Orthography],
 ):
     """
     Rejection sampling of pairs from the rows of dt_df that have swap candidates
@@ -838,7 +856,7 @@ def _sample_pairs(
             target,
             max_sen_len=max_sen_len,
             min_sen_len=min_sen_len,
-            orthography=orthography,
+            orthographies=orthographies,
         )
         if len(round_df) > 0 and classifier is not None:
             round_df = score_swap_df(round_df, classifier)

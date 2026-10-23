@@ -5,6 +5,7 @@ All functions work with conllu.TokenList objects, as produced by
 load_treebank() or deserialize_tree().
 """
 
+import re
 from copy import deepcopy
 
 from conllu import TokenList, parse as conllu_parse
@@ -43,6 +44,28 @@ def serialize_tree(tree: TokenList) -> str:
 # ── Surface string ────────────────────────────────────────────────────────────
 
 
+# Spoken treebanks that transcribe prosodic boundaries and other speech phenomena
+# as punctuation tokens (e.g. "//", "?//", "<", "#", "[", "{", "&//", or "|c" for
+# coordination). These are not part of the language as written and are left out of
+# the surface string; ordinary punctuation (",", "?", "(") is kept.
+SPOKEN_MARKUP_TREEBANKS = {
+    "UD_Naija-NSC",
+    "UD_Beja-Autogramm",
+    "UD_Haitian_Creole-Autogramm",
+    "UD_Hausa-EasternAutogramm",
+    "UD_Hausa-NorthernAutogramm",
+    "UD_Hausa-SouthernAutogramm",
+    "UD_Hausa-WesternAutogramm",
+    "UD_Northwest_Gbaya-Autogramm",
+    "UD_Zaar-Autogramm",
+}
+_SPOKEN_MARKUP = re.compile(r"[/#<>\[\]{}|&=+?!()]*[/#<>\[\]{}|&][/#<>\[\]{}|&=+?!()]*|\|[a-z]+")
+
+
+def _is_spoken_markup(token) -> bool:
+    return token["upos"] == "PUNCT" and _SPOKEN_MARKUP.fullmatch(token["form"]) is not None
+
+
 def tree_to_sentence(tree) -> str:
     """
     Reconstruct the surface string from a TokenList, respecting SpaceAfter=No
@@ -50,13 +73,28 @@ def tree_to_sentence(tree) -> str:
 
     The words of a multiword token (stored as MWT/MWTForm in misc, see
     multiblimp.treebank.remove_multiword_tokens) are rendered as its surface form,
-    e.g. "zu" + "dem" as "zum".
+    e.g. "zu" + "dem" as "zum". Transcription markup of spoken treebanks (see
+    SPOKEN_MARKUP_TREEBANKS) is left out; the treebank is read from the metadata.
     """
+    metadata = getattr(tree, "metadata", None) or {}
+    treebank = metadata.get("treebank", "").split("/")[0]
+    drop_markup = treebank in SPOKEN_MARKUP_TREEBANKS
+
     tokens = list(tree)
     parts = []
     i = 0
     while i < len(tokens):
         misc = tokens[i]["misc"] or {}
+        if drop_markup and "MWT" not in misc and _is_spoken_markup(tokens[i]):
+            # Keep a bracket that is part of the markup (e.g. "//)"), and the word
+            # boundary the markup token stood for.
+            bracket = "".join(ch for ch in tokens[i]["form"] if ch in "()")
+            if bracket:
+                parts.append(bracket if misc.get("SpaceAfter") == "No" else f"{bracket} ")
+            elif misc.get("SpaceAfter") != "No" and parts and not parts[-1].endswith(" "):
+                parts[-1] += " "
+            i += 1
+            continue
         form, last = tokens[i]["form"], i
         if "MWTForm" in misc:
             form = misc["MWTForm"]
