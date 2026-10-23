@@ -24,6 +24,9 @@ OMIT_FEATURES = [
     "subject_idx",
     "object_idx",
     "verb_idx",
+    # Order of subject, verb and object in the main clause: for nsubj/obj targets
+    # this is (part of) the order being predicted.
+    "core_args",
 ]  # TODO should be passed via pipeline to fit_dt kwarg omit_feats
 
 
