@@ -3,24 +3,27 @@ import os
 import random
 import re
 import gc
+import itertools
+import pickle
 
 from collections import defaultdict, Counter
 from dataclasses import dataclass
 
 sys.path.append("src")
 
-from tqdm.notebook import tqdm
+from tqdm.auto import tqdm
 import pandas as pd
 import numpy as np
 
 from multiblimp.treebank import Treebank
-from multiblimp.languages import remove_diacritics_langs, gblang2udlang
+from multiblimp.languages import gblang2udlang
 
 from .prediction_target import PredictionTarget
 from .utils import shorten_cls
 
 
 META_FEATURES = ["sen", "treebank", "sent_id", "tree_idx", "treebank_link", "sen_str"]
+QUESTION_MARKS = {"?", "؟", "？"}
 
 
 @dataclass
@@ -29,28 +32,24 @@ class TreeMaps:
     head2child_ids: dict
     head2child_deprels: dict
     head2child_lemmas: dict
-    head2left_deprels: dict
-    head2right_deprels: dict
     head2child_pos: dict
     head2child_feats: dict
 
 
-def load_treebank(
-    lang: str, resource_dir: str | None = None, max_treebank_len: int | None = None
-) -> Treebank:
-    lang = gblang2udlang.get(lang, lang).replace(" ", "_")
-
-    treebank = Treebank(
-        lang,
-        remove_diacritics=(lang in remove_diacritics_langs),
-        resource_dir=resource_dir,
-        remove_typo=True,
-        load_from_pickle=True,
-    )
-    if max_treebank_len is not None and len(treebank) > max_treebank_len:
+def subsample_treebank(treebank, max_treebank_len: int):
+    if len(treebank) > max_treebank_len:
         rng = random.Random(42)
         treebank = rng.sample(treebank, max_treebank_len)
+    return treebank
 
+
+def load_treebank(lang: str, pickle_dir: str, max_treebank_len: int | None = None):
+    """Load {pickle_dir}/{lang}.pickle, subsampled to max_treebank_len trees if given."""
+    lang = gblang2udlang.get(lang, lang).replace(" ", "_")
+    with open(os.path.join(pickle_dir, f"{lang}.pickle"), "rb") as f:
+        treebank = pickle.load(f)
+    if max_treebank_len is not None:
+        treebank = subsample_treebank(treebank, max_treebank_len)
     return treebank
 
 
@@ -219,54 +218,62 @@ def extract_node_features(
                     elif node["head"] < node["id"] < idx:
                         features[f"{prefix}_sibling-deprel-HCs_{sibling_deprel}"] = True
                         features[f"{prefix}_sibling-pos-HCs_{sibling_pos}"] = True
-        else:
-            for sibling_dir in ["L", "R"]:
-                if sibling_dir == "L":
-                    dir_sibling_deprels = list(
-                        tree_maps.head2left_deprels[node["head"]]
-                    )
-                    if node["id"] < node["head"]:
-                        dir_sibling_deprels = remove_first_occurrence(
-                            dir_sibling_deprels, node["deprel"]
-                        )
-                else:
-                    dir_sibling_deprels = list(
-                        tree_maps.head2right_deprels[node["head"]]
-                    )
-                    if node["id"] > node["head"]:
-                        dir_sibling_deprels = remove_first_occurrence(
-                            dir_sibling_deprels, node["deprel"]
-                        )
 
+            # Sibling lemma for specific deprels
+            if lexicalize:
+                sibling_lemmas = tree_maps.head2child_lemmas[node["head"]]
                 for deprel in sibling_deprel_candidates:
-                    features[f"{prefix}_sibling-deprel-{sibling_dir}_{deprel}"] = (
-                        deprel in dir_sibling_deprels
-                    )
+                    lemma_val = "None"
+                    for dep, lem in zip(
+                        tree_maps.head2child_deprels[node["head"]], sibling_lemmas
+                    ):
+                        if dep == deprel and dep != node["deprel"]:
+                            lemma_val = lem
+                            break
+                    features[f"{prefix}_sibling-lemma_{deprel}"] = lemma_val
 
-        # Sibling lemma for specific deprels
-        if lexicalize:
-            sibling_lemmas = tree_maps.head2child_lemmas[node["head"]]
-            for deprel in sibling_deprel_candidates:
-                lemma_val = "None"
-                for dep, lem in zip(
-                    tree_maps.head2child_deprels[node["head"]], sibling_lemmas
+            # Sibling morphological features
+            for feat in all_feats:
+                for deprel in sibling_deprel_candidates:
+                    if deprel == node["deprel"]:
+                        features[f"{prefix}_sibling-feat_{deprel}_{feat}"] = None
+                    else:
+                        features[f"{prefix}_sibling-feat_{deprel}_{feat}"] = (
+                            tree_maps.head2child_feats[node["head"]]
+                            .get(deprel, {})
+                            .get(feat)
+                        )
+        else:
+            # Siblings are described relative to the head, never relative to the
+            # node itself, so that the features are the same whichever side of the
+            # head the node is on: per side, the number of siblings per deprel and
+            # the attributes of the sibling of each deprel nearest to the head.
+            siblings = [
+                tree[idx - 1]
+                for idx in tree_maps.head2child_ids[node["head"]]
+                if idx != node["id"]
+            ]
+            for side in ("L", "R"):
+                side_siblings = [
+                    sibling
+                    for sibling in siblings
+                    if (sibling["id"] < node["head"]) == (side == "L")
+                ]
+                counts = Counter(sibling["deprel"] for sibling in side_siblings)
+                for deprel in sibling_deprel_candidates:
+                    features[f"{prefix}_sibling-deprel-{side}_{deprel}"] = counts[deprel]
+
+                nearest = {}
+                for sibling in sorted(
+                    side_siblings, key=lambda sibling: abs(sibling["id"] - node["head"])
                 ):
-                    if dep == deprel and dep != node["deprel"]:
-                        lemma_val = lem
-                        break
-                features[f"{prefix}_sibling-lemma_{deprel}"] = lemma_val
-
-        # Sibling morphological features
-        for feat in all_feats:
-            for deprel in sibling_deprel_candidates:
-                if deprel == node["deprel"]:
-                    features[f"{prefix}_sibling-feat_{deprel}_{feat}"] = None
-                else:
-                    features[f"{prefix}_sibling-feat_{deprel}_{feat}"] = (
-                        tree_maps.head2child_feats[node["head"]]
-                        .get(deprel, {})
-                        .get(feat)
-                    )
+                    nearest.setdefault(sibling["deprel"], sibling)
+                for deprel, sibling in nearest.items():
+                    for feat, value in (sibling["feats"] or {}).items():
+                        if feat in all_feats:
+                            features[f"{prefix}_sibling-feat-{side}1_{deprel}_{feat}"] = value
+                    if lexicalize:
+                        features[f"{prefix}_sibling-lemma-{side}1_{deprel}"] = sibling["lemma"]
 
     # Child features (node's own dependents)
     child_deprel_candidates = set(all_deprel) - excluded_deprels
@@ -338,8 +345,12 @@ def extract_sen_features(tree):
     feature2val["object_idx"] = obj_idx
     feature2val["verb_idx"] = verb_idx
 
-    # Question detection
-    feature2val["in_question"] = tree[-1]["form"] == "?"
+    # Question detection: a question mark attached to the root (rather than one at
+    # the end of the sentence, which can belong to a word whose position varies)
+    root_id = next((token["id"] for token in tree if token["head"] == 0), None)
+    feature2val["in_question"] = any(
+        token["form"] in QUESTION_MARKS and token["head"] == root_id for token in tree
+    )
 
     return feature2val
 
@@ -353,8 +364,6 @@ def _build_tree_maps(tree) -> TreeMaps:
     head2child_pos = defaultdict(set)
     head2child_lemmas = defaultdict(list)
     head2child_feats = defaultdict(dict)
-    head2left_deprels = defaultdict(list)
-    head2right_deprels = defaultdict(list)
 
     for child in tree:
         child2head[child["id"]] = child["head"]
@@ -367,11 +376,6 @@ def _build_tree_maps(tree) -> TreeMaps:
         for feat, value in (child["feats"] or {}).items():
             head2child_feats[child["head"]][child["deprel"]][feat] = value
 
-        if child["id"] < child["head"]:
-            head2left_deprels[child["head"]].append(child["deprel"])
-        else:
-            head2right_deprels[child["head"]].append(child["deprel"])
-
     for child, head in child2head.items():
         child2root[child].add(tree[child - 1]["deprel"])
         while head != 0:
@@ -383,8 +387,6 @@ def _build_tree_maps(tree) -> TreeMaps:
         head2child_ids=head2child_ids,
         head2child_deprels=head2child_deprels,
         head2child_lemmas=head2child_lemmas,
-        head2left_deprels=head2left_deprels,
-        head2right_deprels=head2right_deprels,
         head2child_pos=head2child_pos,
         head2child_feats=head2child_feats,
     )
@@ -399,11 +401,9 @@ def extract_instances(
     lexicalize: bool = False,
 ):
     """
-    Extract training instances from a tree.
-
-    When target is None, returns one instance per (head, child) pair across all
-    non-root tokens, using prefix 'head' and 'child'. When target is provided,
-    filters to matching head-child groups and uses the deprel as the child prefix.
+    Extract training instances from a tree: one per child with the target deprel
+    (or, for targets with several deprels, per combination of such children of
+    the same head), with the deprel as the prefix of the child's features.
 
     Returns:
         list of dicts, where each dict contains features for one instance
@@ -423,44 +423,40 @@ def extract_instances(
         if target.match_deprel(child["deprel"]) in target.child_deprels:
             head2children[child["head"]].append(child)
 
-    # For each head that has all required child deprels present
+    def child_pos_allowed(deprel, child):
+        if isinstance(target.child_pos, list):
+            return child["upos"] in target.child_pos
+        if isinstance(target.child_pos, dict):
+            return child["upos"] in target.child_pos[deprel]
+        return True
+
     for head_id, children in head2children.items():
-        # Check if we have all required deprels
-        child_deprels_present = {target.match_deprel(c["deprel"]) for c in children}
-        if not all(deprel in child_deprels_present for deprel in target.child_deprels):
-            continue
-
         head = tree[head_id - 1]
-
-        # Create a mapping from (target) deprel to child for this head
-        deprel2child = {target.match_deprel(c["deprel"]): c for c in children}
 
         # Optional filters
         if target.head_deprel is not None and head["deprel"] != target.head_deprel:
             continue
         if target.head_pos is not None and head["upos"] not in target.head_pos:
             continue
-        if target.child_pos is not None:
-            skip = False
-            for deprel, child in deprel2child.items():
-                if isinstance(target.child_pos, list):
-                    if child["upos"] not in target.child_pos:
-                        skip = True
-                elif isinstance(target.child_pos, dict):
-                    if child["upos"] not in target.child_pos[deprel]:
-                        skip = True
-            if skip:
-                continue
 
-        sen = tree2sen(tree)
-        instance = {
-            "sen": sen,
-            "treebank": tree.metadata["treebank"].split("/")[0],
-            "sent_id": tree.metadata["sent_id"],
-            "tree_idx": tree_idx,
+        # Every child is an instance of its own; for targets with several deprels,
+        # every combination of children with those deprels.
+        candidates = [
+            [
+                child
+                for child in children
+                if target.match_deprel(child["deprel"]) == deprel
+                and child_pos_allowed(deprel, child)
+            ]
+            for deprel in target.child_deprels
+        ]
+        if not all(candidates):
+            continue
+
+        # Including subtypes (e.g. nmod:poss for nmod)
+        excluded_deprels = {
+            deprel for deprel in all_deprel if target.match_deprel(deprel) in target.child_deprels
         }
-
-        excluded_deprels = set(target.child_deprels)
 
         # Extract features for the head
         head_features = extract_node_features(
@@ -475,70 +471,99 @@ def extract_instances(
             lexicalize=lexicalize,
             excluded_deprels=excluded_deprels,
         )
-        instance.update(head_features)
-
         if len(head_features) == 0:  # item failed PredictionTarget filters
             continue
 
-        # Extract features for each child type; use deprel as prefix (e.g. "nsubj_pos", "amod_pos")
-        for deprel in target.child_deprels:
-            if deprel not in deprel2child:
-                continue
-
-            child = deprel2child[deprel]
-            child_features = extract_node_features(
-                child,
-                tree,
-                tree_maps,
-                deprel,
-                all_feats,
-                all_deprel,
-                all_pos,
-                target,
-                lexicalize=lexicalize,
-            )
-            instance.update(child_features)
-
-            # add SV agreement variable for predictor_var (e.g. "head_nsubj_Number_agreement")
-            # 1. is feature annotated on head & target child?, 2. is value the same? -> TRUE else False
-            if predictor_var and "agreement" in predictor_var:
-                target_feature = re.match(r".*_([A-Z][a-z]+)_.*", predictor_var).group(
-                    1
+        for combination in itertools.product(*candidates):
+            deprel2child = dict(zip(target.child_deprels, combination))
+            instances.append(
+                _build_instance(
+                    tree,
+                    tree_idx,
+                    tree_maps,
+                    target,
+                    tree_metadata,
+                    head_features,
+                    deprel2child,
+                    sen_features,
+                    predictor_var,
+                    lexicalize,
                 )
-                head_val = head_features.get(f"head_{target_feature}", None)
-                child_val = child_features.get(f"{deprel}_{target_feature}", None)
-                if head_val == child_val:
-                    if head_val != None:
-                        agreement_label = "Yes"  # both set and agreeing
-                    else:
-                        agreement_label = "--"  # both undefined
-                elif head_val != None:
-                    if child_val != None:
-                        agreement_label = "No"  # both set but disagreement
-                    else:
-                        agreement_label = "+-"  # child feat not set
-                elif head_val == None:
-                    agreement_label = "+-"  # head feat notset
-                else:
-                    raise ValueError(
-                        "Value combination inadmissable"
-                    )  # should not occur
-
-                instance[f"head_{deprel}_{target_feature}_agreement"] = agreement_label
-
-        # Add sentence-level features
-        instance.update(sen_features)
-
-        deprel_ids = {
-            deprel: instance[f"{deprel}_idx"]
-            for deprel in target.child_deprels + ["head"]
-        }
-        deprel_order = "_".join(sorted(deprel_ids, key=deprel_ids.get))
-        instance["deprel_order"] = shorten_cls(deprel_order, target)
-
-        instances.append(instance)
+            )
 
     return instances
+
+
+def _build_instance(
+    tree,
+    tree_idx,
+    tree_maps,
+    target,
+    tree_metadata,
+    head_features,
+    deprel2child,
+    sen_features,
+    predictor_var,
+    lexicalize,
+):
+    all_feats, _, all_deprel, all_pos = tree_metadata
+
+    instance = {
+        "sen": tree2sen(tree),
+        "treebank": tree.metadata["treebank"].split("/")[0],
+        "sent_id": tree.metadata["sent_id"],
+        "tree_idx": tree_idx,
+    }
+    instance.update(head_features)
+
+    # Features per child, prefixed with its deprel (e.g. "nsubj_pos", "amod_pos")
+    for deprel, child in deprel2child.items():
+        child_features = extract_node_features(
+            child,
+            tree,
+            tree_maps,
+            deprel,
+            all_feats,
+            all_deprel,
+            all_pos,
+            target,
+            lexicalize=lexicalize,
+        )
+        instance.update(child_features)
+
+        # add SV agreement variable for predictor_var (e.g. "head_nsubj_Number_agreement")
+        # 1. is feature annotated on head & target child?, 2. is value the same? -> TRUE else False
+        if predictor_var and "agreement" in predictor_var:
+            target_feature = re.match(r".*_([A-Z][a-z]+)_.*", predictor_var).group(1)
+            head_val = head_features.get(f"head_{target_feature}", None)
+            child_val = child_features.get(f"{deprel}_{target_feature}", None)
+            if head_val == child_val:
+                if head_val != None:
+                    agreement_label = "Yes"  # both set and agreeing
+                else:
+                    agreement_label = "--"  # both undefined
+            elif head_val != None:
+                if child_val != None:
+                    agreement_label = "No"  # both set but disagreement
+                else:
+                    agreement_label = "+-"  # child feat not set
+            elif head_val == None:
+                agreement_label = "+-"  # head feat notset
+            else:
+                raise ValueError("Value combination inadmissable")  # should not occur
+
+            instance[f"head_{deprel}_{target_feature}_agreement"] = agreement_label
+
+    # Add sentence-level features
+    instance.update(sen_features)
+
+    deprel_ids = {
+        deprel: instance[f"{deprel}_idx"] for deprel in target.child_deprels + ["head"]
+    }
+    deprel_order = "_".join(sorted(deprel_ids, key=deprel_ids.get))
+    instance["deprel_order"] = shorten_cls(deprel_order, target)
+
+    return instance
 
 
 def _categorize(df: pd.DataFrame) -> pd.DataFrame:
@@ -641,7 +666,9 @@ def create_word_order_df(
 
     if treebank is None:
         assert lang is not None, "lang must be provided for loading treebank"
-        treebank = load_treebank(lang, resource_dir, max_treebank_len=max_treebank_len)
+        treebank = load_treebank(
+            lang, os.path.join(resource_dir, "ud", "ud_pickles"), max_treebank_len=max_treebank_len
+        )
 
     dfs = extract_features(
         treebank,

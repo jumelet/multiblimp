@@ -6,6 +6,8 @@ from .prediction_target import PredictionTarget
 ALL_CORE_ARGS = ["vos", "vso", "ovs", "svo", "osv", "sov"]
 
 MAX_TREEBANK_LEN = 30_000
+# Treebank pickles subsampled to MAX_TREEBANK_LEN trees, relative to the data dir
+SAMPLED_PICKLE_DIR = f"resources/ud/ud_pickles_max{MAX_TREEBANK_LEN}"
 
 
 def capitalize_first(word: str) -> str:
