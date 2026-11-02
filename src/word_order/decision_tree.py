@@ -1,4 +1,5 @@
 import joblib
+import math
 import os
 import re
 
@@ -15,7 +16,7 @@ import pandas as pd
 
 from .entropy import order_entropy
 from .prediction_target import PredictionTarget
-from .process_treebank import META_FEATURES
+from .process_treebank import META_FEATURES, read_df
 from .utils import get_all_orders
 
 
@@ -326,6 +327,46 @@ def fit_dt(
             print("Test acc ", model.score(X_test, y_test))
 
     return model, X_train, y_train
+
+
+def get_impurity(n, min_n=300, max_n=4000, max_val=0.1, min_val=0.01):
+    """min_impurity_decrease for a DT on n rows: log-linear from max_val to min_val."""
+    if n <= min_n:
+        return max_val
+    if n >= max_n:
+        return min_val
+    t = (math.log(n) - math.log(min_n)) / (math.log(max_n) - math.log(min_n))
+    return max_val - t * (max_val - min_val)
+
+
+def fit_word_order_dt(data_dir: str, lang: str, target: PredictionTarget, lexical: bool):
+    """
+    Fit the DT of (lang, target) on {data_dir}/treebank_features/ and save it to
+    dt_df/ or, if lexical (with form/lemma features), dt_df_lexical/.
+    """
+    deprel = "_".join(target.child_deprels)
+    save_to = os.path.join(data_dir, "dt_df_lexical" if lexical else "dt_df", deprel, lang)
+    for ext in (".joblib", ".parquet"):  # no new DT is written if there are too few rows
+        if os.path.exists(save_to + ext):
+            os.remove(save_to + ext)
+
+    full_df = read_df(lang, word_order_dir=os.path.join(data_dir, "treebank_features", deprel))
+    full_df = full_df[full_df["deprel_order"].notnull()]
+    if len(full_df) == 0:
+        return None, None
+
+    omit_feats = set() if lexical else {col for col in full_df.columns if "form" in col or "lemma" in col}
+    model, dt_df, _ = fit_dt(
+        full_df,
+        "decision_tree",
+        target=target,
+        verbose=0,
+        min_impurity_decrease=get_impurity(len(full_df)),
+        min_samples_leaf=10,
+        save_to=save_to,
+        omit_feats=omit_feats,
+    )
+    return model, dt_df
 
 
 def set_dt_features_in_df(
