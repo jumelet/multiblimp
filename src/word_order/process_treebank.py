@@ -25,6 +25,20 @@ from .utils import shorten_cls
 META_FEATURES = ["sen", "treebank", "sent_id", "tree_idx", "treebank_link", "sen_str"]
 QUESTION_MARKS = {"?", "؟", "？"}
 
+_FEATURE_NAMES: dict[tuple[str, ...], str] = {}
+
+
+def _feature_name(*parts: str) -> str:
+    """
+    "_".join(parts), as a single string object shared by all instances: an
+    instance has thousands of features (deprel x feat combinations), and keeping
+    a copy of each name per instance takes many GBs for large feature sets.
+    """
+    name = _FEATURE_NAMES.get(parts)
+    if name is None:
+        name = _FEATURE_NAMES[parts] = "_".join(parts)
+    return name
+
 
 @dataclass
 class TreeMaps:
@@ -130,7 +144,7 @@ def extract_node_features(
 
     # Morphological features
     for feat in all_feats:
-        features[f"{prefix}_{feat}"] = (node["feats"] or {}).get(feat)
+        features[_feature_name(prefix, feat)] = (node["feats"] or {}).get(feat)
         if (node["feats"] or {}).get(feat, None):
             morph_feats[feat] = node["feats"].get(feat, None)
 
@@ -158,7 +172,7 @@ def extract_node_features(
 
     # Path to root features
     for deprel in all_deprel:
-        features[f"{prefix}_under_{deprel}"] = (
+        features[_feature_name(prefix, "under", deprel)] = (
             deprel in tree_maps.child2root[node["id"]]
         )
 
@@ -184,11 +198,11 @@ def extract_node_features(
 
         # # Sibling deprel presence
         for deprel in sibling_deprel_candidates:
-            features[f"{prefix}_sibling-deprel_{deprel}"] = deprel in sibling_deprels
+            features[_feature_name(prefix, "sibling-deprel", deprel)] = deprel in sibling_deprels
 
         # # Sibling POS presence
         for pos in all_pos:
-            features[f"{prefix}_sibling-pos_{pos}"] = pos in sibling_pos
+            features[_feature_name(prefix, "sibling-pos", pos)] = pos in sibling_pos
 
         # Directional sibling deprels
         if encode_positional_features:
@@ -230,15 +244,15 @@ def extract_node_features(
                         if dep == deprel and dep != node["deprel"]:
                             lemma_val = lem
                             break
-                    features[f"{prefix}_sibling-lemma_{deprel}"] = lemma_val
+                    features[_feature_name(prefix, "sibling-lemma", deprel)] = lemma_val
 
             # Sibling morphological features
             for feat in all_feats:
                 for deprel in sibling_deprel_candidates:
                     if deprel == node["deprel"]:
-                        features[f"{prefix}_sibling-feat_{deprel}_{feat}"] = None
+                        features[_feature_name(prefix, "sibling-feat", deprel, feat)] = None
                     else:
-                        features[f"{prefix}_sibling-feat_{deprel}_{feat}"] = (
+                        features[_feature_name(prefix, "sibling-feat", deprel, feat)] = (
                             tree_maps.head2child_feats[node["head"]]
                             .get(deprel, {})
                             .get(feat)
@@ -261,7 +275,7 @@ def extract_node_features(
                 ]
                 counts = Counter(sibling["deprel"] for sibling in side_siblings)
                 for deprel in sibling_deprel_candidates:
-                    features[f"{prefix}_sibling-deprel-{side}_{deprel}"] = counts[deprel]
+                    features[_feature_name(prefix, f"sibling-deprel-{side}", deprel)] = counts[deprel]
 
                 nearest = {}
                 for sibling in sorted(
@@ -281,10 +295,10 @@ def extract_node_features(
     child_pos = tree_maps.head2child_pos[node["id"]]
 
     for deprel in child_deprel_candidates:
-        features[f"{prefix}_child-deprel_{deprel}"] = deprel in child_deprels
+        features[_feature_name(prefix, "child-deprel", deprel)] = deprel in child_deprels
 
     for pos in all_pos:
-        features[f"{prefix}_child-pos_{pos}"] = pos in child_pos
+        features[_feature_name(prefix, "child-pos", pos)] = pos in child_pos
 
     if lexicalize:
         child_lemmas = tree_maps.head2child_lemmas[node["id"]]
@@ -294,11 +308,11 @@ def extract_node_features(
                 if dep == deprel:
                     lemma_val = lem
                     break
-            features[f"{prefix}_child-lemma_{deprel}"] = lemma_val
+            features[_feature_name(prefix, "child-lemma", deprel)] = lemma_val
 
     for feat in all_feats:
         for deprel in child_deprel_candidates:
-            features[f"{prefix}_child-feat_{deprel}_{feat}"] = (
+            features[_feature_name(prefix, "child-feat", deprel, feat)] = (
                 tree_maps.head2child_feats[node["id"]].get(deprel, {}).get(feat)
             )
 
