@@ -6,8 +6,10 @@ takes far longer than the scoring itself.
 
 Each sentence is scored by its log-probability conditioned only on BOS/EOT, and
 a pair counts as correct if the original sentence is more likely than the
-swapped one. Scores are stored per pair as (lang, deprel, sen_logprob,
-swapped_sen_logprob).
+swapped one. Scores are stored per pair as (lang, deprel, doc_id, sen_logprob,
+swapped_sen_logprob), where doc_id is the row index within the split. This
+matches the row order of the {lang}/{deprel} parquet files of the dataset, so
+the scores can be merged back onto the full pair data on (lang, deprel, doc_id).
 
 HF_HOME must be set before importing this module, as it imports transformers.
 """
@@ -37,6 +39,7 @@ def load_pairs(dataset: str, langs: list[str] | None = None) -> pd.DataFrame:
     dfs = []
     for path in tqdm(sorted(Path(local_dir).glob("*/*.parquet"))):
         df = pd.read_parquet(path, columns=["sen_str", "swapped_sen_str", "lang", "deprel"])
+        df["doc_id"] = range(len(df))
         dfs.append(df)
 
     return pd.concat(dfs, ignore_index=True)
