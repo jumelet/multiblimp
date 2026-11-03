@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from conllu import TokenList
 
+from .entropy import order_entropy
 from .process_treebank import PredictionTarget
 from .tree_utils import serialize_tree, tree_to_sentence
 from .utils import shorten_cls
@@ -694,6 +695,59 @@ def swap_candidates(dt_df, min_entropy, max_entropy) -> pd.Series:
     return dt_df.apply(candidates, axis=1)
 
 
+# A leaf is only used if its order does not rest on a single word combination:
+# without its most frequent (head lemma, child lemma) combination, the order
+# entropy may not rise above the step's range by more than this many bits. This
+# rules out leaves made by a repeated formula, e.g. the Ukrainian parliamentary
+# "Слово надається ..." ("the floor is given to ...", 44x, never "Надається
+# слово"), whose swap is grammatical, while a frequent combination that is one of
+# many (English "thank you") barely changes the entropy of its leaf.
+MAX_TOP_COMBINATION_ENTROPY_JUMP = 0.1
+
+
+def _word_combination(tree, idxs) -> str:
+    """The lemmas of the tokens at (1-based) idxs, e.g. head and child; forms where there are no lemmas."""
+
+    def lemma(idx):
+        token = tree[int(idx) - 1]
+        return token["lemma"] if token["lemma"] not in (None, "_") else token["form"].lower()
+
+    return " | ".join(lemma(idx) for idx in idxs)
+
+
+def formulaic_leaves(
+    dt_df, treebank, target: PredictionTarget, min_entropy: float, max_entropy: float
+) -> dict[int, str]:
+    """
+    The leaves of dt_df with an order entropy in [min_entropy, max_entropy) that
+    rise above max_entropy, by more than MAX_TOP_COMBINATION_ENTROPY_JUMP, when
+    their most frequent word combination is left out; mapped to that combination.
+    """
+    orders = dt_df.deprel_order.astype(str)
+    leaves = {}
+    for leaf_id, leaf_orders in orders.groupby(dt_df.leaf_id):
+        counts = leaf_orders.value_counts()
+        entropy = order_entropy(counts.iloc[0], counts.iloc[1:].sum())
+        if not min_entropy <= entropy < max_entropy:
+            continue
+        rows = dt_df.loc[leaf_orders.index]
+        idx_cols = ["head_idx"] + [f"{dep}_idx" for dep in target.child_deprels]
+        combinations = pd.Series(
+            [
+                _word_combination(treebank[tree_idx], idxs)
+                for tree_idx, *idxs in zip(rows.tree_idx, *(rows[col] for col in idx_cols))
+            ],
+            index=rows.index,
+        )
+        top = combinations.value_counts().index[0]
+        rest = leaf_orders[combinations != top]
+        n_major = (rest == counts.index[0]).sum()
+        entropy_rest = order_entropy(n_major, len(rest) - n_major)
+        if entropy_rest >= max_entropy and entropy_rest - entropy > MAX_TOP_COMBINATION_ENTROPY_JUMP:
+            leaves[leaf_id] = top
+    return leaves
+
+
 def _balance_weights(df, balance_features):
     """
     Inverse-frequency sample weights, so that sampling flattens the distribution
@@ -765,9 +819,15 @@ def create_pairs_tree(
         source_df = dt_dfs[dt_name]
         if source_df is None:
             continue
-        candidates_df = source_df.assign(
-            swap_order_candidates=swap_candidates(source_df, min_entropy, max_entropy)
+        candidates = swap_candidates(source_df, min_entropy, max_entropy)
+        formulaic = formulaic_leaves(source_df, treebank, target, min_entropy, max_entropy)
+        for leaf_id, combination in formulaic.items():
+            print(f"  {order_strength} leaf {leaf_id} rests on '{combination}', not used", flush=True)
+        candidates = pd.Series(
+            [[] if leaf_id in formulaic else c for leaf_id, c in zip(source_df.leaf_id, candidates)],
+            index=candidates.index,
         )
+        candidates_df = source_df.assign(swap_order_candidates=candidates)
         swap_df = _sample_pairs(
             candidates_df,
             treebank,
