@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -t 2:00:00
 #SBATCH -N 1
-#SBATCH -p gpu_mig
+#SBATCH -p gpu_h100
 #SBATCH --gpus=1
 
 # Submit from this directory; all arguments are passed on to eval_model.py, e.g.
