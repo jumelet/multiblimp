@@ -24,8 +24,8 @@ if __name__ == "__main__":
 
     sys.path.append(args.src_dir)
 
-    from lm_eval.load_model import load_hf_model
-    from lm_eval.score import score_tse
+    from eval_lm.load_model import load_hf_model
+    from eval_lm.score import score_tse
 
     if os.path.exists(args.hf_token):
         with open(args.hf_token) as f:
