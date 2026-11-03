@@ -91,38 +91,111 @@ gblang2udlang = {
     "Modern Hebrew": "Hebrew",
 }
 
-# TODO: rewrite this as exclusion list rather than inclusion
-# Maps a language to all the treebanks that should be used for that language.
-# If a language is not in this dictionary we take all available treebanks.
-udlang2treebanks = {
-    "Vietnamese": ["VTB"],
-    "Hebrew": ["HTB"],
-    "Latvian": ["LVTB"],
-    "German": ["GSD", "PUD", "HDT"],
-    "Czech": ["CAC", "CLTT", "FicTree", "PDT", "PUD"],
-    "Russian": ["GSD", "PUD", "SynTagRus", "Taiga"],
-    "Slovenian": ["SSJ"],
-    "Faroese": ["OFT"],
-    "Icelandic": ["GC", "Modern", "PUD"],
-    "English": ["EWT", "LinES", "ParTUT", "PUD"],
-    "Sanskrit": ["Vedic"],
-    "French": ["FQB", "GSD", "ParTUT", "PUD", "Sequoia"],
-    "Galician": ["PUD", "TreeGal"],
-    "Italian": [
-        "ISDT",
-        "MarkIT",
-        "ParlaMint",
-        "ParTUT",
-        "PoSTWITA",
-        "PUD",
-        "TWITTIRO",
-        "VIT",
+# Maps a language to the treebanks that should NOT be used for that language.
+# All other treebanks of the language are used, including ones added in later
+# UD releases. Based on the treebanks in UD v2.18. Treebanks whose words are
+# removed (all forms _) are listed explicitly, although their trees would be
+# dropped as malformed anyway.
+# fmt: off
+udlang2excluded_treebanks = {
+    "Arabic": ["NYUAD"],             # no text
+    "Chinese": [
+        "CFL",                       # L2
+        "GSD",                       # duplicate of GSDSimp, traditional
+        "HK",                        # spoken
     ],
-    "Romanian": ["RRT", "SiMoNERo", "TueCL"],
-    "Spanish": ["AnCora", "GSD", "PUD"],
-    "Japanese": ["GSD", "PUD", "BCCWJ"],
-    "Classical_Chinese": ["Kyoto"],
-    "Arabic": ["PADT", "PUD"],
+    "Classical_Chinese": ["TueCL"],  # small
+    "Czech": ["Poetry"],             # poetry
+    "English": [
+        "Atis",                      # spoken, flight queries
+        "CHILDES",                   # child language, spoken
+        "CTeTex",                    # software requirements
+        "ESL",                       # L2, words removed
+        "ESLSpok",                   # L2, spoken
+        "GENTLE",                    # out-of-domain genres
+        "GUM",                       # partly spoken
+        "GUMReddit",                 # no text
+        "Pronouns",                  # synthetic examples
+    ],
+    "Faroese": ["FarPaHC"],          # historical
+    "French": [
+        "ALTS",                      # historical
+        "GTB",                       # words removed
+        "ParisStories",              # spoken
+        "PoitevinDIVITAL",           # dialect
+        "Rhapsodie",                 # spoken
+    ],
+    "Galician": ["CTG"],             # automatic parse
+    "German": ["LIT"],               # historical, aphorisms
+    "Gheg": ["GPS"],                 # code switching
+    "Greek": [
+        "Cretan",                    # dialect, automatic transcription
+        "GLCII",                     # L2
+        "Lesbian",                   # dialect
+        "Messinian",                 # dialect
+    ],
+    "Hebrew": [
+        "IAHLTknesset",              # spoken, parliament
+        "IAHLTwiki",                 # incompatible annotation
+        "PostRab",                   # historical
+    ],
+    "Hindi_English": ["HIENCS"],     # code switching, words removed
+    "Icelandic": ["IcePaHC"],        # historical, up to 1350 split into Old Norse
+    "Irish": ["TwittIrish"],         # social media
+    "Italian": [
+        "KIParlaForest",             # spoken
+        "MarkIT",                    # marked constructions
+        "Old",                       # historical, poetry
+        "ParlaMint",                 # parliament transcripts
+        "PoSTWITA",                  # social media
+        "TWITTIRO",                  # social media
+        "Valico",                    # L2
+    ],
+    "Japanese": [
+        "BCCWJ",                     # no text
+        "BCCWJLUW",                  # no text, duplicate of BCCWJ
+        "GSDLUW",                    # duplicate of GSD
+        "KTC",                       # words removed
+        "PUDLUW",                    # duplicate of PUD
+    ],
+    "Korean": [
+        "KSL",                       # L2
+        "LittlePrince",              # automatic parse
+    ],
+    "Latvian": ["Cairo"],            # grammar examples
+    "Maghrebi_Arabic_French": [
+        "Arabizi",                   # code switching, low quality
+    ],
+    "Mbya_Guarani": ["Dooley"],      # words removed
+    "Polish": ["MPDT"],              # historical
+    "Portuguese": ["DANTEStocks"],   # social media
+    "Romanian": [
+        "MolDoRo",                   # grammar examples
+        "Nonstandard",               # historical, poetry
+        "TueCL",                     # social media
+    ],
+    "Russian": ["Poetry"],           # poetry
+    "Sanskrit": ["UFAL"],            # Classical Sanskrit, small
+    "Slovenian": ["SST"],            # spoken
+    "Spanish": ["COSER"],            # spoken
+    "Swedish": [
+        "Old",                       # historical
+        "SweLL",                     # L2
+    ],
+    "Turkish": ["Atis"],             # spoken, flight queries
+    "Vietnamese": ["TueCL"],         # spoken
+}
+# fmt: on
+
+# Sentences to exclude per treebank, as a pattern on their sent_id (see
+# Treebank(remove_excluded=True)).
+excluded_sentences = {
+    # The news headlines of PADT, the first unit of each article, which follow a word order of their own (SVO).
+    "UD_Arabic-PADT": r":p1u1$",
+    # The spoken dialogues of PDTC (the PDTSC part).
+    "UD_Czech-PDTC": r"^pdtsc_",
+    # The poetry of Taiga.
+    "UD_Russian-Taiga": r"poetry",
 }
 
 lang2unimorph_lang = {
@@ -167,6 +240,7 @@ ancient_langs = {
     "Old French",
     "Old Georgian",
     "Old Irish",
+    "Old Norse",
     "Old Occitan",
     "Old Turkish",
     "Ottoman Turkish",

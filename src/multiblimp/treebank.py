@@ -12,7 +12,7 @@ from unidecode import unidecode
 from bs4 import BeautifulSoup
 
 from .config import UD_PATH
-from .languages import udlang2treebanks, convert_arabic_to_latin_langs
+from .languages import udlang2excluded_treebanks, convert_arabic_to_latin_langs, excluded_sentences
 
 
 def has_typo(item, filter_style: bool = True):
@@ -165,6 +165,16 @@ def remove_multiword_tokens(tree):
         tree.remove(item)
 
 
+def remove_excluded_sentences(treebank) -> list:
+    """Remove the sentences listed in languages.excluded_sentences."""
+
+    def excluded(tree):
+        pattern = excluded_sentences.get(tree.metadata.get("treebank", "").split("/")[0])
+        return pattern is not None and re.search(pattern, tree.metadata.get("sent_id", "")) is not None
+
+    return [tree for tree in treebank if not excluded(tree)]
+
+
 class Treebank:
     def __new__(
         cls,
@@ -174,13 +184,16 @@ class Treebank:
         load_from_pickle: bool = False,
         resource_dir: str | None = None,
         test_files_only: bool = False,
-        use_selected_treebanks: bool = True,
+        # Skip the treebanks listed in languages.udlang2excluded_treebanks.
+        exclude_treebanks: bool = True,
         remove_typo: bool = True,
         filter_style: bool = True,
         pickle_path: str = "ud/ud_pickles",
         # Only needed to match UD forms to UniMorph in the original MultiBLiMP
         # pipeline; it also removes the maqaf (U+05BE), which joins words.
         remove_cantillation: bool = False,
+        # Remove the sentences listed in languages.excluded_sentences.
+        remove_excluded: bool = False,
     ):
         if resource_dir is None:
             resource_dir = "."
@@ -191,22 +204,19 @@ class Treebank:
                 return pickle.load(f)
 
         if test_files_only:
-            treebank_glob = os.path.join(UD_PATH, f"UD_{lang}*/*test*.conllu")
+            treebank_glob = os.path.join(UD_PATH, f"UD_{lang}-*/*test*.conllu")
         else:
-            treebank_glob = os.path.join(UD_PATH, f"UD_{lang}*/*.conllu")
+            treebank_glob = os.path.join(UD_PATH, f"UD_{lang}-*/*.conllu")
         treebank_glob = os.path.join(resource_dir, treebank_glob)
         treebank_paths = glob(treebank_glob)
 
         skip_flagged = flag_treebanks("sign language").get((lang if not "_" in lang else lang.split("_")[0]), [])
         treebank_paths = [p for p in treebank_paths if p.split("/")[-2].split("-")[-1].lower() not in skip_flagged]
-        selected_treebanks = udlang2treebanks.get(lang)
-        if use_selected_treebanks and selected_treebanks is not None:
-            selected_paths = []
-            for path in treebank_paths:
-                treebank_name = Path(path).parent.name.split("-")[-1]
-                if treebank_name in selected_treebanks:
-                    selected_paths.append(path)
-            treebank_paths = selected_paths
+        if exclude_treebanks:
+            excluded_treebanks = udlang2excluded_treebanks.get(lang, [])
+            treebank_paths = [
+                p for p in treebank_paths if Path(p).parent.name.split("-")[-1] not in excluded_treebanks
+            ]
 
         if verbose:
             print("Loading:\n", "\n".join(treebank_paths))
@@ -224,6 +234,9 @@ class Treebank:
                 for tree in treebank
                 if not tree_is_malformed(tree, filter_style=filter_style)
             ]
+
+        if remove_excluded:
+            treebank = remove_excluded_sentences(treebank)
 
         if lang in convert_arabic_to_latin_langs:
             for tree in treebank:

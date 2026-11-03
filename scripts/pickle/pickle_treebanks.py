@@ -6,7 +6,7 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../src"))
 
-from multiblimp.treebank import Treebank
+from multiblimp.treebank import Treebank, remove_excluded_sentences
 from multiblimp.languages import (
     get_ud_langs,
     remove_diacritics_langs,
@@ -53,7 +53,10 @@ def subsample_pickles(
     max_treebank_len: int = MAX_TREEBANK_LEN,
     overwrite: bool = False,
 ) -> None:
-    """Store the pickled treebanks subsampled to max_treebank_len trees in ud/ud_pickles_max{N}."""
+    """
+    Store the pickled treebanks subsampled to max_treebank_len trees in
+    ud/ud_pickles_max{N}, without the sentences in languages.excluded_sentences.
+    """
     full_dir = os.path.join(resource_dir, "ud/ud_pickles")
     out_dir = os.path.join(resource_dir, f"ud/ud_pickles_max{max_treebank_len}")
     Path(out_dir).mkdir(parents=True, exist_ok=True)
@@ -64,7 +67,8 @@ def subsample_pickles(
             continue
         if os.path.exists(out_path) and not overwrite:
             continue
-        treebank = subsample_treebank(load_treebank(lang, full_dir), max_treebank_len)
+        treebank = remove_excluded_sentences(load_treebank(lang, full_dir))
+        treebank = subsample_treebank(treebank, max_treebank_len)
         with open(out_path, "wb") as f:
             pickle.dump(treebank, f)
 
