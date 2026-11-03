@@ -48,6 +48,11 @@ def tree_is_malformed(tree, filter_style: bool = True):
     if all(item["form"] == "_" for item in tree):
         return True
 
+    # Masked tokens: Czech-CAC writes numbers and symbols as "#" and "*", with a
+    # placeholder lemma such as "&camount;", "&cyear;" or "&cwildcard;".
+    if any(re.fullmatch(r"&c[a-z]+;", item["lemma"] or "") for item in tree):
+        return True
+
     # Broken lines (e.g. a missing column) leave a syntactic word without a head.
     if any(isinstance(item["id"], int) and item["head"] is None for item in tree):
         return True
