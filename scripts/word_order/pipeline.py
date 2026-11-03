@@ -1,7 +1,7 @@
 """Run (parts of) the word order minimal pair pipeline.
 
 Steps, always run in this order:
-  pickle_treebanks           UD treebanks -> resources/ud/ud_pickles/ (and _max30000/)
+  pickle_treebanks           UD treebanks without typos -> resources/ud/ud_pickles/ (and _max30000/)
   extract_features           -> treebank_features/
   fit_validation_classifiers -> joint_classifiers/
   fit_dts                    -> dt_df/
@@ -75,7 +75,8 @@ def main():
             continue
         print(f"=== {step} === {time.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
         if step == "pickle_treebanks":
-            pickle_treebanks(resource_dir, langs, args.overwrite)
+            # the word order pipeline only uses the pickles with typos removed
+            pickle_treebanks(resource_dir, langs, args.overwrite, include_typos=False)
             subsample_pickles(resource_dir, langs, overwrite=args.overwrite)
         elif step == "extract_features":
             extract_features(args.data_dir, langs, overwrite=args.overwrite, workers=args.workers)

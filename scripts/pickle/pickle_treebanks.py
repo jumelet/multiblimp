@@ -17,11 +17,21 @@ from word_order.process_treebank import load_treebank, subsample_treebank
 from word_order.utils import MAX_TREEBANK_LEN
 
 
-def pickle_treebanks(resource_dir: str, langs: list[str] | None = None, overwrite: bool = False) -> None:
-    """Pickle the UD treebanks of `langs` (default: all UD languages), with and without typos."""
+def pickle_treebanks(
+    resource_dir: str,
+    langs: list[str] | None = None,
+    overwrite: bool = False,
+    include_typos: bool = True,
+) -> None:
+    """
+    Pickle the UD treebanks of `langs` (default: all UD languages) with the trees
+    containing typos removed, in ud/ud_pickles. If `include_typos`, also pickle
+    them with those trees kept, in ud/ud_typo_pickles; these are only used for
+    matching UD to UniMorph (ud2um.py).
+    """
     for lang in langs or get_ud_langs(resource_dir):
         lang = gblang2udlang.get(lang, lang).replace(" ", "_")
-        for remove_typo in [True, False]:
+        for remove_typo in [True, False] if include_typos else [True]:
             if remove_typo:
                 pickle_path = os.path.join(resource_dir, "ud/ud_pickles")
             else:
