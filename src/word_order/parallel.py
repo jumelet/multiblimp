@@ -19,10 +19,15 @@ from .utils import SAMPLED_PICKLE_DIR
 GB_PER_PICKLE_MB = 0.03
 GB_PER_MILLION_FEATURE_CELLS = 0.11
 BASE_GB = 0.5
+# The training data of the validation classifier has a column per deprel x feat
+# combination, so its memory depends on a language's feature inventory more than
+# on its treebank size: 9.5 GB for Polish (77 MB pickle, 74 deprels x 24 feats),
+# 4.2 GB for Swedish (38 MB), 5.8 GB for Czech (119 MB).
+GB_PER_PICKLE_MB_CLASSIFIER = 0.12
 
 STEP_MEMORY = {
     "extract_features": {"pickle": GB_PER_PICKLE_MB},
-    "fit_validation_classifiers": {"pickle": GB_PER_PICKLE_MB},
+    "fit_validation_classifiers": {"pickle": GB_PER_PICKLE_MB_CLASSIFIER},
     "fit_dts": {"features": GB_PER_MILLION_FEATURE_CELLS},
     # a lexical DT may be fitted while the treebank is loaded
     "create_pairs": {"pickle": GB_PER_PICKLE_MB, "features": GB_PER_MILLION_FEATURE_CELLS},
