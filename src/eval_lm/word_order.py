@@ -18,6 +18,7 @@ import os
 from pathlib import Path
 
 import pandas as pd
+import torch
 from huggingface_hub import snapshot_download
 from lm_eval.api.instance import Instance
 from lm_eval.models.huggingface import HFLM
@@ -65,11 +66,20 @@ def eval_lm(
     batch_size: int | str = "auto:8",
     max_batch_size: int = 1024,
     dtype: str = "auto",
+    parallelize: bool | None = None,
 ) -> pd.DataFrame:
     """Score all pairs of the dataset with the model, and save the scores to
-    {output_dir}/{model with / replaced by __}.parquet."""
+    {output_dir}/{model with / replaced by __}.parquet.
+
+    With parallelize, the model is split over all visible GPUs, for models that
+    do not fit on a single one; by default it is used when there is more than one GPU.
+    """
     pairs = load_pairs(dataset, langs)
     print(f"Loaded {len(pairs)} pairs", flush=True)
+
+    if parallelize is None:
+        parallelize = torch.cuda.device_count() > 1
+    print(f"GPUs: {torch.cuda.device_count()}, parallelize: {parallelize}", flush=True)
 
     lm = HFLM(
         pretrained=model,
@@ -77,6 +87,7 @@ def eval_lm(
         max_batch_size=max_batch_size,
         dtype=dtype,
         softmax_dtype="float32",
+        parallelize=parallelize,
     )
 
     sen2logprob = score_sentences(lm, pairs.sen_str.tolist() + pairs.swapped_sen_str.tolist())
