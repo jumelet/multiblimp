@@ -33,8 +33,10 @@ udlang2iso639 = {
     "Chintang": "Chhintange",
     "Chukchi": "Chukot",
     "Classical Chinese": "Literary Chinese",
+    "Cuicatec": "Tepeuxila Cuicatec",
     "Egyptian": "Egyptian (Ancient)",
     "Gheg": "Gheg Albanian",
+    "Gorani": "Gurani",  # the Iranian language (Hawrami), not the Slavic Gorani of Gora
     "Greek": "Modern Greek (1453-)",
     "Guajajara": "Guajajára",
     "Gwichin": "Gwich'in",
@@ -43,8 +45,10 @@ udlang2iso639 = {
     "Kiche": "K'iche'",
     "Komi Permyak": "Komi-Permyak",
     "Komi Zyrian": "Komi-Zyrian",
+    "Kullvi": "Kullu Pahari",
     "Kurmanji": "Northern Kurdish",
     "Makurap": "Makuráp",
+    "Mandyali": "Mandeali",
     "Mbya Guarani": "Mbyá Guaraní",
     "Middle French": "Middle French (ca. 1400-1600)",
     "Munduruku": "Mundurukú",
@@ -68,6 +72,7 @@ udlang2iso639 = {
     "South Levantine Arabic": "Levantine Arabic",
     "Teko": "Tektiteko",
     "Tupinamba": "Tupinambá",
+    "Uspanteko": "Uspanteco",
     "Western Sierra Puebla Nahuatl": "Zacatlán-Ahuacatlán-Tepetzintla Nahuatl",  # zaca1241, nhi
     "Xavante": "Xavánte",
     "isiXhosa": "Xhosa",
@@ -93,21 +98,30 @@ gblang2udlang = {
 
 # Maps a language to the treebanks that should NOT be used for that language.
 # All other treebanks of the language are used, including ones added in later
-# UD releases. Based on the treebanks in UD v2.18. Treebanks whose words are
+# UD releases. Based on the treebanks in UD v2.19. Treebanks whose words are
 # removed (all forms _) are listed explicitly, although their trees would be
 # dropped as malformed anyway.
 # fmt: off
 udlang2excluded_treebanks = {
     "Arabic": ["NYUAD"],             # no text
+    "Avestan": ["Old"],              # poetry, small
+    "Bonan": ["GDUD"],               # IPA transcription
+    "Chechen": ["MottDT"],           # Latin romanisation (written in Cyrillic)
     "Chinese": [
         "CFL",                       # L2
         "GSD",                       # duplicate of GSDSimp, traditional
         "HK",                        # spoken
     ],
     "Classical_Chinese": ["TueCL"],  # small
-    "Czech": ["Poetry"],             # poetry
+    "Czech": [
+        "CzeSL",                     # L2
+        "Poetry",                    # poetry
+    ],
+    "Dargwa": ["Mehweb"],            # IPA transcription
+    "Daur": ["GDUD"],                # IPA transcription
+    "Dongxiang": ["GDUD"],           # IPA transcription
     "English": [
-        "Atis",                      # spoken, flight queries
+        "Atis",                     # spoken, flight queries
         "CHILDES",                   # child language, spoken
         "CTeTex",                    # software requirements
         "ESL",                       # L2, words removed
@@ -117,6 +131,8 @@ udlang2excluded_treebanks = {
         "GUMReddit",                 # no text
         "Pronouns",                  # synthetic examples
     ],
+    "Even": ["GDUD"],                # broken characters, Latin transcription (written in Cyrillic)
+    "Evenki": ["GDUD"],              # Latin transcription (written in Cyrillic)
     "Faroese": ["FarPaHC"],          # historical
     "French": [
         "ALTS",                      # historical
@@ -130,7 +146,9 @@ udlang2excluded_treebanks = {
     "Gheg": ["GPS"],                 # code switching
     "Greek": [
         "Cretan",                    # dialect, automatic transcription
+        "Cypriot",                   # dialect, partly spoken
         "GLCII",                     # L2
+        "Griko",                     # dialect
         "Lesbian",                   # dialect
         "Messinian",                 # dialect
     ],
@@ -158,6 +176,7 @@ udlang2excluded_treebanks = {
         "KTC",                       # words removed
         "PUDLUW",                    # duplicate of PUD
     ],
+    "Kalmyk": ["GDUD"],              # mostly Latin transcription (written in Cyrillic)
     "Korean": [
         "KSL",                       # L2
         "LittlePrince",              # automatic parse
@@ -167,8 +186,14 @@ udlang2excluded_treebanks = {
         "Arabizi",                   # code switching, low quality
     ],
     "Mbya_Guarani": ["Dooley"],      # words removed
+    "Mongolian": ["GDUD"],           # Latin transliteration (written in Cyrillic)
+    "Nanai": ["GDUD"],               # Latin transcription (written in Cyrillic)
+    "Negidal": ["GDUD"],             # IPA transcription
+    "Oroch": ["GDUD"],               # IPA transcription
+    "Peripheral_Mongolian": ["Ordos"],  # Latin transliteration (written in Mongolian script)
     "Polish": ["MPDT"],              # historical
     "Portuguese": ["DANTEStocks"],   # social media
+    "Prakrit": ["DIPI"],             # small, parallel versions of the same edicts
     "Romanian": [
         "MolDoRo",                   # grammar examples
         "Nonstandard",               # historical, poetry
@@ -179,10 +204,15 @@ udlang2excluded_treebanks = {
     "Slovenian": ["SST"],            # spoken
     "Spanish": ["COSER"],            # spoken
     "Swedish": [
+        "Modern",                    # historical (1526-1880)
         "Old",                       # historical
         "SweLL",                     # L2
     ],
+    "Tu": ["GDUD"],                  # IPA transcription
     "Turkish": ["Atis"],             # spoken, flight queries
+    "Udihe": ["GDUD"],               # IPA transcription
+    "Ukrainian": ["Zhelekhivka"],    # historical regional standard
+    "Ulch": ["GDUD"],                # mixed Latin transcription and Cyrillic
     "Vietnamese": ["TueCL"],         # spoken
 }
 # fmt: on
@@ -234,6 +264,7 @@ ancient_langs = {
     "Latin",
     "Middle Armenian",
     "Middle French",
+    "Middle Georgian",
     "Old Church Slavonic",
     "Old East Slavic",
     "Old English",
@@ -263,6 +294,7 @@ skip_langs = {
     "Maghrebi Arabic French",
     "Telugu English",
     "Turkish English",
+    "French Sign Language",
     "Spanish Sign Language",
     "Swedish Sign Language",
 }
