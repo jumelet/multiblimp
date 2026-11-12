@@ -63,7 +63,7 @@ sbatch -t 3:00:00 job.sh --model allenai/Olmo-3-1125-32B --output_dir ~/model_re
 sbatch -t 3:00:00 job.sh --model allenai/Olmo-3.1-32B-Instruct --output_dir ~/model_results
 
 # Qwen 3.6 (2 models): 27B and 35B-A3B (MoE), both post-trained.
-sbatch -t 2:30:00 job.sh --model Qwen/Qwen3.6-27B --output_dir ~/model_results
+sbatch -t 3:30:00 job.sh --model Qwen/Qwen3.6-27B --output_dir ~/model_results
 sbatch -t 3:00:00 job.sh --model Qwen/Qwen3.6-35B-A3B --output_dir ~/model_results
 
 # EuroLLM (6 models): 1.7B, 9B and 22B, each in base and instruction-tuned versions.
