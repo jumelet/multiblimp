@@ -25,17 +25,26 @@ from lm_eval.models.huggingface import HFLM
 from tqdm import tqdm
 
 
-def load_pairs(dataset: str, langs: list[str] | None = None) -> pd.DataFrame:
-    """Download the {lang}/{deprel}-00000-of-00001.parquet files of the dataset
-    in a single snapshot and concatenate them."""
+def download_pairs(dataset: str, langs: list[str] | None = None) -> str:
+    """Download the {lang}/{deprel}-00000-of-00001.parquet files of the current
+    revision of the dataset into the HF cache (only the files not there yet), and
+    return the local snapshot folder.
+
+    Few parallel downloads: the datasets consist of >1000 small files, and many
+    jobs downloading them at once with many workers get rate-limited by HF."""
     patterns = [f"{lang}/*.parquet" for lang in langs] if langs else ["*/*.parquet"]
-    local_dir = snapshot_download(
+    return snapshot_download(
         dataset,
         repo_type="dataset",
         allow_patterns=patterns,
-        max_workers=32,
+        max_workers=4,
         token=os.environ.get("HF_TOKEN"),
     )
+
+
+def load_pairs(dataset: str, langs: list[str] | None = None) -> pd.DataFrame:
+    """Download the pair files of the dataset (see download_pairs) and concatenate them."""
+    local_dir = download_pairs(dataset, langs)
 
     dfs = []
     for path in tqdm(sorted(Path(local_dir).glob("*/*.parquet"))):
