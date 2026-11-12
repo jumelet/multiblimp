@@ -40,8 +40,8 @@ sbatch -t 5:30:00 --gpus=2 job.sh --model meta-llama/Meta-Llama-3-70B-Instruct -
 
 # Llama 4 (4 models): Scout (109B MoE) and Maverick (400B MoE), both with 17B active parameters, each in base and instruction-tuned versions.
 # 218 GB in bf16, split over 3 GPUs (94 GB each)
-sbatch -t 8:00:00 --gpus=3 job.sh --model meta-llama/Llama-4-Scout-17B-16E --output_dir ~/model_results
-sbatch -t 8:00:00 --gpus=3 job.sh --model meta-llama/Llama-4-Scout-17B-16E-Instruct --output_dir ~/model_results
+sbatch -t 5:00:00 --gpus=3 job.sh --model meta-llama/Llama-4-Scout-17B-16E --output_dir ~/model_results
+sbatch -t 5:00:00 --gpus=3 job.sh --model meta-llama/Llama-4-Scout-17B-16E-Instruct --output_dir ~/model_results
 # 800 GB in bf16, does not fit on a single node (4x H100)
 # sbatch job.sh --model meta-llama/Llama-4-Maverick-17B-128E --output_dir ~/model_results
 # sbatch job.sh --model meta-llama/Llama-4-Maverick-17B-128E-Instruct --output_dir ~/model_results
@@ -58,9 +58,8 @@ sbatch -t 1:00:00 job.sh --model CohereLabs/tiny-aya-water --output_dir ~/model_
 # OLMo 3 (4 models): 7B and 32B, base + post-trained.
 sbatch -t 1:30:00 job.sh --model allenai/Olmo-3-1025-7B --output_dir ~/model_results
 sbatch -t 1:30:00 job.sh --model allenai/Olmo-3-7B-Instruct --output_dir ~/model_results
-sbatch -t 3:00:00 job.sh --model allenai/Olmo-3-1125-32B --output_dir ~/model_results
-# there is no OLMo 3 (3.0) 32B Instruct, only 32B Think; this is the 3.1 Instruct
-sbatch -t 3:00:00 job.sh --model allenai/Olmo-3.1-32B-Instruct --output_dir ~/model_results
+sbatch -t 5:00:00 job.sh --model allenai/Olmo-3-1125-32B --output_dir ~/model_results
+sbatch -t 5:00:00 job.sh --model allenai/Olmo-3.1-32B-Instruct --output_dir ~/model_results
 
 # Qwen 3.6 (2 models): 27B and 35B-A3B (MoE), both post-trained.
 sbatch -t 3:30:00 job.sh --model Qwen/Qwen3.6-27B --output_dir ~/model_results
