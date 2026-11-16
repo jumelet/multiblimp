@@ -71,7 +71,8 @@ sbatch -t 3:00:00 job.sh --model Qwen/Qwen3.6-35B-A3B --dataset jumelet/multibli
 # EuroLLM (6 models): 1.7B, 9B and 22B, each in base and instruction-tuned versions.
 # sbatch -t 1:00:00 job.sh --model utter-project/EuroLLM-1.7B --dataset jumelet/multiblimp-new --output_dir ~/model_results_new
 # sbatch -t 1:00:00 job.sh --model utter-project/EuroLLM-1.7B-Instruct --dataset jumelet/multiblimp-new --output_dir ~/model_results_new
-# sbatch -t 1:30:00 job.sh --model utter-project/EuroLLM-9B-2512 --dataset jumelet/multiblimp-new --output_dir ~/model_results_new
+# stored in float32 (the other EuroLLMs in bfloat16), which --dtype auto would load: far slower
+# sbatch -t 1:30:00 job.sh --model utter-project/EuroLLM-9B-2512 --dataset jumelet/multiblimp-new --output_dir ~/model_results_new --dtype bfloat16
 # sbatch -t 1:30:00 job.sh --model utter-project/EuroLLM-9B-Instruct-2512 --dataset jumelet/multiblimp-new --output_dir ~/model_results_new
 # sbatch -t 2:30:00 job.sh --model utter-project/EuroLLM-22B-2512 --dataset jumelet/multiblimp-new --output_dir ~/model_results_new
 # sbatch -t 2:30:00 job.sh --model utter-project/EuroLLM-22B-Instruct-2512 --dataset jumelet/multiblimp-new --output_dir ~/model_results_new
