@@ -30,4 +30,8 @@ else
     source "$VENV_DIR/bin/activate"
 fi
 
+# Lets PyTorch reuse fragmented GPU memory: without it, salamandra-2b went OOM with
+# 23 GiB reserved but unused, as the auto-detected batch size leaves little headroom.
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 python eval_model.py "$@"
