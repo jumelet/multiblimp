@@ -25,7 +25,13 @@ def main():
         default="auto:8",
         help='Batch size, or "auto:N" to re-evaluate the optimal batch size N times during eval',
     )
-    parser.add_argument("--max_batch_size", type=int, default=1024)
+    parser.add_argument(
+        "--max_batch_size",
+        type=int,
+        default=256,
+        help="Upper bound of the auto-detected batch size; with 1024, the float32 logits of a batch "
+        "of short sentences took 18.55 GiB for salamandra-2b (256k vocab) and went OOM",
+    )
     parser.add_argument("--hf_token", default="hf_token.txt", help="File containing the token, or the token itself")
     parser.add_argument("--dtype", default="auto")
     parser.add_argument("--output_dir", default="model_results/word_order")
